@@ -1,4 +1,4 @@
-module com.matti.battleship_game {
+module com.matti.battleship {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -8,6 +8,6 @@ module com.matti.battleship_game {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
 
-    opens com.matti.battleship_game to javafx.fxml;
-    exports com.matti.battleship_game;
+    opens com.matti.battleship to javafx.fxml;
+    exports com.matti.battleship;
 }

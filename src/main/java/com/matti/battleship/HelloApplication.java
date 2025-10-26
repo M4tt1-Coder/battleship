@@ -1,4 +1,4 @@
-package com.matti.battleship_game;
+package com.matti.battleship;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
