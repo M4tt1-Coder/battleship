@@ -5,6 +5,8 @@ import com.matti.battleship.enums.PlayingMode;
 public class Game {
     public boolean hasEnded = false;
     PlayingMode playingMode;
-    public  Game() {
+    public Board board;
+    public Player[] players;
+    public Game() {
     }
 }
