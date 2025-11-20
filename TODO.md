@@ -1,6 +1,6 @@
  - [X] Determine entities & relations
  - [X] Assign tasks to everybody
  - [X] Create Java classes
- - [_] Initialization methods of the classes -> rework logic + add needed classes; data conversion against custom communication protocol (Matthis)
- - [_] Playing Mode Scene (Thomas, 23.11.2025)
- - [_] Setup socket connector class -> extra package (Fabi, 23.11.2025)
+ - [ ] Initialization methods of the classes -> rework logic + add needed classes; data conversion against custom communication protocol (Matthis)
+ - [ ] Playing Mode Scene (Thomas, 23.11.2025)
+ - [ ] Setup socket connector class -> extra package (Fabi, 23.11.2025)

@@ -17,6 +17,11 @@ public class Field {
      * Coordinates of the 'Field';
      */
     private Coordinates coordinates;
+
+    /**
+     * 
+     */
+    private Ship[] ships;
     
     public Field(Coordinates coordinates) {
         isOccupied = false;
