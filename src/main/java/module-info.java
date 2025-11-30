@@ -7,6 +7,8 @@ module com.matti.battleship {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
+    requires javafx.graphics;
 
     opens com.matti.battleship to javafx.fxml;
     exports com.matti.battleship;
