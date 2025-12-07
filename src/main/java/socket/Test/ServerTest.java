@@ -6,10 +6,9 @@ import socket.network.ServerConnection;
 public class ServerTest {
 
     public static void main(String[] args) {
-        int port = 5555;
 
         try {
-            ServerConnection server = new ServerConnection(port);
+            ServerConnection server = new ServerConnection();
 
             System.out.println("[SERVER] startet…");
             server.startServer(new MessageListener() {

@@ -6,16 +6,11 @@ import java.net.Socket;
 
 public class ServerConnection {
 
-    private final int port;
     private ServerSocket serverSocket;
     private SocketConnector connector;
 
-    public ServerConnection(int port) {
-        this.port = port;
-    }
-
     public void startServer(MessageListener listener) throws IOException {
-        serverSocket = new ServerSocket(port);
+        serverSocket = new ServerSocket(50000);
         System.out.println("Server wartet auf Verbindung ...");
 
         Socket client = serverSocket.accept();

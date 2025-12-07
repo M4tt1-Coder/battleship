@@ -7,13 +7,12 @@ import socket.protocol.MessageBuilder;
 public class ClientTest {
 
     public static void main(String[] args) {
-        int port = 5555;
 
         try {
             ClientConnection client = new ClientConnection();
 
             System.out.println("[CLIENT] Verbindet...");
-            client.connectToServer("localhost", port, new MessageListener() {
+            client.connectToServer("localhost", new MessageListener() {
 
                 @Override
                 public void onMessageReceived(String msg) {
