@@ -7,8 +7,8 @@ public class ClientConnection {
 
     private SocketConnector connector;
 
-    public void connectToServer(String host, MessageListener listener) throws IOException {
-        Socket socket = new Socket(host, 50000);
+    public void connectToServer(String host, int port, MessageListener listener) throws IOException {
+        Socket socket = new Socket(host, port);
         System.out.println("Mit Server verbunden");
 
         connector = new SocketConnector(socket);
