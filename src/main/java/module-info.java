@@ -9,7 +9,7 @@ module com.matti.battleship {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires javafx.graphics;
-    requires java.desktop;
+    //requires java.desktop;
 
     opens com.matti.battleship to javafx.fxml;
     exports com.matti.battleship;
