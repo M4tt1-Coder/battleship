@@ -6,8 +6,10 @@ import java.util.Properties;
 
 public class EnvConfig {
 
+    // Lade Umgebungsvariablen aus der port.env Datei
     private static final Properties props = new Properties();
 
+    // Statischer Initialisierungsblock zum Laden der Datei
     static {
         try {
             FileInputStream fis = new FileInputStream("port.env");
@@ -17,6 +19,7 @@ public class EnvConfig {
         }
     }
 
+    // Gibt den Port zurück, standardmäßig 50000, falls nicht durch .env bekommen
     public static int getPort() {
         try {
             return Integer.parseInt(props.getProperty("PORT", "50000"));

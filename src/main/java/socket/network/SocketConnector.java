@@ -11,14 +11,16 @@ import java.net.Socket;
     public class SocketConnector {
 
         private final Socket socket;
-        private final BufferedReader reader;
-        private final BufferedWriter writer;
-        private MessageListener listener;
-        private Thread listeningThread;
+        private final BufferedReader reader;  // zum Lesen
+        private final BufferedWriter writer;  // zum Schreiben
+        private MessageListener listener;  // Callback für empfangene Nachrichten
+        private Thread listeningThread;  // Thread zum Lesen
 
         // Konstruktor bekommt nen Socket
         public SocketConnector(Socket socket) throws IOException {
-            this.socket = socket;
+            this.socket = socket;  // Socket speichern
+
+            // Reader und Writer initialisieren
             this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         }
@@ -54,7 +56,7 @@ import java.net.Socket;
                     try { socket.close(); } catch (Exception ignored) {}   
                 }
             });
-
+            // Setze als Daemon, damit er nicht den Programmablauf blockiert
             listeningThread.setDaemon(true);
             listeningThread.start();
         }

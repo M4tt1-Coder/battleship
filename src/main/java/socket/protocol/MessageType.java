@@ -1,5 +1,6 @@
 package socket.protocol;
 
+//gültige Protokoll-Kommandos
 public enum MessageType {
 
     SIZE,       // size rows
@@ -12,5 +13,5 @@ public enum MessageType {
     SAVE,       // save id
     LOAD,       // load id
     OK,         // ok
-    UNKNOWN     // bei random sachen
+    UNKNOWN     // bei random sachen, die nicht bestimmt sind
 }

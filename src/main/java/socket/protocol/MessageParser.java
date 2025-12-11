@@ -1,18 +1,24 @@
 package socket.protocol;
 
+// Wandelt ein String zu Message-Objekt
+// -> Text -> Message
 public class MessageParser {
 
     public static Message parse(String line) {
 
+        // falls was ungültiges kommt
         if (line == null || line.isBlank())
             return new Message(MessageType.UNKNOWN);
 
+        // Zerlegt Zeile in Woöter
         String[] parts = line.trim().split("\\s+");
         String command = parts[0].toLowerCase();
 
+        // Parameter extrahieren
         String[] args = new String[parts.length - 1];
         System.arraycopy(parts, 1, args, 0, args.length);
 
+        //Befehlzuordnung
         return switch (command) {
             case "size" -> new Message(MessageType.SIZE, args);
             case "ships" -> new Message(MessageType.SHIPS, args);
