@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Board { 
+    // maximum 15
     int size;
     public int number_of_ships;
     public Field[][] board;
@@ -15,7 +16,6 @@ public class Board {
         // creates an empty field with no content
         this.board =  new Field[size][size];
     }
-
     /**
      * Provides the size of a 'Board' instance.
      *
@@ -71,7 +71,7 @@ public class Board {
     Ship getShipOnBoardByID(UUID id) {
         for (Field[] row : this.board) {
             for (Field field : row) {
-                if 
+                if (field.)
             }
         }
         return null;

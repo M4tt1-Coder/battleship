@@ -1,12 +1,14 @@
 package com.matti.battleship.types;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Represents a single field on the field.
  * A 'Field' can be identified with its coordinates.
  * When a 'Ship' is placed on a 'Field' 'isOccupied' will be set to TRUE (default FALSE). 
  * 
  * @author m4tt1 
- * @since OPENJDK 17.0.17
+ * @since OPENJDxK 17.0.17
  */
 public class Field {
     /**
@@ -19,13 +21,23 @@ public class Field {
     private Coordinates coordinates;
 
     /**
-     * 
+     * Optional ship on the field where the ships origin field is situated.
      */
-    private Ship[] ships;
+    @Nullable
+    private Ship ship;
     
     public Field(Coordinates coordinates) {
         isOccupied = false;
         this.coordinates = coordinates;
+    }
+
+    @Nullable
+    public Ship getShip() {
+        return this.ship;
+    }
+    
+    public void setShip(@Nullable Ship ship) {
+        this.ship = ship;
     }
 
     public Coordinates getCoordinates() {
