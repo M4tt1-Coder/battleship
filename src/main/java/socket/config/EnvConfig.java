@@ -6,16 +6,16 @@ import java.util.Properties;
 
 public class EnvConfig {
 
-    // Lade Umgebungsvariablen aus der port.env Datei
+    // Lade Umgebungsvariablen aus der .env Datei
     private static final Properties props = new Properties();
 
     // Statischer Initialisierungsblock zum Laden der Datei
     static {
         try {
-            FileInputStream fis = new FileInputStream("port.env");
+            FileInputStream fis = new FileInputStream(".env");
             props.load(fis);
         } catch (IOException e) {
-            System.out.println("port.env Datei nicht gefunden");
+            System.out.println(".env Datei nicht gefunden");
         }
     }
 
