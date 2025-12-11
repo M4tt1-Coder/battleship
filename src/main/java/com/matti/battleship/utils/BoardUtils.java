@@ -8,7 +8,7 @@ import com.matti.battleship.types.Ship;
  * @author m4tt1
  */
 public class BoardUtils {
-    public boolean AreFieldsOfShipAlreadyOccupied(Board board, Ship ship) {
+    public boo`lean AreFieldsOfShipAlreadyOccupied(Board board, Ship ship) {
         // first get all occupied fields of the board
         var occupiedFields = board.getCoordinatesOfOccupiedFields();
         

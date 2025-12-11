@@ -10,7 +10,6 @@ module com.matti.battleship {
     requires java.desktop;
     requires annotations;
     requires javafx.graphics;
-    requires java.desktop;
 
     opens com.matti.battleship to javafx.fxml;
     exports com.matti.battleship;
