@@ -8,7 +8,7 @@ public class ServerTest {
     public static void main(String[] args) {
 
         try {
-            ServerConnection server = new ServerConnection(50000);
+            ServerConnection server = new ServerConnection();
 
             System.out.println("[SERVER] startet…");
             server.startServer(new MessageListener() {

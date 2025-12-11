@@ -1,5 +1,6 @@
 package socket.network;
 
+import socket.config.EnvConfig;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,8 +11,8 @@ public class ServerConnection {
     private ServerSocket serverSocket;
     private SocketConnector connector;
 
-    public ServerConnection(int port) {
-        this.port = port;
+    public ServerConnection() {
+        this.port = EnvConfig.getPort();;
     }
 
     public void startServer(MessageListener listener) throws IOException {

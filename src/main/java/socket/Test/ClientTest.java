@@ -12,7 +12,7 @@ public class ClientTest {
             ClientConnection client = new ClientConnection();
 
             System.out.println("[CLIENT] Verbindet...");
-            client.connectToServer("localhost", 50000, new MessageListener() {
+            client.connectToServer("localhost", new MessageListener() {
 
                 @Override
                 public void onMessageReceived(String msg) {

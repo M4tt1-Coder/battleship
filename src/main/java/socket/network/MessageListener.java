@@ -1,9 +1,11 @@
 package socket.network;
 
 public interface MessageListener {
-    // wird aufgerufen, sobald eine Zeile empfangen wurde
+
+    //Wird aufgerufen wenn SocketConnector ne volle Zeile bekommt
+    //->Nachricht kommt als String
     void onMessageReceived(String message);
 
-    // wenn die verbindung geschlossen wurde
+    //Aufruf falls Verbindung abbricht/geschlossen
     void onConnectionClosed(Exception e);
 }
