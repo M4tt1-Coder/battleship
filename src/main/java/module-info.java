@@ -10,6 +10,10 @@ module com.matti.battleship {
     requires java.desktop;
     requires annotations;
     requires javafx.graphics;
+    requires jdk.jshell;
+    requires org.apache.logging.log4j;
+    requires jdk.dynalink;
+    requires org.apache.logging.log4j.core;
 
     opens com.matti.battleship to javafx.fxml;
     exports com.matti.battleship;

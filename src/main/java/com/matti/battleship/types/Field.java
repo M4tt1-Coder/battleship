@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  * When a 'Ship' is placed on a 'Field' 'isOccupied' will be set to TRUE (default FALSE). 
  * 
  * @author m4tt1 
- * @since OPENJDxK 17.0.17
+ * @since OPENDxK 17.0.17
  */
 public class Field {
     /**
