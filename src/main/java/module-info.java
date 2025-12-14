@@ -8,8 +8,12 @@ module com.matti.battleship {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    requires annotations;
     requires javafx.graphics;
-    requires java.desktop;
+    requires jdk.jshell;
+    requires org.apache.logging.log4j;
+    requires jdk.dynalink;
+    requires org.apache.logging.log4j.core;
 
     opens com.matti.battleship to javafx.fxml;
     exports com.matti.battleship;
