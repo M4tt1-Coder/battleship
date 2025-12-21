@@ -25,18 +25,18 @@ public class Board {
      * @author m4tt1
      * @return The size of a board
      */
-    public int get_size() {
+    public int getSize() {
         return size;
     }
 
     /**
      * Receives a list of ships to be placed on the board. Then validates the single ships and the whole process.
+     * Used for playing against the 
      * 
      * @param ships Array of 'Ship's selected by the user / generator to be placed on the board of the 'Game'
      * @return TRUE, if the ships were added to the board.
      */
     public boolean addShips(Ship[] ships) {
-        
         // for each ship check if its occupied fields are free
         for  (Ship ship : ships) {
             var can_not_be_placed = BoardUtils.AreFieldsOfShipAlreadyOccupied(this, ship);
@@ -67,7 +67,7 @@ public class Board {
      */
     public void reset() {
         number_of_ships = 0;
-        board =  new Field[size][size];
+        board = new Field[size][size];
     }
 
     /**
@@ -89,10 +89,19 @@ public class Board {
         return output_coordinates;
     }
 
+    /**
+     * Searches on the board for a 'Ship' with the provided ID.
+     * 
+     * @param id The identifier of the 'Ship'
+     * @return A 'Ship' with the provided id or else NULL; 
+     */
     Ship getShipOnBoardByID(UUID id) {
         for (Field[] row : this.board) {
             for (Field field : row) {
-                if (field.)
+                var ship = field.getShip();
+                if (ship != null && ship.id.equals(id)) {
+                    return ship;
+                }
             }
         }
         return null;
@@ -114,18 +123,5 @@ public class Board {
         }
         logger.debug("Could not find field on the board with the coordinates {}!", coordinates);
         return null;
-    }
-    
-    /**
-     * 
-     * @return 
-     * @author m4tt1
-     */
-    public Coordinates[] getCoordinatesOfShip() {
-        
-    }
-    
-    public Coordinates[] getShipCoordinates() {
-        return new Coordinates[1];
     }
 }

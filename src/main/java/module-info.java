@@ -14,6 +14,8 @@ module com.matti.battleship {
     requires org.apache.logging.log4j;
     requires jdk.dynalink;
     requires org.apache.logging.log4j.core;
+    requires java.management;
+    requires com.fasterxml.jackson.databind;
 
     opens com.matti.battleship to javafx.fxml;
     exports com.matti.battleship;

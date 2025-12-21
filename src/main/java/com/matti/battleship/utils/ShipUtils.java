@@ -25,15 +25,15 @@ public class ShipUtils {
      */
     public static Coordinates[] getFieldsOfShip(Board board, Ship ship) {
         // generate the field coordinates of the wanted fields
-        Coordinates[] fields = calcFieldsOfShip(ship.start, ship.direction, ship.length.getValue());
+        Coordinates[] fields = calcFieldsOfShip(ship.getStartCoordinates(), ship.getDirection(), ship.getLength().getValue());
         
         // validate fields against the game logic
         for (var c : fields) {
             // on field?
             if (c.x < 0 || 
-                    c.x > board.get_size() - 1 || 
+                    c.x > board.getSize() - 1 || 
                     c.y <  0 || 
-                    c.y > board.get_size() - 1
+                    c.y > board.getSize() - 1
             ) {
                 logger.error("Ship coordinates: {} not on the board! Can't determine the fields of a ship!", c.toString());
                 return new Coordinates[]{};

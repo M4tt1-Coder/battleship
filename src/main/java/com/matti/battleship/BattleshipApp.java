@@ -13,9 +13,8 @@ public class BattleshipApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setTitle("Hello!");
         Button btn = new Button("Click me");
-        btn.setOnAction( event ->
+        btn.setOnAction( event -> 
                 System.out.println("hello world")
-
         );
 
         StackPane root = new StackPane(); //Layout

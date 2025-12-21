@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -36,7 +35,7 @@ public class Scenecontroller3 extends Application {
         StackPane root1 = new StackPane();
         root1.setId("pane1");
         root1.getChildren().addAll(button1, button2, label1);
-
+        
         // Links/rechts dynamisch positionieren
         button1.translateXProperty().bind(root1.widthProperty().multiply(-0.25)); // links 25%
         button2.translateXProperty().bind(root1.widthProperty().multiply(0.25));  // rechts 25%
