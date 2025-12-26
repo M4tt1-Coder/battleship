@@ -9,143 +9,128 @@ import org.apache.logging.log4j.Logger;
 import java.util.UUID;
 
 /**
- * A ship which can be placed on to the board.
- * Depending on its length it occupies a certain number of fields. There is a 'starting point' (coordinates of a field) and a direction.
- * 
- * @author m4tt1 
+ * A ship which can be placed on to the board. Depending on its length it occupies a certain number
+ * of fields. There is a 'starting point' (coordinates of a field) and a direction.
+ *
+ * @author m4tt1
  */
 public class Ship {
-    private static final Logger logger = LogManager.getLogger(Ship.class);
-    
-    /**
-     * Unique identifier of a ship.
-     * UUID version 4 ... 
-     */
-    private final UUID id;
+  private static final Logger logger = LogManager.getLogger(Ship.class);
 
-    /**
-     * Coordinates from where the ship can be set and 
-     */
-    private Coordinates start;
+  /** Unique identifier of a ship. UUID version 4 ... */
+  private final UUID id;
 
-    /**
-     * Direction the ship is turned to relatively to its starting coordinates.
-     */
-    private Direction direction;
+  /** Coordinates from where the ship can be set and */
+  private Coordinates start;
 
-    /**
-     * Unique identifier of the player the ship belongs to.
-     */
-    private final UUID PlayerID;
+  /** Direction the ship is turned to relatively to its starting coordinates. */
+  private Direction direction;
 
-    /**
-     * Specifies if the ship has been sunk or not.
-     */
-    private boolean has_sunk;
+  /** Unique identifier of the player the ship belongs to. */
+  private final UUID PlayerID;
 
-    /**
-     * How long a ship can be! Either 2, 3, 4 or 5.
-     */
-    private final ShipLength length;
-    
-    public Ship(Coordinates start, Direction direction, ShipLength length, UUID PlayerID) {
-        this.start = start;
-        this.direction = direction;
-        this.length = length;
-        this.id = UUID.randomUUID();
-        this.has_sunk = false;
-        this.PlayerID = PlayerID;
+  /** Specifies if the ship has been sunk or not. */
+  private boolean has_sunk;
+
+  /** How long a ship can be! Either 2, 3, 4 or 5. */
+  private final ShipLength length;
+
+  public Ship(Coordinates start, Direction direction, ShipLength length, UUID PlayerID) {
+    this.start = start;
+    this.direction = direction;
+    this.length = length;
+    this.id = UUID.randomUUID();
+    this.has_sunk = false;
+    this.PlayerID = PlayerID;
+  }
+
+  // ----- Methods -----
+
+  /**
+   * Retrieves the unique identifier of a ship.
+   *
+   * @return UUID of the ship
+   */
+  public UUID getId() {
+    return id;
+  }
+
+  /**
+   * Provides the starting coordinates of a ship.
+   *
+   * @return Coordinates of the 'starting point' of a ship
+   */
+  public Coordinates getStartCoordinates() {
+    return start;
+  }
+
+  /**
+   * Updates the starting coordinates of a ship. For that the passed data needs to be valid and the
+   * coordinates new.
+   *
+   * @param start New / updated coordinates for a ship
+   * @param boardSize Size of the board
+   * @return TRUE, if the 'start' coordinates have been mutated.
+   */
+  public boolean setStart(Coordinates start, int boardSize) {
+    if (BoardUtils.isCoordinateOnBoard(start, boardSize)) {
+      return false;
     }
-    
-    // ----- Methods -----
-    
-    /**
-     * Retrieves the unique identifier of a ship.
-     * 
-     * @return UUID of the ship
-     */
-    public UUID getId() {
-        return id;
+    if (this.start != start) {
+      this.start = start;
+    } else {
+      logger.info("Please alter different coordinates not the SAME!");
     }
+    return true;
+  }
 
-    /**
-     * Provides the starting coordinates of a ship.
-     * 
-     * @return Coordinates of the 'starting point' of a ship
-     */
-    public Coordinates getStartCoordinates() {
-        return start;
-    }
+  /**
+   * Gets the direction of the ship.
+   *
+   * @return Direction of the ship.
+   */
+  public Direction getDirection() {
+    return direction;
+  }
 
-    /**
-     * Updates the starting coordinates of a ship. For that the passed data needs to be valid and the coordinates new.
-     * 
-     * @param start New / updated coordinates for a ship
-     * @param boardSize Size of the board
-     * @return TRUE, if the 'start' coordinates have been mutated.
-     */
-    public boolean setStart(Coordinates start, int boardSize) {
-        if (BoardUtils.isCoordinateOnBoard(start, boardSize)) {
-            return false;
-        }
-        if (this.start != start) {
-            this.start = start;
-        } else {
-            logger.info("Please alter different coordinates not the SAME!");
-        }
-        return true;
-    }
-    
-    /**
-     *  Gets the direction of the ship.
-     * 
-     * @return Direction of the ship.
-     */
-    public Direction getDirection() {
-        return direction;
-    }
+  /**
+   * Sets the direction of the ship.
+   *
+   * @param direction New direction of the ship.
+   */
+  public void setDirection(Direction direction) {
+    this.direction = direction;
+  }
 
-    /**
-     * Sets the direction of the ship.
-     * 
-     * @param direction New direction of the ship.
-     */
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
-    
-    /**
-     * Gets the length of the ship.
-     * 
-     * @return Length of the ship.
-     */
-    public ShipLength getLength() {
-        return length;
-    }
+  /**
+   * Gets the length of the ship.
+   *
+   * @return Length of the ship.
+   */
+  public ShipLength getLength() {
+    return length;
+  }
 
-    /**
-     *  Gets the player ID the ship belongs to.
-     * 
-     * @return UUID of the player
-     */
-    public UUID getPlayerID() {
-        return PlayerID;
-    }
+  /**
+   * Gets the player ID the ship belongs to.
+   *
+   * @return UUID of the player
+   */
+  public UUID getPlayerID() {
+    return PlayerID;
+  }
 
-    /**
-     * Retrieves if the ship has sunk.
-     * 
-     * @return TRUE, if the ship has sunk.
-     */
-    public boolean getHasSunk() {
-        return has_sunk;
-    }
+  /**
+   * Retrieves if the ship has sunk.
+   *
+   * @return TRUE, if the ship has sunk.
+   */
+  public boolean getHasSunk() {
+    return has_sunk;
+  }
 
-
-    /**
-     * Alters the 'has_sunk' property of the ship.
-     */
-    public void alterHasSunk() {
-        this.has_sunk = !this.has_sunk;
-    }
+  /** Alters the 'has_sunk' property of the ship. */
+  public void alterHasSunk() {
+    this.has_sunk = !this.has_sunk;
+  }
 }
