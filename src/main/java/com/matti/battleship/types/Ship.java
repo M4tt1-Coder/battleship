@@ -9,6 +9,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.UUID;
 
 /**
+ * A ship which can be placed on to the board.
+ * Depending on its length it occupies a certain number of fields. There is a 'starting point' (coordinates of a field) and a direction.
+ * 
  * @author m4tt1 
  */
 public class Ship {
@@ -57,16 +60,18 @@ public class Ship {
     // ----- Methods -----
     
     /**
+     * Retrieves the unique identifier of a ship.
      * 
-     * @return
+     * @return UUID of the ship
      */
     public UUID getId() {
         return id;
     }
 
     /**
+     * Provides the starting coordinates of a ship.
      * 
-     * @return
+     * @return Coordinates of the 'starting point' of a ship
      */
     public Coordinates getStartCoordinates() {
         return start;
@@ -92,47 +97,53 @@ public class Ship {
     }
     
     /**
+     *  Gets the direction of the ship.
      * 
-     * @return
+     * @return Direction of the ship.
      */
     public Direction getDirection() {
         return direction;
     }
 
     /**
+     * Sets the direction of the ship.
      * 
-     * @param direction
+     * @param direction New direction of the ship.
      */
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
     
     /**
+     * Gets the length of the ship.
      * 
-     * @return
+     * @return Length of the ship.
      */
     public ShipLength getLength() {
         return length;
     }
 
     /**
+     *  Gets the player ID the ship belongs to.
      * 
-     * @return
+     * @return UUID of the player
      */
     public UUID getPlayerID() {
         return PlayerID;
     }
 
     /**
+     * Retrieves if the ship has sunk.
      * 
-     * @return
+     * @return TRUE, if the ship has sunk.
      */
     public boolean getHasSunk() {
         return has_sunk;
     }
 
+
     /**
-     * 
+     * Alters the 'has_sunk' property of the ship.
      */
     public void alterHasSunk() {
         this.has_sunk = !this.has_sunk;
