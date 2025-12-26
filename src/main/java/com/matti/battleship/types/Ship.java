@@ -21,32 +21,32 @@ public class Ship {
      * Unique identifier of a ship.
      * UUID version 4 ... 
      */
-    UUID id;
+    private final UUID id;
 
     /**
      * Coordinates from where the ship can be set and 
      */
-    Coordinates start;
+    private Coordinates start;
 
     /**
      * Direction the ship is turned to relatively to its starting coordinates.
      */
-    Direction direction;
+    private Direction direction;
 
     /**
      * Unique identifier of the player the ship belongs to.
      */
-    UUID PlayerID;
+    private final UUID PlayerID;
 
     /**
      * Specifies if the ship has been sunk or not.
      */
-    boolean has_sunk;
+    private boolean has_sunk;
 
     /**
      * How long a ship can be! Either 2, 3, 4 or 5.
      */
-    ShipLength length;
+    private final ShipLength length;
     
     public Ship(Coordinates start, Direction direction, ShipLength length, UUID PlayerID) {
         this.start = start;

@@ -14,7 +14,8 @@ public class Field {
     /**
      * TRUE, when a ship is situated on the 'Field'.
      */
-    public boolean isOccupied;
+    private boolean isOccupied;
+    
     /**
      * Coordinates of the 'Field';
      */
@@ -31,20 +32,59 @@ public class Field {
         this.coordinates = coordinates;
     }
 
+    /**
+     * Gets the ship which is placed on the field.
+     * 
+     * @return Ship which is placed on the field or NULL, when no ship is placed on the field.
+     */
     @Nullable
     public Ship getShip() {
         return this.ship;
     }
-    
+
+    /**
+     * Sets the ship on the field.
+     * 
+     * @param ship Ship to be placed on the field or NULL, when no ship is placed on the field.
+     */
     public void setShip(@Nullable Ship ship) {
         this.ship = ship;
+        this.isOccupied = (ship != null);
     }
 
+    /**
+     * Gets the coordinates of the field.
+     * 
+     * @return Coordinates of the field.
+     */
     public Coordinates getCoordinates() {
         return coordinates;
     }
 
+    /**
+     * Sets the coordinates of the field.
+     * 
+     * @param coordinates Coordinates to be set on the field.
+     */
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
+    }
+    
+    /**
+     * Checks if the field is occupied by a ship.
+     * 
+     * @return TRUE, when the field is occupied by a ship.
+     */
+    public boolean isOccupied() {
+        return isOccupied;
+    }
+     
+    /**
+     * Sets the occupation status of the field.
+     * 
+     * @param isOccupied TRUE, when the field is occupied by a ship.
+     */
+    public void setOccupied(boolean isOccupied) {
+        this.isOccupied = isOccupied;
     }
 }

@@ -1,24 +1,50 @@
 package com.matti.battleship.types;
 
 import com.matti.battleship.utils.BoardUtils;
+import com.matti.battleship.utils.ShipUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * Represents the game board for Battleship.
+ * Contains fields and methods to manage ships and their placement.
+ * 
+ * @author m4tt1
+ */
 public class Board {
     private static final Logger logger = LogManager.getLogger(Board.class);
     
-    // maximum 15
-    int size;
+    /**
+     * Size of the board instance. 
+     * Maximum size is 15x15 fields.
+     */
+    private final int size;
+    
+    /**
+     * Number of ships currently placed on the board.
+     */
     public int number_of_ships;
+    
+    /**
+     * 2D array representing the fields on the board.
+     */
     public Field[][] board;
+    
     public Board(int size) {
+        // size can only be set during initialization
+        // - must be greater than zero and less than 16
+        if (size < 1 || size > 15) {
+            logger.error("Board size must be between 1 and 15! Provided size: {}", size);
+            throw new IllegalArgumentException("Board size must be between 1 and 15!");
+        }
         this.size = size;
         this.number_of_ships = 0;
         // creates an empty field with no content
         this.board =  new Field[size][size]; 
     }
+    
     /**
      * Provides the size of a 'Board' instance.
      *
@@ -46,11 +72,12 @@ public class Board {
                 return false;
             }
             this.number_of_ships++;
-            Field field = this.getFieldOnBoardByCoordinates(ship.start);
+            Field field = this.getFieldOnBoardByCoordinates(ship.getStartCoordinates());
             if (field != null) {
                 field.setShip(ship);
+                this.markFieldOfShipAsOccupied(ship);
             } else {
-                logger.error("Field at the coordinates {} could not be found and the ship couldn't be placed in consequence!", ship.start);
+                logger.error("Field at the coordinates {} could not be found and the ship couldn't be placed in consequence!", ship.getStartCoordinates());
                 return false;
             }
         }
@@ -82,7 +109,7 @@ public class Board {
         
         for (Field[] row : this.board) {
             for (Field field : row) {
-                if (field.isOccupied) output_coordinates.add(field.getCoordinates());
+                if (field.isOccupied()) output_coordinates.add(field.getCoordinates());
             }
         }
         
@@ -99,7 +126,7 @@ public class Board {
         for (Field[] row : this.board) {
             for (Field field : row) {
                 var ship = field.getShip();
-                if (ship != null && ship.id.equals(id)) {
+                if (ship != null && ship.getId().equals(id)) {
                     return ship;
                 }
             }
@@ -123,5 +150,20 @@ public class Board {
         }
         logger.debug("Could not find field on the board with the coordinates {}!", coordinates);
         return null;
+    }
+    
+    /**
+     * Marks all fields of a ship as occupied on the board.
+     * 
+     * @param ship Ship which fields need to be marked as occupied
+     */
+    private void markFieldOfShipAsOccupied(Ship ship) {
+        var fields = ShipUtils.getFieldsOfShip(this, ship);
+        for (var c : fields) {
+            var field = this.getFieldOnBoardByCoordinates(c);
+            if (field != null) {
+                field.setOccupied(true);
+            }
+        }
     }
 }
