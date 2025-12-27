@@ -3,10 +3,9 @@ package com.matti.battleship.types;
 import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.utils.BoardUtils;
+import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.UUID;
 
 /**
  * A ship which can be placed on to the board. Depending on its length it occupies a certain number

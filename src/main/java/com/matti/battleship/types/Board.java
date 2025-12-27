@@ -2,10 +2,10 @@ package com.matti.battleship.types;
 
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.ShipUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.UUID;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Represents the game board for Battleship. Contains fields and methods to manage ships and their

@@ -6,39 +6,41 @@ import socket.protocol.MessageBuilder;
 
 public class ClientTest {
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        try {
-            ClientConnection client = new ClientConnection();
+    try {
+      ClientConnection client = new ClientConnection();
 
-            System.out.println("[CLIENT] Verbindet...");
-            client.connectToServer("localhost", new MessageListener() {
+      System.out.println("[CLIENT] Verbindet...");
+      client.connectToServer(
+          "localhost",
+          new MessageListener() {
 
-                @Override
-                public void onMessageReceived(String msg) {
-                    System.out.println("[CLIENT] Empfangene Nachricht: " + msg);
-                }
+            @Override
+            public void onMessageReceived(String msg) {
+              System.out.println("[CLIENT] Empfangene Nachricht: " + msg);
+            }
 
-                @Override
-                public void onConnectionClosed(Exception e) {
-                    System.out.println("[CLIENT] Verbindung geschlossen: " + e);
-                }
-            });
+            @Override
+            public void onConnectionClosed(Exception e) {
+              System.out.println("[CLIENT] Verbindung geschlossen: " + e);
+            }
+          });
 
-            // Testnachrichten senden
-            System.out.println("[CLIENT] sendet: size 10");
-            client.send("size 10");
+      // Testnachrichten senden
+      System.out.println("[CLIENT] sendet: size 10");
+      client.send("size 10");
 
-            System.out.println("[CLIENT] sendet: ready");
-            client.send(MessageBuilder.ready());
+      System.out.println("[CLIENT] sendet: ready");
+      client.send(MessageBuilder.ready());
 
-            // etwas warten
-            Thread.sleep(1000);
+      // etwas warten
+      Thread.sleep(1000);
 
-            client.disconnect();
+      client.disconnect();
 
-        } catch (Exception e) {
-            System.out.println("[CLIENT FEHLER] " + e);
-        }
+    } catch (Exception e) {
+      System.out.println("[CLIENT FEHLER] " + e);
     }
+  }
 }
