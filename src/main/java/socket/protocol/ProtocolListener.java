@@ -2,7 +2,7 @@ package socket.protocol;
 
 public interface ProtocolListener {
 
-    void onMessage(Message msg);
+  void onMessage(Message msg);
 
-    void onClosed(Exception e);
+  void onClosed(Exception e);
 }
