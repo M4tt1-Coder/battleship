@@ -19,9 +19,36 @@ public class Field {
   /** Optional ship on the field where the ships origin field is situated. */
   @Nullable private Ship ship;
 
+  /** TRUE, when the field was already shot at. */
+  private boolean wasShotAt = false;
+
   public Field(Coordinates coordinates) {
     isOccupied = false;
     this.coordinates = coordinates;
+  }
+
+  // ----- Methods -----
+
+  /**
+   * Marks the field as having been shot at.
+   *
+   * @return TRUE, when the field was not already shot at.
+   */
+  public boolean markAsShotAt() {
+    if (!wasShotAt) {
+      wasShotAt = true;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Marks the field as having been shot at.
+   *
+   * @return TRUE, when the field was already shot at.
+   */
+  public boolean wasShotAt() {
+    return wasShotAt;
   }
 
   /**

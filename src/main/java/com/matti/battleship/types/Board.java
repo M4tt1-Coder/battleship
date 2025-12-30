@@ -1,9 +1,9 @@
 package com.matti.battleship.types;
 
+import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.ShipUtils;
 import java.util.ArrayList;
-import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +51,8 @@ public class Board {
   // TODO: Maybe use a method which places a single ship on the board instead of an array of ships?
 
   // TODO: Add validation if the number of ships exceeds a certain limit depending on the board
-  // size?
+  // size? -> E.g. 10 ships on a 10x10 board or calculate the maximum number of ships depending on
+  // the board
 
   // TODO: Ships can't be placed directly next to each other. There must be at least one field gap
   // between two ships.
@@ -77,7 +78,7 @@ public class Board {
       Field field = this.getFieldOnBoardByCoordinates(ship.getStartCoordinates());
       if (field != null) {
         field.setShip(ship);
-        this.markFieldOfShipAsOccupied(ship);
+        this.markFieldsOfShipAsOccupied(ship);
       } else {
         logger.error(
             "Field at the coordinates {} could not be found and the ship couldn't be placed in consequence!",
@@ -122,22 +123,82 @@ public class Board {
   }
 
   /**
-   * Searches on the board for a 'Ship' with the provided ID.
+   * Marks a field on the board as shot at. If the field was already shot at the method returns
+   * 'INVALID'. If the field was occupied by a ship it returns 'HIT', otherwise 'MISS'.
    *
-   * @param id The identifier of the 'Ship'
-   * @return A 'Ship' with the provided id or else NULL;
+   * @param coordinates Coordinates of the field to be shot at
+   * @return 'HIT' if the shot landed on a field that is a ship on.
    */
-  Ship getShipOnBoardByID(UUID id) {
+  public ShotAttemptResult shotAtField(Coordinates coordinates) {
+    Field field = this.getFieldOnBoardByCoordinates(coordinates);
+    if (field == null) {
+      logger.error("No field found at the provided coordinates: {}", coordinates);
+      return ShotAttemptResult.INVALID;
+    }
+
+    if (field.wasShotAt()) {
+      logger.debug("Field at {} was already shot at!", coordinates);
+      return ShotAttemptResult.INVALID;
+    }
+
+    if (field.markAsShotAt() && field.isOccupied()) {
+      logger.info("Shot at {} was a HIT!", coordinates);
+      return ShotAttemptResult.HIT;
+    } else {
+      logger.info("Shot at {} was a MISS!", coordinates);
+      return ShotAttemptResult.MISS;
+    }
+  }
+
+  /**
+   * Iterates over all fields on the board and checks if a ship has been sunk. There can only be one
+   * ship sunk after one shot.
+   *
+   * @return TRUE, when the ship that was hit with the last shot finally is sunk.
+   */
+  public boolean checkIfShipWasSunk() {
     for (Field[] row : this.board) {
       for (Field field : row) {
-        var ship = field.getShip();
-        if (ship != null && ship.getId().equals(id)) {
-          return ship;
+        Ship ship = field.getShip();
+        if (ship != null && !ship.getHasSunk()) {
+          var shipFields = ShipUtils.getFieldsOfShip(this, ship);
+          boolean allFieldsHit = true;
+          for (var coord : shipFields) {
+            Field shipField = this.getFieldOnBoardByCoordinates(coord);
+            if (shipField != null && !shipField.wasShotAt()) {
+              allFieldsHit = false;
+              break;
+            }
+          }
+          if (allFieldsHit) {
+            ship.alterHasSunk();
+            logger.info("Ship {} has been sunk!", ship.getId());
+            return true;
+          }
         }
       }
     }
-    return null;
+    return false;
   }
+
+  /**
+   * Checks if all ships on the board have been sunk.
+   *
+   * @return TRUE, if all ships are sunk; FALSE otherwise
+   */
+  public boolean areAllShipsSunk() {
+    for (Field[] row : this.board) {
+      for (Field field : row) {
+        Ship ship = field.getShip();
+        if (ship != null && !ship.getHasSunk()) {
+          return false; // Found a ship that is not sunk
+        }
+      }
+    }
+    return true; // All ships are sunk
+  }
+
+  // ----- Private Methods -----
 
   /**
    * Gets the field which is on the coordinates provided.
@@ -145,7 +206,7 @@ public class Board {
    * @param coordinates Coordinates of the field
    * @return The 'Field' object if the coordinates are on the board
    */
-  private Field getFieldOnBoardByCoordinates(Coordinates coordinates) {
+  public Field getFieldOnBoardByCoordinates(Coordinates coordinates) {
     for (Field[] row : this.board) {
       for (Field field : row) {
         if (field.getCoordinates().equals(coordinates)) {
@@ -162,7 +223,7 @@ public class Board {
    *
    * @param ship Ship which fields need to be marked as occupied
    */
-  private void markFieldOfShipAsOccupied(Ship ship) {
+  private void markFieldsOfShipAsOccupied(Ship ship) {
     var fields = ShipUtils.getFieldsOfShip(this, ship);
     for (var c : fields) {
       var field = this.getFieldOnBoardByCoordinates(c);

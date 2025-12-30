@@ -15,6 +15,7 @@ module com.matti.battleship {
   requires org.apache.logging.log4j.core;
   requires java.management;
   requires com.fasterxml.jackson.databind;
+  requires java.xml.crypto;
 
   opens com.matti.battleship to
       javafx.fxml;
