@@ -16,28 +16,36 @@ public class BoardUtils {
   private static final Logger logger = LogManager.getLogger(BoardUtils.class);
 
   /**
-   * Determines if ship can be placed on to the board.
+   * Checks whether a ship can be placed on the board at its intended position without overlapping
+   * existing ships and without being directly adjacent to any other ship.
    *
-   * @param board Board of the game
-   * @param ship Ship which the user / generator wants to place on to the field.
-   * @return TRUE, if the ship can't be placed on the board.
+   * @param board The game board where ships are placed.
+   * @param ship The ship to be placed.
+   * @return true if the ship can be placed without conflicts; false otherwise.
    */
-  public static boolean AreFieldsOfShipAlreadyOccupied(Board board, Ship ship) {
+  public static boolean canShipBePlacedOnBoard(Board board, Ship ship) {
     // first get all occupied fields of the board
     var occupiedFields = board.getCoordinatesOfOccupiedFields();
 
     // get supposed occupied fields by the ship
-    var intended_fields = ShipUtils.getFieldsOfShip(board, ship);
+    var intendedFields = ShipUtils.getFieldsOfShip(board, ship);
 
     // validate if the ship can be placed in that field
-    for (Coordinates occupiedField : occupiedFields) {
-      for (Coordinates intendedField : intended_fields) {
-        if (occupiedField.x == intendedField.x && occupiedField.y == intendedField.y) {
-          return true;
-        }
+    for (Coordinates intendedField : intendedFields) {
+      if (occupiedFields.contains(intendedField)) {
+        return false; // Overlap detected
       }
     }
-    return false;
+
+    // make sure no ship is directly besides the ship
+    Coordinates[] surroundingFields = board.getFieldsAroundShip(intendedFields);
+    for (Coordinates field : surroundingFields) {
+      if (board.getFieldOnBoardByCoordinates(field).isOccupied()) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

@@ -48,46 +48,42 @@ public class Board {
     return size;
   }
 
-  // TODO: Maybe use a method which places a single ship on the board instead of an array of ships?
-
   // TODO: Add validation if the number of ships exceeds a certain limit depending on the board
   // size? -> E.g. 10 ships on a 10x10 board or calculate the maximum number of ships depending on
-  // the board
-
-  // TODO: Ships can't be placed directly next to each other. There must be at least one field gap
-  // between two ships.
+  // the board -> 30% of the fields need to be occupied by ships
 
   /**
-   * Receives a list of ships to be placed on the board. Then validates the single ships and the
-   * whole process. Used for playing against the
+   * Attempts to add a ship to the game board at its starting coordinates. Checks if the ship's
+   * occupied fields are free and places the ship if possible.
    *
-   * @param ships Array of 'Ship's selected by the user / generator to be placed on the board of the
-   *     'Game'
-   * @return TRUE, if the ships were added to the board.
+   * <p>If the ship cannot be placed due to occupied fields, logs an error and returns {@code
+   * false}. If the placement is successful, increments the number of ships, sets the ship on the
+   * starting field, and marks its fields as occupied.
+   *
+   * @param ship the {@link Ship} instance to be added to the board
+   * @return {@code true} if the ship was successfully added; {@code false} otherwise
    */
-  public boolean addShips(Ship[] ships) {
-    // for each ship check if its occupied fields are free
-    for (Ship ship : ships) {
-      var can_not_be_placed = BoardUtils.AreFieldsOfShipAlreadyOccupied(this, ship);
-      if (can_not_be_placed) {
-        // log if a ship couldn't be placed on the field
-        logger.error("Ship {} can't be placed on the board!", ship.toString());
-        return false;
-      }
-      this.number_of_ships++;
-      Field field = this.getFieldOnBoardByCoordinates(ship.getStartCoordinates());
-      if (field != null) {
-        field.setShip(ship);
-        this.markFieldsOfShipAsOccupied(ship);
-      } else {
-        logger.error(
-            "Field at the coordinates {} could not be found and the ship couldn't be placed in consequence!",
-            ship.getStartCoordinates());
-        return false;
-      }
+  public boolean addShip(Ship ship) {
+
+    var canBePlaced = BoardUtils.canShipBePlacedOnBoard(this, ship);
+    if (!canBePlaced) {
+      // log if a ship couldn't be placed on the field
+      logger.error("Ship {} can't be placed on the board!", ship.toString());
+      return false;
+    }
+    this.number_of_ships++;
+    Field field = this.getFieldOnBoardByCoordinates(ship.getStartCoordinates());
+    if (field != null) {
+      field.setShip(ship);
+      this.markFieldsOfShipAsOccupied(ship);
+    } else {
+      logger.error(
+          "Field at the coordinates {} could not be found and the ship couldn't be placed in consequence!",
+          ship.getStartCoordinates());
+      return false;
     }
 
-    logger.debug("Added ships on the board!");
+    logger.debug("Added ship to the board!");
     return true;
   }
 
@@ -171,6 +167,7 @@ public class Board {
             }
           }
           if (allFieldsHit) {
+            markFieldsAroundSunkenShipAsShotAt(shipFields);
             ship.alterHasSunk();
             logger.info("Ship {} has been sunk!", ship.getId());
             return true;
@@ -198,8 +195,6 @@ public class Board {
     return true; // All ships are sunk
   }
 
-  // ----- Private Methods -----
-
   /**
    * Gets the field which is on the coordinates provided.
    *
@@ -219,6 +214,31 @@ public class Board {
   }
 
   /**
+   * Retrieves all coordinates surrounding the specified ship's coordinates. This includes all
+   * neighboring fields (adjacent horizontally, vertically, or diagonally) around each coordinate of
+   * the ship.
+   *
+   * @param shipCoordinates an array of {@link Coordinates} representing the positions of the ship's
+   *     fields
+   * @return an array of {@link Coordinates} representing the neighboring fields around the ship
+   */
+  public Coordinates[] getFieldsAroundShip(Coordinates[] shipCoordinates) {
+    ArrayList<Coordinates> output_coordinates = new ArrayList<>();
+    for (Field[] rows : this.board) {
+      for (Field field : rows) {
+        for (Coordinates coord : shipCoordinates) {
+          if (coord.isNeighbour(field.getCoordinates())) {
+            output_coordinates.add(coord);
+          }
+        }
+      }
+    }
+    return output_coordinates.toArray(new Coordinates[0]);
+  }
+
+  // ----- Private Methods -----
+
+  /**
    * Marks all fields of a ship as occupied on the board.
    *
    * @param ship Ship which fields need to be marked as occupied
@@ -229,6 +249,27 @@ public class Board {
       var field = this.getFieldOnBoardByCoordinates(c);
       if (field != null) {
         field.setOccupied(true);
+      }
+    }
+  }
+
+  /**
+   * Marks all fields surrounding the specified sunken ship's coordinates as shot, if they have not
+   * been shot already. This typically reflects the game rule that fields adjacent to a sunken ship
+   * are considered safe to target.
+   *
+   * @param fieldCoordinates an array of {@link Coordinates} representing the positions of the
+   *     sunken ship's fields
+   */
+  private void markFieldsAroundSunkenShipAsShotAt(Coordinates[] fieldCoordinates) {
+    for (Field[] rows : this.board) {
+      for (Field field : rows) {
+        for (Coordinates coord : fieldCoordinates) {
+          if (coord.isNeighbour(field.getCoordinates()) && !field.wasShotAt()) {
+            // mark as 'shotAt'
+            field.markAsShotAt();
+          }
+        }
       }
     }
   }
