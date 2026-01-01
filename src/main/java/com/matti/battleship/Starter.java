@@ -7,3 +7,4 @@ public class Starter {
     Application.launch(BattleshipApp.class, args);
   }
 }
+// test
