@@ -10,6 +10,10 @@ public class Buttons extends Button {
         super(text);
     }
 
+    public Buttons() {
+        super();
+    }
+
     public void position (Pane root, double positionX, double positionY) {
         this.translateXProperty().bind(root.widthProperty().multiply(positionX));
         this.translateYProperty().bind(root.heightProperty().multiply(positionY));

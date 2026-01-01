@@ -2,10 +2,9 @@ package com.matti.battleship;
 
 import com.matti.battleship.types.*;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -16,9 +15,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-public class Scenecontroller4 extends Application {
+public class Scenecontroller5 extends Application {
 
     private Scene scene1;
+    int selected_field_size = 10;
+    int selected_amount_of_boats = 5;
 
     @Override
     public void start(Stage primaryStage) {
@@ -155,8 +156,6 @@ public class Scenecontroller4 extends Application {
         label41.setAlignment(Pos.TOP_CENTER);
 
         button22.setOnAction(e -> {
-            int selected_field_size = 10;
-            int selected_amount_of_boats = 5;
 
             if (!tf22.getText().isEmpty()) {
                 try {
@@ -177,7 +176,7 @@ public class Scenecontroller4 extends Application {
             double BOARD_SIZE = 400;
             double cellSize = BOARD_SIZE / selected_field_size;
 
-            GridPane battleGrid = new GridPane();
+            GridPane battleGrid = new GridPane(); //ev das global dann kann battle grid auch in anderen angezeigt werden
             battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
             battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
             battleGrid.setStyle("-fx-background-color: transparent;");
@@ -226,16 +225,40 @@ public class Scenecontroller4 extends Application {
             root4.getChildren().addAll(battleGrid, ship);
             StackPane.setAlignment(battleGrid, Pos.CENTER);
             StackPane.setAlignment(ship, Pos.TOP_CENTER);
-
             scene1.setRoot(root4);
         });
         // ---------------root 5--------------------------------------------------------------------- root5
 
         StackPane root5 = new StackPane();
-        root3.setId("pane5");
+        root5.setId("pane5");
 
-        button32.setOnAction(e -> {
-            
+
+
+        button42.setOnAction(e -> {
+            double BOARD_SIZE = 400;
+            double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
+            GridPane grid = new GridPane();
+            grid.setHgap(0);
+            grid.setVgap(0);
+            grid.setPadding(new Insets(12));
+
+            for (int r = 0; r < selected_field_size; r++) {
+                for (int c = 0; c < selected_field_size; c++) {
+                    Buttons btn = new Buttons(r + "," + c);
+                    btn.setStyle("-fx-background-radius: 0; -fx-border-radius: 0;");
+                    btn.setPrefSize(BUTTON_SIZE, BUTTON_SIZE);
+                    final int rr = r;
+                    final int cc = c;
+                    btn.setOnAction(ev -> System.out.println("Clicked: row=" + rr + " col=" + cc));
+                    grid.add(btn, c, r);
+                }
+            }
+
+            root5.getChildren().addAll(grid);
+            grid.setAlignment(Pos.CENTER);
+
+
+            scene1.setRoot(root5);
         });
 
 
@@ -245,7 +268,6 @@ public class Scenecontroller4 extends Application {
         button21b.setOnAction(e -> scene1.setRoot(root1));
         button31b.setOnAction(e -> scene1.setRoot(root1));
         button41e.setOnAction(e -> scene1.setRoot(root1));
-        button42.setOnAction(e -> scene1.setRoot(root5));
 
 
         // ---------------Stage Setup--------------------------------------------------------------
