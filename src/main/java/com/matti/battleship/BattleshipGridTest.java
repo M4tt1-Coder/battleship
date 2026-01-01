@@ -1,4 +1,4 @@
 package com.matti.battleship;
 
-public class Scenecontroller4 {
+public class test {
 }
