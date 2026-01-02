@@ -1,6 +1,5 @@
 package com.matti.battleship;
 
-import java.io.IOException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,7 +8,7 @@ import javafx.stage.Stage;
 
 public class BattleshipApp extends Application {
   @Override
-  public void start(Stage primaryStage) throws IOException {
+  public void start(Stage primaryStage) {
     primaryStage.setTitle("Hello!");
     Button btn = new Button("Click me");
     btn.setOnAction(event -> System.out.println("hello world"));
@@ -21,5 +20,9 @@ public class BattleshipApp extends Application {
     primaryStage.setScene(scene);
 
     primaryStage.show();
+  }
+
+  public static void main(String[] args) {
+    launch(args); // Launch JavaFX application
   }
 }
