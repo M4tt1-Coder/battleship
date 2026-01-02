@@ -10,8 +10,8 @@
    - ! after every move check of if the ship can be placed on the board !
  - [X] move trait assignment logic of elements to external functions (Thomas)
  - [ ] UML diagram
- - [ ] store game progress in a file
- - [ ] configure maven to have a clean source code compilation -> get .jar file https://www.youtube.com/watch?v=sE6oxriAOP4
+ - [ ] store game progress in a file -> later you can load that and continue at that point
+ - [X] configure maven to have a clean source code compilation -> get .jar file https://www.youtube.com/watch?v=sE6oxriAOP4
 
  ## Ideas
 

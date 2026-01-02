@@ -16,6 +16,14 @@ import org.apache.logging.log4j.Logger;
 public class Board {
   private static final Logger logger = LogManager.getLogger(Board.class);
 
+  /**
+   * Defines the exact percentage of all fields that need to be occupied by ships. There can't be
+   * less or more ships on the field!
+   *
+   * <p>Here 30% of the fields need to occupied by a ship.
+   */
+  private static final float shareOfShipsOnTheBoard = 0.3f;
+
   /** Size of the board instance. Maximum size is 15x15 fields. */
   private final int size;
 
@@ -38,6 +46,8 @@ public class Board {
     this.board = new Field[size][size];
   }
 
+  // ----- methods -----
+
   /**
    * Provides the size of a 'Board' instance.
    *
@@ -47,10 +57,6 @@ public class Board {
   public int getSize() {
     return size;
   }
-
-  // TODO: Add validation if the number of ships exceeds a certain limit depending on the board
-  // size? -> E.g. 10 ships on a 10x10 board or calculate the maximum number of ships depending on
-  // the board -> 30% of the fields need to be occupied by ships
 
   /**
    * Attempts to add a ship to the game board at its starting coordinates. Checks if the ship's
@@ -64,7 +70,9 @@ public class Board {
    * @return {@code true} if the ship was successfully added; {@code false} otherwise
    */
   public boolean addShip(Ship ship) {
-
+    // when the maximum capacity of ships is reached it automatically shouldn't be possible to add a
+    // ship anymore
+    if (isTheMaxCapacityForShipsReached()) return false;
     var canBePlaced = BoardUtils.canShipBePlacedOnBoard(this, ship);
     if (!canBePlaced) {
       // log if a ship couldn't be placed on the field
@@ -236,6 +244,52 @@ public class Board {
     return output_coordinates.toArray(new Coordinates[0]);
   }
 
+  /**
+   * Calculates the number of ships needed to exactly occupy the specified share of the board.
+   *
+   * @return the number of ships required.
+   */
+  public int getNumberForExactNumberOfMandatoryOccupiedFields() {
+    int totalCells = this.size * this.size;
+    double requiredShips = totalCells / shareOfShipsOnTheBoard;
+    return (int) Math.ceil(requiredShips);
+  }
+
+  /**
+   * Counts the total number of fields on the board that are currently occupied.
+   *
+   * <p>Iterates through each field in the 2D board array and increments a counter for every field
+   * that is marked as occupied.
+   *
+   * @return the total count of occupied fields.
+   */
+  public int getNumberOfOccupiedFields() {
+    int output = 0;
+    for (Field[] row : this.board) {
+      for (Field field : row) {
+        if (field.isOccupied()) output++;
+      }
+    }
+    return output;
+  }
+
+  /**
+   * Checks whether the game board is completely empty. A board is considered empty if none of the
+   * fields are occupied or contain a ship.
+   *
+   * @return {@code true} if the board has no occupied fields or ships; {@code false} otherwise
+   */
+  public boolean isBoardEmpty() {
+    for (Field[] row : this.board) {
+      for (Field field : row) {
+        if (field.isOccupied() || field.getShip() != null) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   // ----- Private Methods -----
 
   /**
@@ -272,5 +326,21 @@ public class Board {
         }
       }
     }
+  }
+
+  /**
+   * Checks whether the maximum capacity for ships on the board has been reached.
+   *
+   * <p>Compares the current number of occupied fields to the required number of occupied fields
+   * based on the maximum ship capacity. If the number of occupied fields is greater than or equal
+   * to the maximum required, it indicates that the capacity has been reached or exceeded.
+   *
+   * @return true if the maximum capacity for ships has been reached or exceeded; false otherwise.
+   */
+  private boolean isTheMaxCapacityForShipsReached() {
+    int numberOfMandatoryOccupiedFields = getNumberForExactNumberOfMandatoryOccupiedFields();
+    int numberOfOccupiedFields = getNumberOfOccupiedFields();
+    // count the occupied fields on the field
+    return numberOfOccupiedFields >= numberOfMandatoryOccupiedFields;
   }
 }

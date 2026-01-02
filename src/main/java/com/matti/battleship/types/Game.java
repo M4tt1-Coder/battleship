@@ -1,20 +1,16 @@
 package com.matti.battleship.types;
 
-import com.matti.battleship.enums.Direction;
-import com.matti.battleship.enums.PlayerTurn;
-import com.matti.battleship.enums.PlayingMode;
-import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.enums.*;
 import com.matti.battleship.utils.BoardUtils;
+import com.matti.battleship.utils.GameUtils;
 import com.matti.battleship.utils.ShipUtils;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// TODO: Add functionality to check for win conditions -> add method to check if all ships of a
-// player have been sunk + winner property
+// TODO: Add algorithms for the 'PLAYER_AI' game mode
 
-// TODO: Need a ship registry NOT of every ship where it is etc BUT which ships should be placed on
-// the field -> validation function
+// TODO: Logger log4j isn't working right
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -31,6 +27,13 @@ public class Game {
   /** Playing mode of the game. */
   private final PlayingMode playingMode;
 
+  /**
+   * Was set by the server and the client receives the information. (Player vs Player)
+   *
+   * <p>Must align with the number required fields occupied by a ship!
+   */
+  private final ShipLength[] initialShipSetup;
+
   /** Player instance representing the local player. */
   public Player player;
 
@@ -42,15 +45,57 @@ public class Game {
   /** Indicates whose turn it is in the game. */
   private PlayerTurn whoseTurn;
 
-  public Game(PlayingMode playingMode, Player player, Player opponent, PlayerTurn turn) {
+  /** The winner of the current game. */
+  private Winner winner;
+
+  public Game(
+      PlayingMode playingMode,
+      Player player,
+      Player opponent,
+      PlayerTurn turn,
+      ShipLength[] initialShipSetup) {
+    // validation method needs to be adjusted after critical changes in the logic or data structures
+    if (!GameUtils.validateGameSetup(player, opponent, initialShipSetup)) {
+      logger.error("A bad initial data input to create a 'Game' instance!");
+      throw new IllegalArgumentException("Invalid initial data for game creation!");
+    }
     this.playingMode = playingMode;
     this.player = player;
     this.opponent = opponent;
     this.hasEnded = false;
     this.whoseTurn = turn; // Default starting turn
+    this.winner = Winner.NONE_YET; // when starting the game no player has won yet
+    this.initialShipSetup = initialShipSetup;
   }
 
   // ----- Methods -----
+
+  /**
+   * Returns the initial setup of ships for the game.
+   *
+   * @return an array of {@link ShipLength} representing the initial ship configuration.
+   */
+  public ShipLength[] getInitialShipSetup() {
+    return this.initialShipSetup;
+  }
+
+  /**
+   * Sets the winner of the game.
+   *
+   * @param winner the Winner object representing the game's winner
+   */
+  public void setWinner(Winner winner) {
+    this.winner = winner;
+  }
+
+  /**
+   * Retrieves the current winner of the game.
+   *
+   * @return the Winner object representing the game's winner
+   */
+  public Winner getWinner() {
+    return this.winner;
+  }
 
   /**
    * Retrieves whose turn it is in the game.
@@ -218,4 +263,24 @@ public class Game {
       throw new IllegalStateException("It's not the turn of the local player attempting to shoot.");
     }
   }
+
+  /**
+   * Checks whether the game has ended.
+   *
+   * <p>The game ends if either the player's or the opponent's ships are all sunk.
+   *
+   * @return true if the game has ended; false otherwise.
+   */
+  public boolean hadTheGameEnded() {
+    // Check if the player has lost (all ships sunk)
+    boolean playerLost = this.player.board.areAllShipsSunk();
+    // Check if the opponent has lost (all ships sunk)
+    boolean opponentLost = this.opponent.board.areAllShipsSunk();
+    if (playerLost) this.winner = Winner.OPPONENT;
+    if (opponentLost) this.winner = Winner.PLAYER;
+    // The game has ended if either player or opponent has lost
+    return playerLost || opponentLost;
+  }
+
+  // ----- private methods -----
 }
