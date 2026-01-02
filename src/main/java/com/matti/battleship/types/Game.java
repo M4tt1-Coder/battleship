@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 // TODO: Add algorithms for the 'PLAYER_AI' game mode
 
-// TODO: Logger log4j isn't working right
+// TODO: Add feature to save current game in a file (txt, csv, etc. ...)
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
