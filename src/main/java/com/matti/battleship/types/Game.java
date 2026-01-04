@@ -9,9 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: Add algorithms for the 'PLAYER_AI' game mode
+// TODO: Add algorithms for the 'PLAYER_AI' game mode -> easy, medium, hard
 
-// TODO: Add feature to save current game in a file (txt, csv, etc. ...)
+// TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
+// data objects
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -174,7 +175,7 @@ public class Game {
       throw new IllegalStateException("It's not the player's turn to shoot.");
     }
 
-    if (playingMode == PlayingMode.VS_AI) {
+    if (playingMode != PlayingMode.VS_PLAYER) {
       throw new IllegalStateException(
           "This method is only for handling opponent responses in PvP mode.");
     }
@@ -205,7 +206,7 @@ public class Game {
         // add ship to the field
         field.setShip(
             new Ship(
-                occupiedFields[0],
+                field.getCoordinates(),
                 shipDirection,
                 ShipUtils.shipLengthFromInt(occupiedFields.length)));
         this.opponent.board.numberOfShips++;

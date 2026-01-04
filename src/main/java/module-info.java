@@ -9,6 +9,7 @@ module com.matti.battleship {
   requires java.management;
   requires java.xml.crypto;
   requires annotations;
+  requires jdk.sctp;
 
   exports com.matti.battleship;
 }
