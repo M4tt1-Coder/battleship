@@ -7,6 +7,7 @@ import com.matti.battleship.utils.ShipUtils;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 // TODO: Add algorithms for the 'PLAYER_AI' game mode
 
@@ -22,7 +23,7 @@ public class Game {
   private static final Logger logger = LogManager.getLogger(Game.class);
 
   /** TRUE, when the game has ended; FALSE otherwise. */
-  private boolean hasEnded = false;
+  private boolean hasEnded;
 
   /** Playing mode of the game. */
   private final PlayingMode playingMode;
@@ -35,12 +36,12 @@ public class Game {
   private final ShipLength[] initialShipSetup;
 
   /** Player instance representing the local player. */
-  public Player player;
+  @NotNull public Player player;
 
   /**
    * Opponent player instance. Either another human player or an AI, depending on the playing mode.
    */
-  public Player opponent;
+  @NotNull public Player opponent;
 
   /** Indicates whose turn it is in the game. */
   private PlayerTurn whoseTurn;
@@ -50,8 +51,8 @@ public class Game {
 
   public Game(
       PlayingMode playingMode,
-      Player player,
-      Player opponent,
+      @NotNull Player player,
+      @NotNull Player opponent,
       PlayerTurn turn,
       ShipLength[] initialShipSetup) {
     // validation method needs to be adjusted after critical changes in the logic or data structures
@@ -206,9 +207,8 @@ public class Game {
             new Ship(
                 occupiedFields[0],
                 shipDirection,
-                ShipUtils.shipLengthFromInt(occupiedFields.length),
-                this.opponent.getID()));
-        this.opponent.board.number_of_ships++;
+                ShipUtils.shipLengthFromInt(occupiedFields.length)));
+        this.opponent.board.numberOfShips++;
         if (!this.opponent.board.checkIfShipWasSunk()) {
           logger.error("No ship was marked sunk after one should have been!");
           throw new IllegalStateException(

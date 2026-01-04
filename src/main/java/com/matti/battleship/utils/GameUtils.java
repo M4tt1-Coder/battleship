@@ -75,7 +75,7 @@ public class GameUtils {
 
     // validate the initial board
     // number of ships should be 0; field should be empty
-    if (player.board.number_of_ships != 0) {
+    if (player.board.numberOfShips != 0) {
       logger.error(
           "The board of the player {} with ID {} doesn't have an initial number of 0 at the start of the game!",
           player.getName(),

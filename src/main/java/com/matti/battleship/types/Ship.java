@@ -25,22 +25,18 @@ public class Ship {
   /** Direction the ship is turned to relatively to its starting coordinates. */
   private Direction direction;
 
-  /** Unique identifier of the player the ship belongs to. */
-  private final UUID PlayerID;
-
   /** Specifies if the ship has been sunk or not. */
-  private boolean has_sunk;
+  private boolean hasSunk;
 
   /** How long a ship can be! Either 2, 3, 4 or 5. */
   private final ShipLength length;
 
-  public Ship(Coordinates start, Direction direction, ShipLength length, UUID PlayerID) {
+  public Ship(Coordinates start, Direction direction, ShipLength length) {
     this.start = start;
     this.direction = direction;
     this.length = length;
     this.id = UUID.randomUUID();
-    this.has_sunk = false;
-    this.PlayerID = PlayerID;
+    this.hasSunk = false;
   }
 
   // ----- Methods -----
@@ -111,25 +107,41 @@ public class Ship {
   }
 
   /**
-   * Gets the player ID the ship belongs to.
-   *
-   * @return UUID of the player
-   */
-  public UUID getPlayerID() {
-    return PlayerID;
-  }
-
-  /**
    * Retrieves if the ship has sunk.
    *
    * @return TRUE, if the ship has sunk.
    */
   public boolean getHasSunk() {
-    return has_sunk;
+    return hasSunk;
   }
 
   /** Alters the 'has_sunk' property of the ship. */
   public void alterHasSunk() {
-    this.has_sunk = !this.has_sunk;
+    this.hasSunk = !this.hasSunk;
+  }
+
+  /**
+   * Returns a string representation of the object, detailing its properties.
+   *
+   * @return a formatted string including id, start position, direction, sunk status, and length
+   */
+  @Override
+  public String toString() {
+    return "("
+        + "id="
+        + id
+        + ","
+        + "start="
+        + start.toString()
+        + ","
+        + "direction="
+        + direction
+        + ","
+        + "hasSunk="
+        + hasSunk
+        + ","
+        + "length="
+        + length
+        + ")";
   }
 }

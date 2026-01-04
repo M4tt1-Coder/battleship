@@ -43,7 +43,7 @@ public class Field {
   }
 
   /**
-   * Marks the field as having been shot at.
+   * Provides information about if a player shot at that field.
    *
    * @return TRUE, when the field was already shot at.
    */

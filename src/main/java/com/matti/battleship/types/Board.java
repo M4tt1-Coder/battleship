@@ -28,7 +28,7 @@ public class Board {
   private final int size;
 
   /** Number of ships currently placed on the board. */
-  public int number_of_ships;
+  public int numberOfShips;
 
   /** 2D array representing the fields on the board. */
   public Field[][] board;
@@ -41,7 +41,11 @@ public class Board {
       throw new IllegalArgumentException("Board size must be between 1 and 15!");
     }
     this.size = size;
-    this.number_of_ships = 0;
+    this.numberOfShips = 0;
+
+    // TODO: When creating the board and its fields like this initially -> field object could be
+    // initialised in wrong way
+
     // creates an empty field with no content
     this.board = new Field[size][size];
   }
@@ -79,7 +83,7 @@ public class Board {
       logger.error("Ship {} can't be placed on the board!", ship.toString());
       return false;
     }
-    this.number_of_ships++;
+    this.numberOfShips++;
     Field field = this.getFieldOnBoardByCoordinates(ship.getStartCoordinates());
     if (field != null) {
       field.setShip(ship);
@@ -102,7 +106,7 @@ public class Board {
    * @author m4tt1
    */
   public void reset() {
-    number_of_ships = 0;
+    numberOfShips = 0;
     board = new Field[size][size];
   }
 

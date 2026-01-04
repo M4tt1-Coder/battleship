@@ -35,4 +35,14 @@ public class Coordinates {
         || this.x - 1 == other.x && this.y == other.y
         || this.x + 1 == other.x && this.y == other.y;
   }
+
+  /**
+   * Returns a string representation of the object, formatted as "x|y".
+   *
+   * @return a string in the format "x|y"
+   */
+  @Override
+  public String toString() {
+    return x + "|" + y;
+  }
 }
