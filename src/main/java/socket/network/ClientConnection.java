@@ -1,21 +1,26 @@
 package socket.network;
 
-import socket.config.EnvConfig;
-
+import java.io.IOException;
 import java.net.Socket;
 
 public class ClientConnection {
 
-    private SocketConnector connector;
+  private SocketConnector connector;
 
-    public void connect(String host, MessageListener listener) throws Exception {
-        Socket socket = new Socket(host, EnvConfig.getPort());
-        connector = new SocketConnector(socket);
-        connector.setMessageListener(listener);
-        connector.startListening();
-    }
+  public void connectToServer(String host, MessageListener listener) throws IOException {
+    Socket socket = new Socket(host, 50000);
+    System.out.println("Mit Server verbunden");
 
-    public void send(String msg) throws Exception {
-        connector.sendMessage(msg);
-    }
+    connector = new SocketConnector(socket);
+    connector.setMessageListener(listener);
+    connector.startListening();
+  }
+
+  public void send(String message) throws IOException {
+    if (connector != null) connector.sendMessage(message);
+  }
+
+  public void disconnect() {
+    if (connector != null) connector.close();
+  }
 }

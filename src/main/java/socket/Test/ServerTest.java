@@ -1,21 +1,39 @@
-package socket.test;
+package socket.Test;
 
-import socket.discovery.ServerDiscoveryBroadcaster;
-import socket.logging.Log;
+import socket.network.MessageListener;
 import socket.network.ServerConnection;
-import socket.protocol.MessageBuilder;
 
 public class ServerTest {
 
-    public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
 
-        new Thread(new ServerDiscoveryBroadcaster()).start();
+    try {
+      ServerConnection server = new ServerConnection();
 
-        ServerConnection server = new ServerConnection();
-        server.startServer(msg -> {
-            Log.serverReceived(msg);
-            server.send(MessageBuilder.size(10));
-            Log.serverSent("size 10");
-        });
+      System.out.println("[SERVER] startet…");
+      server.startServer(
+          new MessageListener() {
+
+            @Override
+            public void onMessageReceived(String msg) {
+              System.out.println("[SERVER] Empfangene Nachricht: " + msg);
+
+              // Testantwort senden
+              try {
+                server.send("ok");
+              } catch (Exception e) {
+                System.out.println("[SERVER] Fehler beim Senden: " + e);
+              }
+            }
+
+            @Override
+            public void onConnectionClosed(Exception e) {
+              System.out.println("[SERVER] Verbindung geschlossen: " + e);
+            }
+          });
+
+    } catch (Exception e) {
+      System.out.println("[SERVER FEHLER] " + e);
     }
+  }
 }
