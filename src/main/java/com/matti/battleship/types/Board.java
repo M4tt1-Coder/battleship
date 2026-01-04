@@ -35,19 +35,24 @@ public class Board {
 
   public Board(int size) {
     // size can only be set during initialization
-    // - must be greater than zero and less than 16
-    if (size < 1 || size > 15) {
-      logger.error("Board size must be between 1 and 15! Provided size: {}", size);
-      throw new IllegalArgumentException("Board size must be between 1 and 15!");
+    // - must be greater than one and less than 16
+    if (size < 2 || size > 15) {
+      logger.error("Board size must be between 2 and 15! Provided size: {}", size);
+      throw new IllegalArgumentException("Board size must be between 2 and 15!");
     }
     this.size = size;
     this.numberOfShips = 0;
 
-    // TODO: When creating the board and its fields like this initially -> field object could be
-    // initialised in wrong way
-
     // creates an empty field with no content
     this.board = new Field[size][size];
+
+    // prepare the single fields
+    for (int i = 0; i < this.size; i++) {
+      for (int j = 0; j < this.size; j++) {
+        board[i][j] = new Field();
+        board[i][j].setCoordinates(new Coordinates(i, j));
+      }
+    }
   }
 
   // ----- methods -----

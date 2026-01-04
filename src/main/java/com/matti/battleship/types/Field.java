@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Field {
   /** TRUE, when a ship is situated on the 'Field'. */
-  private boolean isOccupied;
+  private boolean isOccupied = false;
 
   /** Coordinates of the 'Field'; */
   private Coordinates coordinates;
@@ -22,9 +22,9 @@ public class Field {
   /** TRUE, when the field was already shot at. */
   private boolean wasShotAt = false;
 
-  public Field(Coordinates coordinates) {
-    isOccupied = false;
-    this.coordinates = coordinates;
+  public Field() {
+    this.coordinates = null;
+    this.ship = null;
   }
 
   // ----- Methods -----
