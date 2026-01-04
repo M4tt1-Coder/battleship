@@ -1,13 +1,11 @@
 package socket.protocol;
 
-import socket.network.SocketConnector;
-import socket.network.MessageListener;
+import socket.network.*;
 
-// Verbindet String-Ebene mit Message-Ebene
 public class ProtocolHandler implements MessageListener {
 
     private final SocketConnector connector;
-    private ProtocolListener listener; // Listener für fertige Message-Obj
+    private ProtocolListener listener;
 
     public ProtocolHandler(SocketConnector connector) {
         this.connector = connector;
@@ -18,19 +16,16 @@ public class ProtocolHandler implements MessageListener {
         this.listener = listener;
     }
 
-    // Nachrichten senden als String (mit MessageBuilder)
-    public void send(String message) throws Exception {
-        connector.sendMessage(message);
+    public void send(String msg) throws Exception {
+        connector.sendMessage(msg);
     }
 
-    // aufgerufen, wenn Nachricht empfangen
     @Override
     public void onMessageReceived(String message) {
-        Message msg = MessageParser.parse(message);  //String -> Message
-        if (listener != null) listener.onMessage(msg);
+        if (listener != null)
+            listener.onMessage(MessageParser.parse(message));
     }
 
-    // aufgerufen, wenn Verbindung weg
     @Override
     public void onConnectionClosed(Exception e) {
         if (listener != null) listener.onClosed(e);

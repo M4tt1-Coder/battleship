@@ -1,35 +1,26 @@
 package socket.protocol;
 
-// Wandelt ein String zu Message-Objekt
-// -> Text -> Message
 public class MessageParser {
 
     public static Message parse(String line) {
-
-        // falls was ungültiges kommt
         if (line == null || line.isBlank())
-            return new Message(MessageType.UNKNOWN);
+            return new Message(MessageType.UNKNOWN, new String[0]);
 
-        // Zerlegt Zeile in Woöter
-        String[] parts = line.trim().split("\\s+");
-        String command = parts[0].toLowerCase();
+        String[] parts = line.split("\\s+");
+        String cmd = parts[0].toLowerCase();
+        String[] args = java.util.Arrays.copyOfRange(parts, 1, parts.length);
 
-        // Parameter extrahieren
-        String[] args = new String[parts.length - 1];
-        System.arraycopy(parts, 1, args, 0, args.length);
-
-        //Befehlzuordnung
-        return switch (command) {
+        return switch (cmd) {
             case "size" -> new Message(MessageType.SIZE, args);
             case "ships" -> new Message(MessageType.SHIPS, args);
-            case "done" -> new Message(MessageType.DONE);
-            case "ready" -> new Message(MessageType.READY);
+            case "done" -> new Message(MessageType.DONE, args);
+            case "ready" -> new Message(MessageType.READY, args);
             case "shot" -> new Message(MessageType.SHOT, args);
             case "answer" -> new Message(MessageType.ANSWER, args);
-            case "pass" -> new Message(MessageType.PASS);
+            case "pass" -> new Message(MessageType.PASS, args);
             case "save" -> new Message(MessageType.SAVE, args);
             case "load" -> new Message(MessageType.LOAD, args);
-            case "ok" -> new Message(MessageType.OK);
+            case "ok" -> new Message(MessageType.OK, args);
             default -> new Message(MessageType.UNKNOWN, args);
         };
     }
