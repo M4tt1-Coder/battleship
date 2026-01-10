@@ -12,9 +12,13 @@ public class MessageBuilder {
     return sb.toString();
   }
 
-  public static String done() { return "done"; }
+  public static String done() {
+    return "done";
+  }
 
-  public static String ready() { return "ready"; }
+  public static String ready() {
+    return "ready";
+  }
 
   public static String shot(int r, int c) {
     return "shot " + r + " " + c;
@@ -24,7 +28,9 @@ public class MessageBuilder {
     return "answer " + a;
   }
 
-  public static String pass() { return "pass"; }
+  public static String pass() {
+    return "pass";
+  }
 
   public static String save(long id) {
     return "save " + id;
@@ -34,5 +40,7 @@ public class MessageBuilder {
     return "load " + id;
   }
 
-  public static String ok() { return "ok"; }
+  public static String ok() {
+    return "ok";
+  }
 }

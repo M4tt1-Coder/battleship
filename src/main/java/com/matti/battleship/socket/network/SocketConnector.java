@@ -1,9 +1,8 @@
 package socket.network;
 
-import socket.logging.TurnLog;
-
 import java.io.*;
 import java.net.Socket;
+import socket.logging.TurnLog;
 
 public class SocketConnector {
 
@@ -19,7 +18,12 @@ public class SocketConnector {
   private MessageListener listener;
 
   // ===== Duo-Tracking =====
-  private enum PairState { NONE, SAW_SENT, SAW_RECEIVED }
+  private enum PairState {
+    NONE,
+    SAW_SENT,
+    SAW_RECEIVED
+  }
+
   private PairState pairState = PairState.NONE;
 
   // 🔑 NEU: verzögerter Turnwechsel (für pass)
@@ -29,7 +33,7 @@ public class SocketConnector {
     this.socket = socket;
     this.log = log;
 
-    this.self  = (log.getSide() == TurnLog.Side.SERVER) ? "SERVER" : "CLIENT";
+    this.self = (log.getSide() == TurnLog.Side.SERVER) ? "SERVER" : "CLIENT";
     this.other = self.equals("SERVER") ? "CLIENT" : "SERVER";
 
     this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -59,31 +63,36 @@ public class SocketConnector {
   /* ===================== RECEIVE ===================== */
 
   public void startListening() {
-    Thread t = new Thread(() -> {
-      try {
-        String line;
-        while ((line = reader.readLine()) != null) {
+    Thread t =
+        new Thread(
+            () -> {
+              try {
+                String line;
+                while ((line = reader.readLine()) != null) {
 
-          handleTurnOnReceive(line);
+                  handleTurnOnReceive(line);
 
-          log.received(line);
-          onReceivedForPair();
+                  log.received(line);
+                  onReceivedForPair();
 
-          if (listener != null) {
-            listener.onMessageReceived(line);
-          }
-        }
-      } catch (Exception e) {
-        if (listener != null) listener.onConnectionClosed(e);
-      }
-    });
+                  if (listener != null) {
+                    listener.onMessageReceived(line);
+                  }
+                }
+              } catch (Exception e) {
+                if (listener != null) listener.onConnectionClosed(e);
+              }
+            });
 
     t.setDaemon(true);
     t.start();
   }
 
   public void close() {
-    try { socket.close(); } catch (IOException ignored) {}
+    try {
+      socket.close();
+    } catch (IOException ignored) {
+    }
   }
 
   /* ===================== PAIR LOGIC ===================== */

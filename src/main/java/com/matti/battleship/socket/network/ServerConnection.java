@@ -1,10 +1,9 @@
 package socket.network;
 
-import socket.config.EnvConfig;
-import socket.logging.TurnLog;
-
 import java.net.ServerSocket;
 import java.net.Socket;
+import socket.config.EnvConfig;
+import socket.logging.TurnLog;
 
 public class ServerConnection {
 

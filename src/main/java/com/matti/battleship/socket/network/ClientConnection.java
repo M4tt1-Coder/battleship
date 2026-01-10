@@ -1,9 +1,8 @@
 package socket.network;
 
+import java.net.Socket;
 import socket.config.EnvConfig;
 import socket.logging.TurnLog;
-
-import java.net.Socket;
 
 public class ClientConnection {
 

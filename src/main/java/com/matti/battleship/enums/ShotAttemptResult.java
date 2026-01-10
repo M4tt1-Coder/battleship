@@ -1,4 +1,3 @@
 package com.matti.battleship.enums;
 
-public enum ShotAttemptResult {
-}
+public enum ShotAttemptResult {}

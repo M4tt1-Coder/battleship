@@ -3,8 +3,7 @@ package socket.protocol;
 public class MessageParser {
 
   /**
-   * Parst eine empfangene Textzeile aus dem Socket
-   * und wandelt sie in ein Message-Objekt um.
+   * Parst eine empfangene Textzeile aus dem Socket und wandelt sie in ein Message-Objekt um.
    *
    * @param line komplette Zeile (z.B. "shot 3 4")
    * @return Message mit Typ + Argumenten
@@ -29,17 +28,16 @@ public class MessageParser {
 
     // Befehlswort auf MessageType abbilden
     return switch (command) {
-
-      case "size"   -> new Message(MessageType.SIZE, args);
-      case "ships"  -> new Message(MessageType.SHIPS, args);
-      case "done"   -> new Message(MessageType.DONE);
-      case "ready"  -> new Message(MessageType.READY);
-      case "shot"   -> new Message(MessageType.SHOT, args);
+      case "size" -> new Message(MessageType.SIZE, args);
+      case "ships" -> new Message(MessageType.SHIPS, args);
+      case "done" -> new Message(MessageType.DONE);
+      case "ready" -> new Message(MessageType.READY);
+      case "shot" -> new Message(MessageType.SHOT, args);
       case "answer" -> new Message(MessageType.ANSWER, args);
-      case "pass"   -> new Message(MessageType.PASS);
-      case "save"   -> new Message(MessageType.SAVE, args);
-      case "load"   -> new Message(MessageType.LOAD, args);
-      case "ok"     -> new Message(MessageType.OK);
+      case "pass" -> new Message(MessageType.PASS);
+      case "save" -> new Message(MessageType.SAVE, args);
+      case "load" -> new Message(MessageType.LOAD, args);
+      case "ok" -> new Message(MessageType.OK);
 
       // Falls etwas Unerwartetes kommt
       default -> new Message(MessageType.UNKNOWN, args);
