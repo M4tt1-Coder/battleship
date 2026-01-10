@@ -18,8 +18,4 @@ public class EnvConfig {
     public static int getPort() {
         return Integer.parseInt(props.getProperty("PORT", "50000"));
     }
-
-    public static String getDiscoveryMessage() {
-        return props.getProperty("DISCOVERY_MESSAGE", "BATTLESHIP_SERVER");
-    }
 }

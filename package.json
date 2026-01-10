@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Battleship game implementation in Java!",
   "scripts": {
-    "format": "mvn com.spotify.fmt:fmt-maven-plugin:format",
+    "format": "mvnw.cmd com.spotify.fmt:fmt-maven-plugin:format",
     "prepare": "husky"
   },
   "author": "Matthis Geißler <matthisgeissler@gmail.com>",

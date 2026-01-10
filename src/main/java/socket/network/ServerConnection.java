@@ -1,35 +1,34 @@
 package socket.network;
 
-import java.io.IOException;
+import socket.config.EnvConfig;
+import socket.logging.TurnLog;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerConnection {
 
-  private ServerSocket serverSocket;
   private SocketConnector connector;
 
-  public void startServer(MessageListener listener) throws IOException {
-    serverSocket = new ServerSocket(50000);
-    System.out.println("Server wartet auf Verbindung ...");
+  public void startServer(MessageListener listener) throws Exception {
+    ServerSocket serverSocket = new ServerSocket(EnvConfig.getPort());
+    System.out.println("[SERVER] wartet auf Verbindung...");
 
     Socket client = serverSocket.accept();
-    System.out.println("Client verbunden: " + client.getInetAddress());
+    System.out.println("[SERVER] Client verbunden: " + client.getInetAddress());
 
-    connector = new SocketConnector(client);
+    TurnLog log = new TurnLog(TurnLog.Side.SERVER);
+    connector = new SocketConnector(client, log);
+
     connector.setMessageListener(listener);
     connector.startListening();
   }
 
-  public void send(String message) throws IOException {
-    if (connector != null) connector.sendMessage(message);
+  public void send(String msg) throws Exception {
+    connector.sendMessage(msg);
   }
 
   public void stop() {
-    try {
-      if (connector != null) connector.close();
-      if (serverSocket != null) serverSocket.close();
-    } catch (Exception ignored) { // ✔️ MUSS Exception sein, nicht IOException
-    }
+    if (connector != null) connector.close();
   }
 }

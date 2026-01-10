@@ -5,7 +5,7 @@ import socket.config.EnvConfig;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-public class ServerDiscoveryListener {
+public class ServerDisListener {
 
     public static String listen() throws Exception {
         try (DatagramSocket socket = new DatagramSocket(EnvConfig.getPort())) {
@@ -15,12 +15,8 @@ public class ServerDiscoveryListener {
 
             socket.receive(packet);
 
-            String msg = new String(packet.getData(), 0, packet.getLength());
-
-            if (msg.equals(EnvConfig.getDiscoveryMessage())) {
-                return packet.getAddress().getHostAddress();
-            }
+            // Jede empfangene UDP-Nachricht gilt als Server
+            return packet.getAddress().getHostAddress();
         }
-        return null;
     }
 }

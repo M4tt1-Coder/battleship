@@ -1,23 +1,27 @@
 package socket.network;
 
-import java.io.IOException;
+import socket.config.EnvConfig;
+import socket.logging.TurnLog;
+
 import java.net.Socket;
 
 public class ClientConnection {
 
   private SocketConnector connector;
 
-  public void connectToServer(String host, MessageListener listener) throws IOException {
-    Socket socket = new Socket(host, 50000);
-    System.out.println("Mit Server verbunden");
+  public void connect(String host, MessageListener listener) throws Exception {
+    Socket socket = new Socket(host, EnvConfig.getPort());
+    System.out.println("[CLIENT] verbunden mit Server: " + host);
 
-    connector = new SocketConnector(socket);
+    TurnLog log = new TurnLog(TurnLog.Side.CLIENT);
+    connector = new SocketConnector(socket, log);
+
     connector.setMessageListener(listener);
     connector.startListening();
   }
 
-  public void send(String message) throws IOException {
-    if (connector != null) connector.sendMessage(message);
+  public void send(String msg) throws Exception {
+    connector.sendMessage(msg);
   }
 
   public void disconnect() {

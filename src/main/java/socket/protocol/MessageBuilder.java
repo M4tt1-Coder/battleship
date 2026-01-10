@@ -6,31 +6,25 @@ public class MessageBuilder {
     return "size " + rows;
   }
 
-  public static String ships(int... lengths) {
+  public static String ships(int... l) {
     StringBuilder sb = new StringBuilder("ships");
-    for (int l : lengths) sb.append(" ").append(l);
+    for (int i : l) sb.append(" ").append(i);
     return sb.toString();
   }
 
-  public static String done() {
-    return "done";
-  }
+  public static String done() { return "done"; }
 
-  public static String ready() {
-    return "ready";
-  }
+  public static String ready() { return "ready"; }
 
-  public static String shot(int row, int col) {
-    return "shot " + row + " " + col;
+  public static String shot(int r, int c) {
+    return "shot " + r + " " + c;
   }
 
   public static String answer(int a) {
     return "answer " + a;
   }
 
-  public static String pass() {
-    return "pass";
-  }
+  public static String pass() { return "pass"; }
 
   public static String save(long id) {
     return "save " + id;
@@ -40,7 +34,5 @@ public class MessageBuilder {
     return "load " + id;
   }
 
-  public static String ok() {
-    return "ok";
-  }
+  public static String ok() { return "ok"; }
 }

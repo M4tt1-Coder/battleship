@@ -17,19 +17,21 @@ public class ProtocolHandler implements MessageListener {
     this.listener = listener;
   }
 
-  // Nachrichten senden = nur MessageBuilder verwenden!
-  public void send(String message) throws Exception {
-    connector.sendMessage(message);
+  public void send(String msg) throws Exception {
+    connector.sendMessage(msg);
   }
 
   @Override
   public void onMessageReceived(String message) {
-    Message msg = MessageParser.parse(message);
-    if (listener != null) listener.onMessage(msg);
+    if (listener != null) {
+      listener.onMessage(MessageParser.parse(message));
+    }
   }
 
   @Override
   public void onConnectionClosed(Exception e) {
-    if (listener != null) listener.onClosed(e);
+    if (listener != null) {
+      listener.onClosed(e);
+    }
   }
 }

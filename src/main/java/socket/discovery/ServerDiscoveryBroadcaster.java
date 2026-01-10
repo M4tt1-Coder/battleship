@@ -13,7 +13,7 @@ public class ServerDiscoveryBroadcaster implements Runnable {
         try (DatagramSocket socket = new DatagramSocket()) {
 
             socket.setBroadcast(true);
-            byte[] data = EnvConfig.getDiscoveryMessage().getBytes();
+            byte[] data = "DISCOVER".getBytes(); // Inhalt egal
 
             DatagramPacket packet = new DatagramPacket(
                     data,
@@ -30,4 +30,3 @@ public class ServerDiscoveryBroadcaster implements Runnable {
         } catch (Exception ignored) {}
     }
 }
-
