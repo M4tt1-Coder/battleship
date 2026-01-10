@@ -1,4 +1,4 @@
-package socket.config;
+package com.matti.battleship.socket.config;
 
 import java.io.FileInputStream;
 import java.util.Properties;

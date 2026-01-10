@@ -1,4 +1,4 @@
-package socket.network;
+package com.matti.battleship.socket.network;
 
 import java.net.ServerSocket;
 import java.net.Socket;

@@ -1,4 +1,4 @@
-package socket.test.pingpong;
+package com.matti.battleship.socket.test.pingpong;
 
 import socket.discovery.ServerDiscoveryBroadcaster;
 import socket.network.MessageListener;

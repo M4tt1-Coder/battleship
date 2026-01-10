@@ -1,6 +1,12 @@
-package socket.logging;
+package com.matti.battleship.socket.logging;
+
+import com.matti.battleship.types.Game;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TurnLog {
+
+  private static final Logger logger = LogManager.getLogger(TurnLog.class);
 
   public enum Side {
     SERVER,
@@ -36,7 +42,7 @@ public class TurnLog {
   }
 
   public void sent(String msg) {
-    System.out.println("  [GESENDET ] " + msg);
+    logger.info("  [GESENDET ] " + msg);
   }
 
   public void received(String msg) {

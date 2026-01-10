@@ -1,4 +1,4 @@
-package socket.discovery;
+package com.matti.battleship.socket.discovery;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

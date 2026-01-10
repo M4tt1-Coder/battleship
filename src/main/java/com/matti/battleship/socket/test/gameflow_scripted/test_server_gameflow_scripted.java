@@ -1,4 +1,4 @@
-package socket.test.gameflow_scripted;
+package com.matti.battleship.socket.test.gameflow_scripted;
 
 import java.util.concurrent.CountDownLatch;
 import socket.network.MessageListener;

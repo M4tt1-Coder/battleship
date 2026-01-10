@@ -1,4 +1,4 @@
-package socket.test.pingpong;
+package com.matti.battleship.socket.test.pingpong;
 
 import java.util.concurrent.CountDownLatch;
 import socket.discovery.ServerDisListener;

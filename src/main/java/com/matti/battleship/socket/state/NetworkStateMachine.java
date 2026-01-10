@@ -1,4 +1,4 @@
-package socket.state;
+package com.matti.battleship.socket.state;
 
 import socket.protocol.Message;
 import socket.protocol.MessageType;

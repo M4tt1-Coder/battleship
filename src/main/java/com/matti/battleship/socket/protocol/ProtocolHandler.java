@@ -1,4 +1,4 @@
-package socket.protocol;
+package com.matti.battleship.socket.protocol;
 
 import socket.network.MessageListener;
 import socket.network.SocketConnector;

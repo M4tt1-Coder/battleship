@@ -1,4 +1,4 @@
-package socket.state;
+package com.matti.battleship.socket.state;
 
 public enum GameState {
   INIT,

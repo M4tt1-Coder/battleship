@@ -1,9 +1,9 @@
 package com.matti.battleship.socket.discovery;
 
+import com.matti.battleship.socket.config.EnvConfig;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import com.matti.battleship.socket.config.EnvConfig;
 
 public class ServerDiscoveryBroadcaster implements Runnable {
 
