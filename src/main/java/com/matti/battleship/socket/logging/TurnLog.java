@@ -1,6 +1,5 @@
 package com.matti.battleship.socket.logging;
 
-import com.matti.battleship.types.Game;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
