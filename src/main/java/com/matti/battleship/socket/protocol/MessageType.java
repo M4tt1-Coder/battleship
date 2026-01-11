@@ -1,4 +1,4 @@
-package socket.protocol;
+package com.matti.battleship.socket.protocol;
 
 public enum MessageType {
   SIZE, // size rows
