@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Field {
   /** TRUE, when a ship is situated on the 'Field'. */
-  private boolean isOccupied;
+  private boolean isOccupied = false;
 
   /** Coordinates of the 'Field'; */
   private Coordinates coordinates;
@@ -19,9 +19,36 @@ public class Field {
   /** Optional ship on the field where the ships origin field is situated. */
   @Nullable private Ship ship;
 
-  public Field(Coordinates coordinates) {
-    isOccupied = false;
-    this.coordinates = coordinates;
+  /** TRUE, when the field was already shot at. */
+  private boolean wasShotAt = false;
+
+  public Field() {
+    this.coordinates = null;
+    this.ship = null;
+  }
+
+  // ----- Methods -----
+
+  /**
+   * Marks the field as having been shot at.
+   *
+   * @return TRUE, when the field was not already shot at.
+   */
+  public boolean markAsShotAt() {
+    if (!wasShotAt) {
+      wasShotAt = true;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Provides information about if a player shot at that field.
+   *
+   * @return TRUE, when the field was already shot at.
+   */
+  public boolean wasShotAt() {
+    return wasShotAt;
   }
 
   /**

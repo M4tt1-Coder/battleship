@@ -18,6 +18,11 @@ public enum ShipLength {
     this.length = length;
   }
 
+  /**
+   * Gets tha value of the enum value as an integer between 2 to 5!
+   *
+   * @return Integer value of the enum value.
+   */
   public int getValue() {
     return length;
   }
