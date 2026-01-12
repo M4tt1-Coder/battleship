@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 // TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
 // data objects
 
+// TODO: Add a property to the 'Ship' class which holds the information about the relative path to the picture of the ship depending on its length
+
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
  * game status.
