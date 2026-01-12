@@ -5,7 +5,6 @@ import com.matti.battleship.types.ComboBoxes;
 import com.matti.battleship.types.ImageViews;
 import com.matti.battleship.types.Labels;
 import com.matti.battleship.types.TextFields;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -187,7 +186,7 @@ public class Scenecontroller5 extends Application {
 
           GridPane battleGrid =
               new GridPane(); // ev das global dann kann battle grid auch in anderen angezeigt
-                              // werden
+          // werden
           battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setStyle("-fx-background-color: transparent;");
