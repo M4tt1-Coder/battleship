@@ -5,9 +5,7 @@ import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Game;
 import com.matti.battleship.utils.BoardUtils;
-
 import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,14 +70,14 @@ public class HardAlgorithm implements Algorithm {
     }
 
     calculateHeatMap();
-    
+
     return guessedCoordinates;
   }
 
   // ----- private methods -----
 
   private void markAllFieldsAroundShipAsMiss() {}
-  
+
   /**
    * Marks all connected ship fields as sunk starting from the given coordinates.
    *
