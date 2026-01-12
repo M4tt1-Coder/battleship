@@ -1,4 +1,4 @@
-package socket.protocol;
+package com.matti.battleship.socket.protocol;
 
 public class MessageBuilder {
 
@@ -6,9 +6,9 @@ public class MessageBuilder {
     return "size " + rows;
   }
 
-  public static String ships(int... lengths) {
+  public static String ships(int... l) {
     StringBuilder sb = new StringBuilder("ships");
-    for (int l : lengths) sb.append(" ").append(l);
+    for (int i : l) sb.append(" ").append(i);
     return sb.toString();
   }
 
@@ -20,8 +20,8 @@ public class MessageBuilder {
     return "ready";
   }
 
-  public static String shot(int row, int col) {
-    return "shot " + row + " " + col;
+  public static String shot(int r, int c) {
+    return "shot " + r + " " + c;
   }
 
   public static String answer(int a) {

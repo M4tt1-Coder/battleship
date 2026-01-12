@@ -1,4 +1,4 @@
-package socket.network;
+package com.matti.battleship.socket.network;
 
 public interface MessageListener {
   // wird aufgerufen, sobald eine Zeile empfangen wurde
