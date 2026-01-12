@@ -1,6 +1,5 @@
 package com.matti.battleship.socket.test.pingpong;
 
-
 import com.matti.battleship.socket.discovery.ServerDiscoveryBroadcaster;
 import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.network.ServerConnection;

@@ -4,7 +4,6 @@ import com.matti.battleship.socket.discovery.ServerDisListener;
 import com.matti.battleship.socket.network.ClientConnection;
 import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.protocol.MessageBuilder;
-
 import java.util.concurrent.CountDownLatch;
 
 public class test_client_ping_pong {

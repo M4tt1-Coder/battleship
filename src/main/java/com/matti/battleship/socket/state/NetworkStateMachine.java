@@ -1,6 +1,5 @@
 package com.matti.battleship.socket.state;
 
-
 import com.matti.battleship.socket.protocol.Message;
 import com.matti.battleship.socket.protocol.MessageType;
 
