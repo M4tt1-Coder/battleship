@@ -10,6 +10,9 @@ module com.matti.battleship {
   requires java.xml.crypto;
   requires annotations;
   requires jdk.sctp;
+  requires jdk.security.auth;
+  requires org.checkerframework.checker.qual;
+  requires com.google.common;
 
   exports com.matti.battleship;
 }

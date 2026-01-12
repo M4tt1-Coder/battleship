@@ -4,6 +4,7 @@ import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Ship;
 import java.util.ArrayList;
+import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -102,7 +103,7 @@ public class BoardUtils {
         // remove it from the 'allOccupiedFields' list -> fasten future iteration cycles
         // check if the 'k' is a neighbor field of a field of the current ship
         for (Coordinates z : temp) {
-          if (z.isNeighbour(k)) {
+          if (z.isNeighbourStraight(k)) {
             allOccupiedFields.remove(k);
             temp.add(k);
           }
@@ -122,14 +123,29 @@ public class BoardUtils {
           break;
         }
       }
-      if (shipAlreadyRegistered) {
-        continue;
-      } else {
+      if (!shipAlreadyRegistered) {
         output = temp;
         break;
       }
     }
     return output.toArray(new Coordinates[0]);
+  }
+
+  /**
+   * Generates a random set of coordinates within the bounds of the game field.
+   *
+   * @param boardSize The size of the game board (assumed square). Valid values are positive
+   *     integers.
+   * @param rand An instance of Random used to generate random numbers. It allows for controlled
+   *     randomness if needed.
+   * @return A Coordinates object representing a randomly selected position on the field.
+   */
+  public static Coordinates randomCoordinatesOnField(int boardSize, Random rand) {
+    // Generate random X and Y within the board boundaries
+    int X = rand.nextInt(boardSize);
+    int Y = rand.nextInt(boardSize);
+    // Create a Coordinates object for the generated point
+    return new Coordinates(X, Y);
   }
 
   // ----- private methods ------
