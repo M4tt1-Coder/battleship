@@ -1,6 +1,5 @@
 package com.matti.battleship.socket.protocol;
 
-
 import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.network.SocketConnector;
 
