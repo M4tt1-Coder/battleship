@@ -157,7 +157,7 @@ public class HardAlgorithm implements Algorithm {
               && shotResultMap[i][j] == DocumentaryShotResult.SUNK
               && !alreadyVisited.contains(temp)) { // avoid an infinite loop
             queue.add(temp);
-          } else if (coordinate.isNeighbourStraight(temp)
+          } else if (coordinate.isNeighbourDiagonal(temp)
               && shotResultMap[i][j] == DocumentaryShotResult.NOT_SET) {
             shotResultMap[i][j] = DocumentaryShotResult.MISS;
           }
