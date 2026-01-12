@@ -1,7 +1,8 @@
 package com.matti.battleship.socket.protocol;
 
-import socket.network.MessageListener;
-import socket.network.SocketConnector;
+
+import com.matti.battleship.socket.network.MessageListener;
+import com.matti.battleship.socket.network.SocketConnector;
 
 public class ProtocolHandler implements MessageListener {
 

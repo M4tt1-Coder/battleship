@@ -18,6 +18,11 @@ import org.jetbrains.annotations.Nullable;
 // TODO: Add a property to the 'Ship' class which holds the information about the relative path to
 // the picture of the ship depending on its length
 
+// TODO: Add a property which defines what role you play in the network connection when playing with
+// another player
+
+// TODO: Additional logic for placing ships on the field is necessary
+
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
  * game status.

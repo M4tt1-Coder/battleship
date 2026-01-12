@@ -1,8 +1,9 @@
 package com.matti.battleship.socket.network;
 
+import com.matti.battleship.socket.logging.TurnLog;
+
 import java.io.*;
 import java.net.Socket;
-import socket.logging.TurnLog;
 
 public class SocketConnector {
 
