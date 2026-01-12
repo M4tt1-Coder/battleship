@@ -10,21 +10,50 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 // uses a probabilistic approach where the algorithm calculates a most likely coordinates where the
-// next field of the ship must be
+// next field of the ship must be`
+
+/**
+ * Implements a strategic algorithm for targeting in a Battleship game. It uses heat maps,
+ * heuristics, and BFS-based methods to decide the next shot based on current game state.
+ *
+ * <p>Represents the hard level for the 'PLAYER_AI' playing mode.
+ */
 public class HardAlgorithm implements Algorithm {
   private static final Logger logger = LogManager.getLogger(HardAlgorithm.class);
 
+  /** Represents the artificial weight used in scoring or decision-making processes. */
   private final int artificialWeight = 100;
 
+  /**
+   * A map that associates each coordinate with an integer value representing the heat or likelihood
+   * of a ship being present at that position.
+   */
   private HashMap<Coordinates, Integer> heatMap;
+
+  /**
+   * A 2D array representing the result of each shot on the game board. Possible values are defined
+   * by the {@link DocumentaryShotResult} enum.
+   */
   private final DocumentaryShotResult[][] shotResultMap;
+
+  /** The size of the game board (number of rows and columns). */
   private final int boardSize;
+
+  /**
+   * A {@link Random} instance used for generating random numbers, likely for decision-making or
+   * simulation.
+   */
   private final Random rand;
 
+  /** Enum representing the possible outcomes of a shot. */
   private enum DocumentaryShotResult {
+    /** The cell has not been shot at yet. */
     NOT_SET,
+    /** The shot hit a part of a ship. */
     HIT,
+    /** The shot missed all ships. */
     MISS,
+    /** The shot resulted in sinking a ship. */
     SUNK
   }
 
@@ -59,14 +88,17 @@ public class HardAlgorithm implements Algorithm {
       if (game.player.board.checkIfShipWasSunk()) { // when a ship was sunken
         // mark all fields that were marked as DocumentaryShotResult.HIT to SUNK
         markAllFieldsOfShipAsSunk(guessedCoordinates);
-        // TODO: mark the fields around the ship as MISS
+        // mark the fields around the ship as MISS
+        markAllFieldsAroundSunkenShipAsMiss(guessedCoordinates);
 
         logger.info("Sunk ship at {} by the opponent (computer)", guessedCoordinates);
       } else { // when it was only hit
-        shotResultMap[guessedCoordinates.x][guessedCoordinates.y] = DocumentaryShotResult.HIT;
+        shotResultMap[guessedCoordinates.y][guessedCoordinates.x] = DocumentaryShotResult.HIT;
       }
     } else if (attemptResult == ShotAttemptResult.MISS) {
-      shotResultMap[guessedCoordinates.x][guessedCoordinates.y] = DocumentaryShotResult.MISS;
+      shotResultMap[guessedCoordinates.y][guessedCoordinates.x] = DocumentaryShotResult.MISS;
+    } else {
+      throw new RuntimeException("Unexpected behavior while trying to shot at the players board!");
     }
 
     calculateHeatMap();
@@ -76,7 +108,63 @@ public class HardAlgorithm implements Algorithm {
 
   // ----- private methods -----
 
-  private void markAllFieldsAroundShipAsMiss() {}
+  /**
+   * Marks all fields surrounding a sunken ship as MISS in the shot result map.
+   *
+   * <p>This method performs a breadth-first search (BFS) starting from the provided coordinates of
+   * a sunken ship segment. It traverses all connected parts of the sunken ship, and for each
+   * neighboring cell that is directly adjacent (up, down, left, right) and has not been processed,
+   * it marks neighboring cells that are not yet set as MISS. This indicates that no ship occupies
+   * those adjacent cells.
+   *
+   * <p><strong>Preconditions:</strong>
+   *
+   * <ul>
+   *   <li>The field at the provided {@code coordinates} must have a shot result of {@code
+   *       DocumentaryShotResult.SUNK}.
+   * </ul>
+   *
+   * <p><strong>Postconditions:</strong>
+   *
+   * <ul>
+   *   <li>All neighboring fields of the sunken ship that are not yet set are marked as {@code
+   *       DocumentaryShotResult.MISS}.
+   * </ul>
+   *
+   * @param coordinates the {@code Coordinates} object representing a position of a sunken ship
+   *     segment.
+   */
+  private void markAllFieldsAroundSunkenShipAsMiss(Coordinates coordinates) {
+    // the source field needs to be marked as DocumentaryShotResult.SUNK -> else the ship hasn't
+    // been sunk
+    if (shotResultMap[coordinates.y][coordinates.x] != DocumentaryShotResult.SUNK) {
+      logger.error(
+          "Can't mark fields around sunken ship as MISS cause, the fields of it haven't been marked SUNK!");
+      return;
+    }
+
+    Queue<Coordinates> queue = new PriorityQueue<>();
+    ArrayList<Coordinates> alreadyVisited = new ArrayList<>();
+    queue.add(coordinates);
+
+    while (!queue.isEmpty()) {
+      Coordinates coordinate = queue.poll();
+      alreadyVisited.add(coordinate);
+      for (int i = 0; i < this.boardSize; i++) {
+        for (int j = 0; j < this.boardSize; j++) {
+          Coordinates temp = new Coordinates(i, j);
+          if (coordinate.isNeighbourStraight(temp)
+              && shotResultMap[i][j] == DocumentaryShotResult.SUNK
+              && !alreadyVisited.contains(temp)) { // avoid an infinite loop
+            queue.add(temp);
+          } else if (coordinate.isNeighbourStraight(temp)
+              && shotResultMap[i][j] == DocumentaryShotResult.NOT_SET) {
+            shotResultMap[i][j] = DocumentaryShotResult.MISS;
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Marks all connected ship fields as sunk starting from the given coordinates.
@@ -145,7 +233,7 @@ public class HardAlgorithm implements Algorithm {
    * @return {@code true} if the cell has not been shot at; {@code false} otherwise.
    */
   private boolean checkIfFieldsWasAlreadyShotAt(Coordinates coordinates) {
-    return this.shotResultMap[coordinates.x][coordinates.y] == DocumentaryShotResult.NOT_SET;
+    return this.shotResultMap[coordinates.y][coordinates.x] == DocumentaryShotResult.NOT_SET;
   }
 
   /**
