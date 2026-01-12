@@ -14,67 +14,67 @@ import javafx.stage.Stage;
 
 public class BattleshipGridTest extends Application {
 
-    private static final int GRID_SIZE = 2;
-    private static final int CELL_SIZE = 100;
+  private static final int GRID_SIZE = 2;
+  private static final int CELL_SIZE = 100;
 
-    @Override
-    public void start(Stage stage) {
+  @Override
+  public void start(Stage stage) {
 
-        GridPane grid = new GridPane();
+    GridPane grid = new GridPane();
 
-        for (int row = 0; row < GRID_SIZE; row++) {
-            for (int col = 0; col < GRID_SIZE; col++) {
+    for (int row = 0; row < GRID_SIZE; row++) {
+      for (int col = 0; col < GRID_SIZE; col++) {
 
-                StackPane cell = new StackPane();
-                cell.setPrefSize(CELL_SIZE, CELL_SIZE);
-                cell.setStyle(
-                        "-fx-border-color: black;" +
-                                "-fx-background-color: lightblue;"
-                );
+        StackPane cell = new StackPane();
+        cell.setPrefSize(CELL_SIZE, CELL_SIZE);
+        cell.setStyle("-fx-border-color: black;" + "-fx-background-color: lightblue;");
 
-                final int r = row;
-                final int c = col;
+        final int r = row;
+        final int c = col;
 
-                cell.setOnDragOver(e -> {
-                    if (e.getGestureSource() != cell) {
-                        e.acceptTransferModes(TransferMode.MOVE);
-                    }
-                    e.consume();
-                });
+        cell.setOnDragOver(
+            e -> {
+              if (e.getGestureSource() != cell) {
+                e.acceptTransferModes(TransferMode.MOVE);
+              }
+              e.consume();
+            });
 
-                cell.setOnDragDropped(e -> {
-                    Rectangle ship = (Rectangle) e.getGestureSource();
-                    cell.getChildren().clear();
-                    cell.getChildren().add(ship);
-                    e.setDropCompleted(true);
-                    e.consume();
+        cell.setOnDragDropped(
+            e -> {
+              Rectangle ship = (Rectangle) e.getGestureSource();
+              cell.getChildren().clear();
+              cell.getChildren().add(ship);
+              e.setDropCompleted(true);
+              e.consume();
 
-                    System.out.println("Zelle belegt: (" + r + "," + c + ")");
-                });
+              System.out.println("Zelle belegt: (" + r + "," + c + ")");
+            });
 
-                grid.add(cell, col, row);
-            }
-        }
+        grid.add(cell, col, row);
+      }
+    }
 
-        Rectangle ship = new Rectangle(80, 80, Color.DARKGRAY);
+    Rectangle ship = new Rectangle(80, 80, Color.DARKGRAY);
 
-        ship.setOnDragDetected(e -> {
-            Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
-            content.putString("SHIP");
-            db.setContent(content);
-            e.consume();
+    ship.setOnDragDetected(
+        e -> {
+          Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
+          ClipboardContent content = new ClipboardContent();
+          content.putString("SHIP");
+          db.setContent(content);
+          e.consume();
         });
 
-        VBox root = new VBox(20, ship, grid);
-        root.setStyle("-fx-padding: 20;");
+    VBox root = new VBox(20, ship, grid);
+    root.setStyle("-fx-padding: 20;");
 
-        stage.setScene(new Scene(root));
-        stage.setTitle("Battleship 2x2 Grid Test");
-        stage.show();
-    }
+    stage.setScene(new Scene(root));
+    stage.setTitle("Battleship 2x2 Grid Test");
+    stage.show();
+  }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+  public static void main(String[] args) {
+    launch(args);
+  }
 }
