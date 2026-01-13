@@ -10,8 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Add algorithms for the 'PLAYER_AI' game mode -> hard
-
 // TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
 // data objects
 
