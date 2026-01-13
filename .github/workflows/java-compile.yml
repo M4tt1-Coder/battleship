@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "microsoft"
-          java-version: $JAVA_VERSION
+          java-version: "$JAVA_VERSION"
           check-latest: true
           cache: "maven"
       - run: ./mvnw clean package
