@@ -21,7 +21,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
-          distribution: "openjdk"
+          distribution: "microsoft"
           java-version: $JAVA_VERSION
           check-latest: true
           cache: "maven"
