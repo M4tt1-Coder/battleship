@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: action/checkout@v5
+      - uses: actions/checkout@v5
       - name: Setup Java
-        uses: action/setup-java@v5
+        uses: actions/setup-java@v5
         with:
           distribution: "openjdk"
           java-version: $JAVA_VERSION
