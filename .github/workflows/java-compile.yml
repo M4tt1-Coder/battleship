@@ -22,7 +22,7 @@ jobs:
         uses: action/setup-java@v5
         with:
           distribution: "openjdk"
-          java-version: ${{ JAVA_VERSION }}
+          java-version: $JAVA_VERSION
           check-latest: true
           cache: "maven"
       - run: ./mvnw clean package
