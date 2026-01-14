@@ -8,11 +8,18 @@ import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-
-// TODO: Add algorithms for the 'PLAYER_AI' game mode -> easy, medium, hard
+import org.jetbrains.annotations.Nullable;
 
 // TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
 // data objects
+
+// TODO: Add a property to the 'Ship' class which holds the information about the relative path to
+// the picture of the ship depending on its length
+
+// TODO: Add a property which defines what role you play in the network connection when playing with
+// another player
+
+// TODO: Additional logic for placing ships on the field is necessary
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -50,6 +57,9 @@ public class Game {
   /** The winner of the current game. */
   private Winner winner;
 
+  /** The difficulty level of the AI. Can be null if not set. */
+  @Nullable private AIDifficulty difficulty;
+
   public Game(
       PlayingMode playingMode,
       @NotNull Player player,
@@ -71,6 +81,25 @@ public class Game {
   }
 
   // ----- Methods -----
+
+  /**
+   * Sets the difficulty level of the AI.
+   *
+   * @param difficulty the desired AIDifficulty level, can be null to indicate no difficulty set
+   */
+  public void setDifficulty(@Nullable AIDifficulty difficulty) {
+    this.difficulty = difficulty;
+  }
+
+  /**
+   * Retrieves the current difficulty level of the AI.
+   *
+   * @return the current {@link AIDifficulty} level, or null if not set
+   */
+  @Nullable
+  public AIDifficulty getDifficulty() {
+    return this.difficulty;
+  }
 
   /**
    * Returns the initial setup of ships for the game.
