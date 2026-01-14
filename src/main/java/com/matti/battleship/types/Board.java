@@ -244,7 +244,7 @@ public class Board {
     for (Field[] rows : this.board) {
       for (Field field : rows) {
         for (Coordinates coord : shipCoordinates) {
-          if (coord.isNeighbour(field.getCoordinates())) {
+          if (coord.isNeighbourDiagonal(field.getCoordinates())) {
             output_coordinates.add(coord);
           }
         }
@@ -328,7 +328,7 @@ public class Board {
     for (Field[] rows : this.board) {
       for (Field field : rows) {
         for (Coordinates coord : fieldCoordinates) {
-          if (coord.isNeighbour(field.getCoordinates()) && !field.wasShotAt()) {
+          if (coord.isNeighbourDiagonal(field.getCoordinates()) && !field.wasShotAt()) {
             // mark as 'shotAt'
             field.markAsShotAt();
           }
