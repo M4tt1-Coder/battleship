@@ -189,7 +189,6 @@ public class Eigener_Test extends Application {
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setStyle("-fx-background-color: transparent;");
 
-
           for (int row = 0; row < selected_field_size; row++) {
             for (int col = 0; col < selected_field_size; col++) {
               StackPane cell = new StackPane();
@@ -210,8 +209,8 @@ public class Eigener_Test extends Application {
               cell.setOnDragDropped(
                   ev -> {
 
-                    //Ship ship1 = new Ship();
-                      // Prüfung ob gültig
+                    // Ship ship1 = new Ship();
+                    // Prüfung ob gültig
                     Rectangle ship = (Rectangle) ev.getGestureSource();
                     cell.getChildren().clear();
                     cell.getChildren().add(ship);
