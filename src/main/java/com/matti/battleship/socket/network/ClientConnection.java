@@ -1,8 +1,8 @@
 package com.matti.battleship.socket.network;
 
 import java.net.Socket;
-import socket.config.EnvConfig;
-import socket.logging.TurnLog;
+import com.matti.battleship.socket.config.EnvConfig;
+import com.matti.battleship.socket.logging.TurnLog;
 
 public class ClientConnection {
 
