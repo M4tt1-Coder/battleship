@@ -1,9 +1,9 @@
 package com.matti.battleship.socket.test.gameflow_scripted;
 
-import java.util.concurrent.CountDownLatch;
 import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.network.ServerConnection;
 import com.matti.battleship.socket.protocol.MessageBuilder;
+import java.util.concurrent.CountDownLatch;
 
 public class TestServerGameflowScripted {
 

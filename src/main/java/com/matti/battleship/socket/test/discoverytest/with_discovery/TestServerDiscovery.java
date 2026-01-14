@@ -1,13 +1,16 @@
-package com.matti.battleship.socket.test.discoverytest.standart;
+package com.matti.battleship.socket.test.discoverytest.with_discovery;
 
 import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.network.ServerConnection;
 
-public class TestServerStandart {
+import java.util.Scanner;
+
+public class TestServerDiscovery {
 
     public static void main(String[] args) throws Exception {
         ServerConnection server = new ServerConnection();
 
+        // Startet TCP (und bei euch: Discovery parallel, falls in ServerConnection eingebaut)
         server.startServer(new MessageListener() {
             @Override
             public void onMessageReceived(String message) {
@@ -34,7 +37,30 @@ public class TestServerStandart {
             }
         });
 
-        System.out.println("[SERVER] läuft. Beenden mit STRG+C");
-        Thread.currentThread().join();
+        // Ab hier kannst du tippen und an den Client senden
+        System.out.println();
+        System.out.println("[SERVER] ✅ Verbunden. Tippe Nachrichten und drücke ENTER. 'exit' beendet.");
+
+        Scanner in = new Scanner(System.in);
+        while (true) {
+            System.out.print("> ");
+            String line = in.nextLine();
+            if (line == null) continue;
+
+            String msg = line.trim();
+            if (msg.equalsIgnoreCase("exit")) {
+                System.out.println("[SERVER] exit.");
+                return;
+            }
+
+            if (msg.isEmpty()) continue;
+
+            try {
+                server.send(msg);
+                System.out.println("[SERVER] sent: " + msg);
+            } catch (Exception e) {
+                System.out.println("[SERVER] send failed: " + e.getMessage());
+            }
+        }
     }
 }
