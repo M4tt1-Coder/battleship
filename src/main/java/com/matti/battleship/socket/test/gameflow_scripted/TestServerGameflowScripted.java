@@ -1,11 +1,11 @@
 package com.matti.battleship.socket.test.gameflow_scripted;
 
 import java.util.concurrent.CountDownLatch;
-import socket.network.MessageListener;
-import socket.network.ServerConnection;
-import socket.protocol.MessageBuilder;
+import com.matti.battleship.socket.network.MessageListener;
+import com.matti.battleship.socket.network.ServerConnection;
+import com.matti.battleship.socket.protocol.MessageBuilder;
 
-public class test_server_gameflow_scripted {
+public class TestServerGameflowScripted {
 
   private enum Phase {
     SERVER_SHOOTING, // Server schießt 4x

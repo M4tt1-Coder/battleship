@@ -3,7 +3,6 @@ package com.matti.battleship.socket.network;
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.discovery.ServerDiscoveryResponder;
 import com.matti.battleship.socket.logging.TurnLog;
-
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,18 +36,19 @@ public class ServerConnection {
     System.out.println("[SERVER] Client verbunden: " + client.getInetAddress());
 
     // Listener wrappen, damit busy zurückgesetzt wird, wenn Verbindung endet
-    MessageListener wrapped = new MessageListener() {
-      @Override
-      public void onMessageReceived(String message) {
-        listener.onMessageReceived(message);
-      }
+    MessageListener wrapped =
+        new MessageListener() {
+          @Override
+          public void onMessageReceived(String message) {
+            listener.onMessageReceived(message);
+          }
 
-      @Override
-      public void onConnectionClosed(Exception e) {
-        busy.set(false);
-        listener.onConnectionClosed(e);
-      }
-    };
+          @Override
+          public void onConnectionClosed(Exception e) {
+            busy.set(false);
+            listener.onConnectionClosed(e);
+          }
+        };
 
     connector = new SocketConnector(client, new TurnLog(TurnLog.Side.SERVER));
     connector.setMessageListener(wrapped);
