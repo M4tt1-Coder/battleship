@@ -41,20 +41,23 @@ public class TurnLog {
   }
 
   public void sent(String msg) {
+
     logger.info("  [GESENDET ] " + msg);
   }
 
   public void received(String msg) {
-    System.out.println("  [EMPFANGEN] " + msg);
+
+    logger.info("  [EMPFANGEN] " + msg);
   }
 
   /** Trennlinie nach jedem Gesendet/Empfangen-Duo */
   public void separator() {
-    System.out.println("  ------------------------");
+
+    logger.info("  ------------------------");
   }
 
   private void printTurnHeader() {
-    System.out.println();
-    System.out.println("[" + currentTurnOwner + " ZUG]");
+    logger.info("");
+    logger.info("[{} ZUG]", currentTurnOwner);
   }
 }
