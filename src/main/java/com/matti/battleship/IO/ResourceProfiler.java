@@ -40,8 +40,9 @@ public class ResourceProfiler {
   private static final String Ship4PicPath = "images/ships/aircraft_carrier_length4.png";
 
   /** File path to the image of a cruiser with length 5. */
-  private static final String Ship5PicPath =
-      "images/ships/cruiser_length5.png"; // __________________________________
+  private static final String Ship5PicPath = "images/ships/cruiser_length5.png";
+
+  // __________________________________
 
   /**
    * Returns the file path to the image corresponding to the specified ship length.

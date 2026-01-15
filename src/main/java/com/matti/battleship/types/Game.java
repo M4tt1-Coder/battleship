@@ -1,5 +1,6 @@
 package com.matti.battleship.types;
 
+import com.matti.battleship.IO.ResourceProfiler;
 import com.matti.battleship.enums.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
@@ -10,10 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
-// data objects (Fabi)
-
 // TODO: Additional logic for placing ships on the field while setting up the game is necessary
+
+// TODO: Add algorithm for VS_AI playing mode that tries to place ships randomly
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -54,16 +54,12 @@ public class Game {
   /** The difficulty level of the AI. Can be null if not set. */
   @Nullable private AIDifficulty difficulty;
 
-  /** Represents the role of the local machine in the 'PlayingMode' VS_PLAYER. */
-  @Nullable private Role role;
-
   public Game(
       PlayingMode playingMode,
       @NotNull Player player,
       @NotNull Player opponent,
       PlayerTurn turn,
-      ShipLength[] initialShipSetup,
-      @Nullable Role role) {
+      ShipLength[] initialShipSetup) {
     // validation method needs to be adjusted after critical changes in the logic or
     // data structures
     if (!GameUtils.validateGameSetup(player, opponent, initialShipSetup)) {
@@ -77,7 +73,6 @@ public class Game {
     this.whoseTurn = turn; // Default starting turn
     this.winner = Winner.NONE_YET; // when starting the game no player has won yet
     this.initialShipSetup = initialShipSetup;
-    this.role = role;
   }
 
   // ----- Methods -----
@@ -234,11 +229,10 @@ public class Game {
         // determine in which direction the ship is pointing to
         Direction shipDirection = ShipUtils.determineShipDirection(occupiedFields);
         // add ship to the field
+        ResourceProfiler prof = new ResourceProfiler();
+        ShipLength len = ShipUtils.shipLengthFromInt(occupiedFields.length);
         field.setShip(
-            new Ship(
-                field.getCoordinates(),
-                shipDirection,
-                ShipUtils.shipLengthFromInt(occupiedFields.length)));
+            new Ship(field.getCoordinates(), shipDirection, len, prof.getPictureOfShip(len)));
         this.opponent.board.numberOfShips++;
         if (!this.opponent.board.checkIfShipWasSunk()) {
           logger.error("No ship was marked sunk after one should have been!");

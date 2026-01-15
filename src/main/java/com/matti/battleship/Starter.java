@@ -6,9 +6,10 @@ import org.apache.logging.log4j.Logger;
 public class Starter {
   private static final Logger logger = LogManager.getLogger(Starter.class);
 
+  /** Entrypoint for the whole application! */
   public static void main(String[] args) {
     logger.info("Starting Game ... ");
-    BattleshipApp.main(args);
+    Scenecontroller.main(args);
+    ;
   }
 }
-// test
