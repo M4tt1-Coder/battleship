@@ -1,5 +1,6 @@
 package com.matti.battleship.utils;
 
+import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Player;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +26,29 @@ public class GameUtils {
     if (!validatePlayerInstance(opponent)) return false;
     // validate initial ship setup
     return !validateShipSetup(initialShipSetup, player);
+  }
+
+  /**
+   * Converts a string representation of difficulty level to the corresponding {@link AIDifficulty}
+   * enum.
+   *
+   * @param val the string representing the difficulty level; expected to be "Easy", "Medium", or
+   *     "Hard"
+   * @return the corresponding {@link AIDifficulty} enum value
+   * @throws IllegalArgumentException if the input string does not match any of the expected
+   *     difficulty levels
+   */
+  public static AIDifficulty getDifficultyFromString(String val) {
+    switch (val) {
+      case "Easy":
+        return AIDifficulty.EASY;
+      case "Medium":
+        return AIDifficulty.MEDIUM;
+      case "Hard":
+        return AIDifficulty.HARD;
+      default:
+        throw new IllegalArgumentException("An invalid argument as AIDifficulty was passed!");
+    }
   }
 
   /**

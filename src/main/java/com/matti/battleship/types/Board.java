@@ -79,7 +79,8 @@ public class Board {
    * @return {@code true} if the ship was successfully added; {@code false} otherwise
    */
   public boolean addShip(Ship ship) {
-    // when the maximum capacity of ships is reached it automatically shouldn't be possible to add a
+    // when the maximum capacity of ships is reached it automatically shouldn't be
+    // possible to add a
     // ship anymore
     if (isTheMaxCapacityForShipsReached()) return false;
     var canBePlaced = BoardUtils.canShipBePlacedOnBoard(this, ship);
@@ -103,6 +104,9 @@ public class Board {
     logger.debug("Added ship to the board!");
     return true;
   }
+
+  // TODO: Add rotate ship method
+  // TODO: Add remove ship method
 
   /**
    * Since the 'Size' property of can only be set during initialization it isn't mutated. The method

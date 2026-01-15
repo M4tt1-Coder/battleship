@@ -1,6 +1,10 @@
 package com.matti.battleship;
 
+import com.matti.battleship.enums.AIDifficulty;
+import com.matti.battleship.enums.PlayingMode;
+import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
+import com.matti.battleship.utils.GameUtils;
 import java.io.File;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -16,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.Nullable;
 
 public class Scenecontroller extends Application {
 
@@ -23,10 +28,22 @@ public class Scenecontroller extends Application {
   int selected_field_size = 10;
   int selected_amount_of_boats = 5;
 
+  // ----- Temorary Game -----
+  private Game game;
+  private PlayingMode playingMode;
+  @Nullable private AIDifficulty difficulty;
+  // TODO: Create an algorithm that generates a ship setup that meets the 30%
+  // percentage rule
+  private ShipLength[] initialShipSetup;
+
+  // ----- Player -----
+  private Board board;
+
   @Override
   public void start(Stage primaryStage) {
 
-    // ---------------root 1---------------------------------------------------------------------
+    // ---------------root
+    // 1---------------------------------------------------------------------
     // root1
 
     Buttons Singleplayer_button_r1 = new Buttons("Singleplayer");
@@ -57,7 +74,8 @@ public class Scenecontroller extends Application {
     label_battleship_lobby_r1.size(root1, 0.4, 0.1);
     label_battleship_lobby_r1.setAlignment(Pos.CENTER);
 
-    // ---------------root 2---------------------------------------------------------------------
+    // ---------------root
+    // 2---------------------------------------------------------------------
     // root2
 
     Image image_player_vs_ai =
@@ -162,7 +180,8 @@ public class Scenecontroller extends Application {
     label_size_of_field_r2.size(root2, 0.1, 0.07);
     label_size_of_field_r2.setAlignment(Pos.CENTER);
 
-    // ---------------root 3---------------------------------------------------------------------
+    // ---------------root
+    // 3---------------------------------------------------------------------
     // root3
 
     Buttons back_button_r3 = new Buttons();
@@ -191,7 +210,8 @@ public class Scenecontroller extends Application {
     label_available_servers_r3.size(root3, 0.7, 0.8);
     label_available_servers_r3.setAlignment(Pos.TOP_CENTER);
 
-    // ---------------root 4---------------------------------------------------------------------
+    // ---------------root
+    // 4---------------------------------------------------------------------
     // root4
     Buttons button41e = new Buttons(); // ändern
     button41e.setId("end_game_button");
@@ -218,6 +238,90 @@ public class Scenecontroller extends Application {
     label41.size(root4, 0.6, 0.8);
     label41.setAlignment(Pos.TOP_CENTER);
 
+    // ---------------root
+    // 5---------------------------------------------------------------------
+    // root5
+
+    Buttons button51e = new Buttons();
+    button51e.setId("end_game_button");
+
+    Labels label51 = new Labels("Test");
+    label51.setId("label21");
+
+    StackPane root5 = new StackPane(button51e, label51);
+    root5.setId("pane5");
+
+    button51e.position(root5, -0.4, -0.43);
+    button51e.fontsize(root5, 0.01);
+    button51e.size(root5, 0.15, 0.06);
+
+    label51.position(root5, 0, -0.01);
+    label51.fontsize(root5, 0.03);
+    label51.size(root5, 0.6, 0.8);
+    label51.setAlignment(Pos.TOP_CENTER);
+
+    // ---------------button_actions---------------------------------------------------------------------
+    button42.setOnAction(
+        e -> {
+          double BOARD_SIZE = 400;
+          double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
+
+          GridPane grid = new GridPane();
+          grid.setHgap(0);
+          grid.setVgap(0);
+          grid.setPadding(new Insets(12));
+
+          Image imgMiss =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                      .toExternalForm());
+          Image imgHit =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
+                      .toExternalForm());
+
+          for (int r = 0; r < selected_field_size; r++) {
+            for (int c = 0; c < selected_field_size; c++) {
+              Buttons btn = new Buttons();
+              btn.setStyle(
+                  "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
+              btn.setPrefSize(BUTTON_SIZE, BUTTON_SIZE);
+
+              final int rr = r;
+              final int cc = c;
+
+              btn.setOnAction(
+                  ev -> {
+                    System.out.println("Clicked: row=" + rr + " col=" + cc);
+                    // hier prüfuzng ob treffer oder nicht
+                    /*
+                     * if(ship_was hit == false) {
+                     *
+                     * }
+                     * else if(ship_was hit == true && ship_sunken == false) {
+                     *
+                     * } else {
+                     *
+                     * }
+                     */
+
+                    ImageViews iv = new ImageViews(imgMiss);
+                    iv.setFitWidth(BUTTON_SIZE * 0.4);
+                    iv.setFitHeight(BUTTON_SIZE * 0.4);
+                    iv.setPreserveRatio(false);
+                    btn.setGraphic(iv);
+                  });
+
+              grid.add(btn, c, r);
+            }
+          }
+          root5.getChildren().addAll(grid);
+          grid.setAlignment(Pos.CENTER);
+          scene1.setRoot(root5);
+        });
+
     start_game_button_r2.setOnAction(
         e -> {
           // prüfen ob Eingabe über tf22 + 21
@@ -229,6 +333,7 @@ public class Scenecontroller extends Application {
             }
           }
 
+          // TODO: Remove manual setting of number of boats
           if (!select_amount_of_boats_r2.getText().isEmpty()) {
             try {
               selected_amount_of_boats = Integer.parseInt(select_amount_of_boats_r2.getText());
@@ -237,7 +342,14 @@ public class Scenecontroller extends Application {
             }
           }
 
-          Board board = new Board(selected_field_size);
+          // save current AIDifficulty
+          String selectedDifficultyString =
+              difficulty_selection_r2.getSelectionModel().getSelectedItem();
+          this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
+
+          // TODO: Potentially adjust / add a temporary datastructure to documente the
+          // ship selection
+          this.board = new Board(selected_field_size);
           double BOARD_SIZE = 400;
           double cellSize = BOARD_SIZE / selected_field_size;
 
@@ -266,8 +378,11 @@ public class Scenecontroller extends Application {
 
               cell.setOnDragDropped(
                   ev -> {
+                    // TODO: Remove ship from old corresponding field and add it to the new field
+                    // if (!this.board.addShip()) {
+                    // set ship temporary red -> show user he / she can t place ship here
+                    // }
 
-                    // Ship ship1 = new Ship(field.getCoordinates(),);
                     // Prüfung ob gültig
                     Rectangle ship = (Rectangle) ev.getGestureSource();
                     cell.getChildren().clear();
@@ -316,90 +431,19 @@ public class Scenecontroller extends Application {
           StackPane.setAlignment(ship, Pos.TOP_CENTER);
           scene1.setRoot(root4);
         });
-    // ---------------root 5---------------------------------------------------------------------
-    // root5
 
-    Buttons button51e = new Buttons();
-    button51e.setId("end_game_button");
-
-    Labels label51 = new Labels("Test");
-    label51.setId("label21");
-
-    StackPane root5 = new StackPane(button51e, label51);
-    root5.setId("pane5");
-
-    button51e.position(root5, -0.4, -0.43);
-    button51e.fontsize(root5, 0.01);
-    button51e.size(root5, 0.15, 0.06);
-
-    label51.position(root5, 0, -0.01);
-    label51.fontsize(root5, 0.03);
-    label51.size(root5, 0.6, 0.8);
-    label51.setAlignment(Pos.TOP_CENTER);
-
-    button42.setOnAction(
+    Singleplayer_button_r1.setOnAction(
         e -> {
-          double BOARD_SIZE = 400;
-          double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
-
-          GridPane grid = new GridPane();
-          grid.setHgap(0);
-          grid.setVgap(0);
-          grid.setPadding(new Insets(12));
-
-          Image imgMiss =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                      .toExternalForm());
-          Image imgHit =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
-                      .toExternalForm());
-
-          for (int r = 0; r < selected_field_size; r++) {
-            for (int c = 0; c < selected_field_size; c++) {
-              Buttons btn = new Buttons();
-              btn.setStyle(
-                  "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
-              btn.setPrefSize(BUTTON_SIZE, BUTTON_SIZE);
-
-              final int rr = r;
-              final int cc = c;
-
-              btn.setOnAction(
-                  ev -> {
-                    System.out.println("Clicked: row=" + rr + " col=" + cc);
-                    // hier prüfuzng ob treffer oder nicht
-                    /*if(ship_was hit == false) {
-
-                    }
-                    else if(ship_was hit == true && ship_sunken == false) {
-
-                    } else {
-
-                    }
-                     */
-
-                    ImageViews iv = new ImageViews(imgMiss);
-                    iv.setFitWidth(BUTTON_SIZE * 0.4);
-                    iv.setFitHeight(BUTTON_SIZE * 0.4);
-                    iv.setPreserveRatio(false);
-                    btn.setGraphic(iv);
-                  });
-
-              grid.add(btn, c, r);
-            }
-          }
-          root5.getChildren().addAll(grid);
-          grid.setAlignment(Pos.CENTER);
-          scene1.setRoot(root5);
+          scene1.setRoot(root2);
+          this.playingMode = PlayingMode.VS_AI;
+          // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
+          // turn, initialShipSetup)
         });
-
-    // ---------------button_actions---------------------------------------------------------------------
-    Singleplayer_button_r1.setOnAction(e -> scene1.setRoot(root2));
-    Multiplayer_button_r1.setOnAction(e -> scene1.setRoot(root3));
+    Multiplayer_button_r1.setOnAction(
+        e -> {
+          scene1.setRoot(root3);
+          this.playingMode = PlayingMode.VS_PLAYER;
+        });
     back_button_r2.setOnAction(e -> scene1.setRoot(root1));
     back_button_r3.setOnAction(e -> scene1.setRoot(root1));
     button41e.setOnAction(e -> scene1.setRoot(root1));
@@ -417,7 +461,8 @@ public class Scenecontroller extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
-    // ---------------Stage Setup--------------------------------------------------------------
+    // ---------------Stage
+    // Setup--------------------------------------------------------------
     scene1 = new Scene(root1, 800, 600);
     scene1.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
 
@@ -443,31 +488,32 @@ public class Scenecontroller extends Application {
 // }
 
 // auslagerung in ship als funktion
-/*boolean add_ship(Ship ship) {
-    cell.setOnDragDropped(
-            ev -> {
-            // hier ev noch bedingung ob möglich von matti
-                Rectangle ship = (Rectangle) ev.getGestureSource();
-                cell.getChildren().clear();
-                cell.getChildren().add(ship);
-                ship.setStart(,this)
-                StackPane.setAlignment(ship, Pos.CENTER);
-                ev.setDropCompleted(true);
-                ev.consume();
-                System.out.println("Zelle belegt: (" + r + "," + c + ")");
-            });
-
-    battleGrid.add(cell, col, row);
-
-
-    ship.setOnDragDetected(
-            ev -> {
-                Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString("SHIP");
-                db.setContent(content);
-                ev.consume();
-            });
-    StackPane.setAlignment(ship, Pos.TOP_CENTER);
-}
+/*
+ * boolean add_ship(Ship ship) {
+ * cell.setOnDragDropped(
+ * ev -> {
+ * // hier ev noch bedingung ob möglich von matti
+ * Rectangle ship = (Rectangle) ev.getGestureSource();
+ * cell.getChildren().clear();
+ * cell.getChildren().add(ship);
+ * ship.setStart(,this)
+ * StackPane.setAlignment(ship, Pos.CENTER);
+ * ev.setDropCompleted(true);
+ * ev.consume();
+ * System.out.println("Zelle belegt: (" + r + "," + c + ")");
+ * });
+ *
+ * battleGrid.add(cell, col, row);
+ *
+ *
+ * ship.setOnDragDetected(
+ * ev -> {
+ * Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
+ * ClipboardContent content = new ClipboardContent();
+ * content.putString("SHIP");
+ * db.setContent(content);
+ * ev.consume();
+ * });
+ * StackPane.setAlignment(ship, Pos.TOP_CENTER);
+ * }
  */
