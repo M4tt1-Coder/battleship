@@ -5,7 +5,7 @@ import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.protocol.MessageBuilder;
 import java.util.concurrent.CountDownLatch;
 
-public class test_client_gameflow_scripted {
+public class TestClientGameflowScripted {
 
   private enum Phase {
     WAIT_SERVER_SHOT, // Client wartet auf server shots

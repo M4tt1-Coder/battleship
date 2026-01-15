@@ -5,7 +5,7 @@ import com.matti.battleship.socket.network.ServerConnection;
 import com.matti.battleship.socket.protocol.MessageBuilder;
 import java.util.concurrent.CountDownLatch;
 
-public class test_server_gameflow_scripted {
+public class TestServerGameflowScripted {
 
   private enum Phase {
     SERVER_SHOOTING, // Server schießt 4x
