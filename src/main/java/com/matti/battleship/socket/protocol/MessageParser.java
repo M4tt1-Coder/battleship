@@ -14,7 +14,6 @@ public class MessageParser {
       return new Message(MessageType.UNKNOWN);
     }
 
-
     String[] parts = line.trim().split("\\s+");
 
     String command = parts[0].toLowerCase();

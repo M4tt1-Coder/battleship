@@ -49,8 +49,7 @@ public class NetworkStateMachine {
         }
       }
 
-      default -> {
-      }
+      default -> {}
     }
   }
 
