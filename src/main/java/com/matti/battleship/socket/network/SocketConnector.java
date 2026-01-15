@@ -26,7 +26,6 @@ public class SocketConnector {
 
   private PairState pairState = PairState.NONE;
 
-  // 🔑 NEU: verzögerter Turnwechsel (für pass)
   private boolean pendingTurnSwitch = false;
 
   public SocketConnector(Socket socket, TurnLog log) throws IOException {
@@ -119,7 +118,6 @@ public class SocketConnector {
     log.separator();
     log.repeatTurnHeader();
 
-    // 🔑 verzögerter Turnwechsel (z. B. nach pass)
     if (pendingTurnSwitch) {
       currentTurn = other;
       pendingTurnSwitch = false;
@@ -167,7 +165,6 @@ public class SocketConnector {
         log.beginTurn(currentTurn);
       }
       case "pass" -> {
-        // pass gehört noch zum Gegner, Wechsel folgt nach Duo
         log.beginTurn(currentTurn);
         pendingTurnSwitch = true;
       }
