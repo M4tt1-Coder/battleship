@@ -135,7 +135,8 @@ public class HardAlgorithm implements Algorithm {
    *     segment.
    */
   private void markAllFieldsAroundSunkenShipAsMiss(Coordinates coordinates) {
-    // the source field needs to be marked as DocumentaryShotResult.SUNK -> else the ship hasn't
+    // the source field needs to be marked as DocumentaryShotResult.SUNK -> else the
+    // ship hasn't
     // been sunk
     if (shotResultMap[coordinates.y][coordinates.x] != DocumentaryShotResult.SUNK) {
       logger.error(
@@ -177,7 +178,8 @@ public class HardAlgorithm implements Algorithm {
    *     parts.
    */
   private void markAllFieldsOfShipAsSunk(Coordinates coordinates) {
-    // have a queue where every next found neighbor HIT field is added -> and check if there are
+    // have a queue where every next found neighbor HIT field is added -> and check
+    // if there are
     // further field of the ship
     Queue<Coordinates> queue = new PriorityQueue<>();
     queue.add(coordinates);
@@ -209,7 +211,8 @@ public class HardAlgorithm implements Algorithm {
    * @return The {@link Coordinates} object representing the position with the highest probability.
    */
   private Coordinates getNextPotentialTarget() {
-    // iterate over the heat map and find the field with to the highest likelihood for a ship to be
+    // iterate over the heat map and find the field with to the highest likelihood
+    // for a ship to be
     // on it
     Coordinates output = new Coordinates(0, 0);
     int biggestProbability = -1;
@@ -275,8 +278,10 @@ public class HardAlgorithm implements Algorithm {
         for (int j = 0; j < this.boardSize; j++) {
           DocumentaryShotResult result = this.shotResultMap[i][j];
           Coordinates coordinates = new Coordinates(i, j);
-          // after a ship was sunken mark all associated fields of the sunken ship as sunken
-          // (DocumentaryShotResult.SUNK) and the surrounded fields as DocumentaryShotResult.MISS
+          // after a ship was sunken mark all associated fields of the sunken ship as
+          // sunken
+          // (DocumentaryShotResult.SUNK) and the surrounded fields as
+          // DocumentaryShotResult.MISS
           switch (result) {
             case NOT_SET -> {
               // get the potential placements for the ship
@@ -313,7 +318,8 @@ public class HardAlgorithm implements Algorithm {
    */
   private void considerPlacementsForHeatMap(
       HashMap<Coordinates, Integer> map, Coordinates[][] placements) {
-    // validate all placements -> need to be on the board and all fields must either be a
+    // validate all placements -> need to be on the board and all fields must either
+    // be a
     // DocumentaryShotResult.HIT or NOT_SET
     for (Coordinates[] placement : placements) {
       boolean isPlacementValid = true;

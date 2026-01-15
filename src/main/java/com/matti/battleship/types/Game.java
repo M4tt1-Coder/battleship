@@ -11,15 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 // TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
-// data objects
+// data objects (Fabi)
 
-// TODO: Add a property to the 'Ship' class which holds the information about the relative path to
-// the picture of the ship depending on its length
-
-// TODO: Add a property which defines what role you play in the network connection when playing with
-// another player
-
-// TODO: Additional logic for placing ships on the field is necessary
+// TODO: Additional logic for placing ships on the field while setting up the game is necessary
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -60,13 +54,18 @@ public class Game {
   /** The difficulty level of the AI. Can be null if not set. */
   @Nullable private AIDifficulty difficulty;
 
+  /** Represents the role of the local machine in the 'PlayingMode' VS_PLAYER. */
+  @Nullable private Role role;
+
   public Game(
       PlayingMode playingMode,
       @NotNull Player player,
       @NotNull Player opponent,
       PlayerTurn turn,
-      ShipLength[] initialShipSetup) {
-    // validation method needs to be adjusted after critical changes in the logic or data structures
+      ShipLength[] initialShipSetup,
+      @Nullable Role role) {
+    // validation method needs to be adjusted after critical changes in the logic or
+    // data structures
     if (!GameUtils.validateGameSetup(player, opponent, initialShipSetup)) {
       logger.error("A bad initial data input to create a 'Game' instance!");
       throw new IllegalArgumentException("Invalid initial data for game creation!");
@@ -78,6 +77,7 @@ public class Game {
     this.whoseTurn = turn; // Default starting turn
     this.winner = Winner.NONE_YET; // when starting the game no player has won yet
     this.initialShipSetup = initialShipSetup;
+    this.role = role;
   }
 
   // ----- Methods -----
@@ -220,7 +220,8 @@ public class Game {
       case SUNK -> {
         field.markAsShotAt();
         field.setOccupied(true);
-        // set one of the fields as 'starting point' to set the ship instance -> first in the list
+        // set one of the fields as 'starting point' to set the ship instance -> first
+        // in the list
         Coordinates[] occupiedFields =
             BoardUtils.getAllCurrentOccupiedFieldsOfSunkenShip(this.opponent.board);
         // make sure the field that was shot at is in the list
@@ -265,7 +266,8 @@ public class Game {
    */
   public ShotAttemptResult shotShot(Coordinates guessed) {
     // check if a ship has been sunk after the shot
-    // in case two players on different devices are playing, you don't know about where the
+    // in case two players on different devices are playing, you don't know about
+    // where the
     // opponents ships are placed -> only when playing against AI
     if (whoseTurn == PlayerTurn.PLAYER && playingMode == PlayingMode.VS_AI) { // Player's turn
       ShotAttemptResult shotResult = opponent.board.shotAtField(guessed);
