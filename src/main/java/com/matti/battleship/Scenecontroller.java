@@ -31,8 +31,7 @@ public class Scenecontroller extends Application {
   // ----- Temorary Game -----
   private Game game;
   private PlayingMode playingMode;
-  @Nullable
-  private AIDifficulty difficulty;
+  @Nullable private AIDifficulty difficulty;
   // TODO: Create an algorithm that generates a ship setup that meets the 30%
   // percentage rule
   private ShipLength[] initialShipSetup;
@@ -56,7 +55,8 @@ public class Scenecontroller extends Application {
     Labels label_battleship_lobby_r1 = new Labels("Battleship");
     label_battleship_lobby_r1.setId("label_battleship_lobby_r1");
 
-    StackPane root1 = new StackPane(Singleplayer_button_r1, Multiplayer_button_r1, label_battleship_lobby_r1);
+    StackPane root1 =
+        new StackPane(Singleplayer_button_r1, Multiplayer_button_r1, label_battleship_lobby_r1);
     root1.setId("stack_pane_root1");
 
     // Layout root1:
@@ -78,10 +78,11 @@ public class Scenecontroller extends Application {
     // 2---------------------------------------------------------------------
     // root2
 
-    Image image_player_vs_ai = new Image(
-        getClass()
-            .getResource("/com/matti/battleship/images/player_vs_ai.jpg")
-            .toExternalForm());
+    Image image_player_vs_ai =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/player_vs_ai.jpg")
+                .toExternalForm());
     ImageViews imageview_player_vs_ai = new ImageViews(image_player_vs_ai);
 
     Buttons back_button_r2 = new Buttons();
@@ -116,18 +117,19 @@ public class Scenecontroller extends Application {
     Labels label_size_of_field_r2 = new Labels("Field Size:");
     label_size_of_field_r2.setId("label_size_of_field_r2");
 
-    StackPane root2 = new StackPane(
-        imageview_player_vs_ai,
-        back_button_r2,
-        label_settings_r2,
-        start_game_button_r2,
-        load_game_button_r2,
-        select_amount_of_boats_r2,
-        select_field_size_r2,
-        difficulty_selection_r2,
-        label_select_difficulty_r2,
-        label_amount_of_boats_r2,
-        label_size_of_field_r2);
+    StackPane root2 =
+        new StackPane(
+            imageview_player_vs_ai,
+            back_button_r2,
+            label_settings_r2,
+            start_game_button_r2,
+            load_game_button_r2,
+            select_amount_of_boats_r2,
+            select_field_size_r2,
+            difficulty_selection_r2,
+            label_select_difficulty_r2,
+            label_amount_of_boats_r2,
+            label_size_of_field_r2);
     root2.setId("stack_pane_root2");
 
     imageview_player_vs_ai.position(root2, 0.25, 0.00);
@@ -191,7 +193,8 @@ public class Scenecontroller extends Application {
     Labels label_available_servers_r3 = new Labels("Join other players");
     label_available_servers_r3.setId("label_available_servers_r3");
 
-    StackPane root3 = new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
+    StackPane root3 =
+        new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
     root3.setId("stack_pane_root3");
 
     back_button_r3.position(root3, -0.45, -0.43);
@@ -268,14 +271,16 @@ public class Scenecontroller extends Application {
           grid.setVgap(0);
           grid.setPadding(new Insets(12));
 
-          Image imgMiss = new Image(
-              getClass()
-                  .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                  .toExternalForm());
-          Image imgHit = new Image(
-              getClass()
-                  .getResource("/com/matti/battleship/images/game/tile_hit.png")
-                  .toExternalForm());
+          Image imgMiss =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                      .toExternalForm());
+          Image imgHit =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
+                      .toExternalForm());
 
           for (int r = 0; r < selected_field_size; r++) {
             for (int c = 0; c < selected_field_size; c++) {
@@ -338,7 +343,8 @@ public class Scenecontroller extends Application {
           }
 
           // save current AIDifficulty
-          String selectedDifficultyString = difficulty_selection_r2.getSelectionModel().getSelectedItem();
+          String selectedDifficultyString =
+              difficulty_selection_r2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
           // TODO: Potentially adjust / add a temporary datastructure to documente the
@@ -347,7 +353,8 @@ public class Scenecontroller extends Application {
           double BOARD_SIZE = 400;
           double cellSize = BOARD_SIZE / selected_field_size;
 
-          GridPane battleGrid = new GridPane(); // ev das global dann kann battle grid auch in anderen angezeigt
+          GridPane battleGrid =
+              new GridPane(); // ev das global dann kann battle grid auch in anderen angezeigt
           // werden
           battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
@@ -390,19 +397,21 @@ public class Scenecontroller extends Application {
             }
           }
 
-          Image ship_length3 = new Image(
-              getClass()
-                  .getResource("/com/matti/battleship/images/ships/destroyer_length2.png")
-                  .toExternalForm());
+          Image ship_length3 =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/ships/destroyer_length2.png")
+                      .toExternalForm());
           ImageViews imageview_ship_length3 = new ImageViews(ship_length3);
           imageview_ship_length3.setFitWidth(cellSize * 0.8);
           imageview_ship_length3.setFitHeight(cellSize * 0.8);
 
-          Image ship_length5 = new Image(
-              getClass()
-                  .getResource(
-                      "/com/matti/battleship/images/ships/aircraft_carrier_length4.png")
-                  .toExternalForm());
+          Image ship_length5 =
+              new Image(
+                  getClass()
+                      .getResource(
+                          "/com/matti/battleship/images/ships/aircraft_carrier_length4.png")
+                      .toExternalForm());
           ImageViews imageview_ship_length5 = new ImageViews(ship_length5);
           imageview_ship_length5.setFitWidth(cellSize * 0.8);
           imageview_ship_length5.setFitHeight(cellSize * 0.8);
@@ -448,7 +457,7 @@ public class Scenecontroller extends Application {
               .getExtensionFilters()
               .add(
                   new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg") // anpassen
-          );
+                  );
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
@@ -458,8 +467,9 @@ public class Scenecontroller extends Application {
     scene1.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
 
     primaryStage.setTitle("Battleship");
-    Image icon = new Image(
-        getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
+    Image icon =
+        new Image(
+            getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
     primaryStage.getIcons().add(icon);
     primaryStage.setScene(scene1);
     primaryStage.show();
