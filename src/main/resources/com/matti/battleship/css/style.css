@@ -103,6 +103,34 @@
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
 }
+/*----------------------------------------------------------------------------*/
+/* root 3 */
+
+#start_new_game_button_r3 {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #a9d0ff);
+    -fx-text-fill: black;
+    -fx-opacity: 0.95;
+    -fx-font-family: "Montserrat";
+    -fx-border-color: #000000;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
+}
+#start_new_game_button_r3:hover {
+    -fx-opacity: 0.6;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+#label_available_servers_r3 {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-family: "Montserrat";
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
 
 /*----------------------------------------------------------------------------*/
 #back_button {
@@ -112,8 +140,8 @@
 }
 #back_button:hover {
     -fx-opacity: 0.6;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 #end_game_button {
