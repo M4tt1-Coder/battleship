@@ -7,29 +7,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The {@code ResourceProfiler} class provides utilities for managing and
- * verifying
- * the existence of ship image resources used within the application.
- * <p>
- * It offers methods to retrieve the file path of ship images based on their
- * length
- * and ensures that all necessary resources are available at runtime by
- * attempting
- * to load them and logging any missing or inaccessible resources.
- * <p>
- * Usage:
- * 
+ * The {@code ResourceProfiler} class provides utilities for managing and verifying the existence of
+ * ship image resources used within the application.
+ *
+ * <p>It offers methods to retrieve the file path of ship images based on their length and ensures
+ * that all necessary resources are available at runtime by attempting to load them and logging any
+ * missing or inaccessible resources.
+ *
+ * <p>Usage:
+ *
  * <pre>
  * ResourceProfiler profiler = new ResourceProfiler();
  * String shipImagePath = profiler.getPictureOfShip(ShipLength.Four);
  * </pre>
- * </p>
- * 
- * <p>
- * <b>Note:</b> Resource existence is checked once upon the first request for a
- * ship image.
+ *
+ * <p><b>Note:</b> Resource existence is checked once upon the first request for a ship image.
  * Subsequent calls assume resources are available unless explicitly re-checked.
- * </p>
  */
 public class ResourceProfiler {
   private static final Logger logger = LogManager.getLogger(ResourceProfiler.class);
@@ -47,14 +40,13 @@ public class ResourceProfiler {
   private static final String Ship4PicPath = "images/ships/aircraft_carrier_length4.png";
 
   /** File path to the image of a cruiser with length 5. */
-  private static final String Ship5PicPath = "images/ships/cruiser_length5.png"; // __________________________________
+  private static final String Ship5PicPath =
+      "images/ships/cruiser_length5.png"; // __________________________________
 
   /**
-   * Returns the file path to the image corresponding to the specified ship
-   * length.
+   * Returns the file path to the image corresponding to the specified ship length.
    *
-   * @param shipLength the length of the ship, represented by the
-   *                   {@link ShipLength} enum
+   * @param shipLength the length of the ship, represented by the {@link ShipLength} enum
    * @return the file path to the ship's image
    * @throws IllegalArgumentException if the provided ship length is invalid
    */
@@ -83,8 +75,7 @@ public class ResourceProfiler {
   // ----- private methods -----
 
   /**
-   * Attempts to load a resource from the classpath given its relative path. Logs
-   * an error if the
+   * Attempts to load a resource from the classpath given its relative path. Logs an error if the
    * resource cannot be found or loaded.
    *
    * @param relPath the relative path to the resource within the classpath
@@ -100,9 +91,8 @@ public class ResourceProfiler {
   }
 
   /**
-   * Checks the availability of all ship picture resources by attempting to load
-   * each one.
-   * Logs errors for any resources that cannot be loaded.
+   * Checks the availability of all ship picture resources by attempting to load each one. Logs
+   * errors for any resources that cannot be loaded.
    */
   private void checkAllShipPictureResources() {
     // try to load all resources
