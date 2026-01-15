@@ -6,7 +6,6 @@ public class DiscoveryProtocol {
 
   private DiscoveryProtocol() {}
 
-  // "Magic" Strings, damit wir nicht auf fremde UDP-Pakete reagieren
   public static final String DISCOVER = "BS_DISCOVER_V1";
   public static final String HERE_PREFIX = "BS_HERE_V1";
 

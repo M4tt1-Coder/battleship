@@ -30,15 +30,13 @@ public class ServerDiscoveryResponder implements Runnable {
 
         String msg = DiscoveryProtocol.str(packet.getData(), packet.getLength());
         if (!DiscoveryProtocol.DISCOVER.equals(msg)) {
-          continue; // fremde Nachricht ignorieren
+          continue;
         }
 
-        // Wenn busy: NICHT antworten -> verschwindet aus der Liste
         if (busy.get()) {
           continue;
         }
 
-        // Unicast-Antwort direkt an den Client, der gefragt hat
         InetAddress clientAddr = packet.getAddress();
         int clientPort = packet.getPort();
 

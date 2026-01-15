@@ -17,13 +17,13 @@ public class ClientDiscoveryScanner {
     try (DatagramSocket socket = new DatagramSocket()) {
       socket.setBroadcast(true);
 
-      // 1) DISCOVER broadcasten
+      // DISCOVER broadcasten
       byte[] data = DiscoveryProtocol.bytes(DiscoveryProtocol.DISCOVER);
       DatagramPacket packet =
           new DatagramPacket(data, data.length, InetAddress.getByName("255.255.255.255"), port);
       socket.send(packet);
 
-      // 2) Antworten einsammeln
+      // Antworten einsammeln
       long end = System.currentTimeMillis() + timeoutMillis;
       socket.setSoTimeout(Math.max(50, timeoutMillis / 5));
 
@@ -53,12 +53,10 @@ public class ClientDiscoveryScanner {
           found.put(host, new DiscoveredServer(host, tcpPort, name, System.currentTimeMillis()));
 
         } catch (SocketTimeoutException ignored) {
-          // nochmal versuchen bis Zeit rum ist
         }
       }
     }
 
-    // sortiert (optional): alphabetisch nach Host
     List<DiscoveredServer> list = new ArrayList<>(found.values());
     list.sort(Comparator.comparing(DiscoveredServer::host));
     return list;

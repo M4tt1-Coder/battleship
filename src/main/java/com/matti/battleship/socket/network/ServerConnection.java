@@ -11,7 +11,6 @@ public class ServerConnection {
 
   private SocketConnector connector;
 
-  // Busy-Flag: true sobald ein Client wirklich verbunden ist
   private final AtomicBoolean busy = new AtomicBoolean(false);
 
   // Discovery nebenher laufen lassen
@@ -20,22 +19,19 @@ public class ServerConnection {
   public void startServer(MessageListener listener) throws Exception {
     int port = EnvConfig.getPort();
 
-    // 1) Discovery starten (parallel)
     discovery = new ServerDiscoveryResponder(port, busy, "Battleship-Server");
     Thread discoveryThread = new Thread(discovery, "Discovery-Responder");
     discoveryThread.setDaemon(true);
     discoveryThread.start();
 
-    // 2) TCP-Server normal starten (blockierend)
     ServerSocket serverSocket = new ServerSocket(port);
     System.out.println("[SERVER] wartet auf Verbindung... (TCP " + port + ")");
 
     Socket client = serverSocket.accept();
-    busy.set(true); // ab jetzt ist Server belegt -> verschwindet aus Discovery-Liste
+    busy.set(true);
 
     System.out.println("[SERVER] Client verbunden: " + client.getInetAddress());
 
-    // Listener wrappen, damit busy zurückgesetzt wird, wenn Verbindung endet
     MessageListener wrapped =
         new MessageListener() {
           @Override

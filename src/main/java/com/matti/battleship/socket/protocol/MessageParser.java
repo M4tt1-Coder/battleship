@@ -10,23 +10,18 @@ public class MessageParser {
    */
   public static Message parse(String line) {
 
-    // Sicherheitscheck (sollte eigentlich nie passieren)
     if (line == null || line.isBlank()) {
       return new Message(MessageType.UNKNOWN);
     }
 
-    // Zerlege die Zeile an Leerzeichen
-    // Beispiel: "shot 3 4" → ["shot", "3", "4"]
+
     String[] parts = line.trim().split("\\s+");
 
-    // Erstes Wort ist immer das Befehlswort
     String command = parts[0].toLowerCase();
 
-    // Rest sind die Parameter
     String[] args = new String[parts.length - 1];
     System.arraycopy(parts, 1, args, 0, args.length);
 
-    // Befehlswort auf MessageType abbilden
     return switch (command) {
       case "size" -> new Message(MessageType.SIZE, args);
       case "ships" -> new Message(MessageType.SHIPS, args);

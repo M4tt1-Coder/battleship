@@ -16,10 +16,6 @@ public class NetworkStateMachine {
     return state;
   }
 
-  /**
-   * Wird aufgerufen, wenn eine Nachricht empfangen wird. Prüft, ob sie im aktuellen Zustand erlaubt
-   * ist und wechselt ggf. den Zustand.
-   */
   public void onMessageReceived(Message msg) {
 
     switch (state) {
@@ -54,12 +50,10 @@ public class NetworkStateMachine {
       }
 
       default -> {
-        // GAME_OVER oder INIT → nichts tun
       }
     }
   }
 
-  /** Prüft, ob eine Nachricht gesendet werden darf */
   public boolean canSend(MessageType type) {
 
     return switch (state) {
@@ -73,7 +67,6 @@ public class NetworkStateMachine {
     };
   }
 
-  /** Muss nach dem Senden aufgerufen werden, um den Zustand korrekt zu wechseln */
   public void onMessageSent(MessageType type) {
 
     if (state == GameState.MY_TURN && type == MessageType.SHOT) {
