@@ -5,17 +5,14 @@ import java.io.*;
 import java.net.Socket;
 
 /**
- * Handles low-level TCP socket communication between client and server.
- * Responsibilities:
- * - Send messages over the socket (line-based protocol)
- * - Receive messages in a background thread
- * - Forward received messages to a {@link MessageListener}
- * - Maintain turn information (SERVER/CLIENT) for logging and debugging
- * - Print separators after complete send/receive pairs (pair/duo tracking)
+ * Handles low-level TCP socket communication between client and server. Responsibilities: - Send
+ * messages over the socket (line-based protocol) - Receive messages in a background thread -
+ * Forward received messages to a {@link MessageListener} - Maintain turn information
+ * (SERVER/CLIENT) for logging and debugging - Print separators after complete send/receive pairs
+ * (pair/duo tracking)
  *
  * @author WoFabian
  */
-
 public class SocketConnector {
 
   /** Underlying TCP socket. */
@@ -45,20 +42,21 @@ public class SocketConnector {
   // ===== Duo-Tracking =====
 
   /**
-   * Pair tracking state.
-   * Used to group a send and a receive into one "communication unit" so logs stay readable.
+   * Pair tracking state. Used to group a send and a receive into one "communication unit" so logs
+   * stay readable.
    */
   private enum PairState {
     NONE,
     SAW_SENT,
     SAW_RECEIVED
   }
+
   /** Current pair state. */
   private PairState pairState = PairState.NONE;
 
   /**
-   * Used for delayed turn switch after a "pass".
-   * The turn switch is applied only after the current pair has been completed.
+   * Used for delayed turn switch after a "pass". The turn switch is applied only after the current
+   * pair has been completed.
    */
   private boolean pendingTurnSwitch = false;
 
@@ -87,8 +85,8 @@ public class SocketConnector {
   }
 
   /**
-   * Registers a listener that will be notified when messages are received
-   * or when the connection closes due to an error.
+   * Registers a listener that will be notified when messages are received or when the connection
+   * closes due to an error.
    *
    * @param listener callback receiver
    * @author WoFabian
@@ -100,10 +98,9 @@ public class SocketConnector {
   /* ===================== SEND ===================== */
 
   /**
-   * Sends a message over the socket.
-   * The message is written as a single line and flushed immediately.
-   * Before sending, this method updates the internal turn state (for logging)
-   * and updates pair tracking to keep logs structured.
+   * Sends a message over the socket. The message is written as a single line and flushed
+   * immediately. Before sending, this method updates the internal turn state (for logging) and
+   * updates pair tracking to keep logs structured.
    *
    * @param msg message to send (must be a single-line protocol command)
    * @throws IOException if writing to the socket fails
@@ -127,12 +124,9 @@ public class SocketConnector {
   /* ===================== RECEIVE ===================== */
 
   /**
-   * Starts a background thread which continuously listens for incoming messages.
-   * For every received line:
-   * - turn logic is updated (for readable logging)
-   * - the message is logged
-   * - pair tracking is updated
-   * - the message is forwarded to the {@link MessageListener}
+   * Starts a background thread which continuously listens for incoming messages. For every received
+   * line: - turn logic is updated (for readable logging) - the message is logged - pair tracking is
+   * updated - the message is forwarded to the {@link MessageListener}
    *
    * @author WoFabian
    */
@@ -181,8 +175,8 @@ public class SocketConnector {
   /* ===================== PAIR LOGIC ===================== */
 
   /**
-   * Updates pair tracking after a send event.
-   * If the last event was a receive, the pair is complete.
+   * Updates pair tracking after a send event. If the last event was a receive, the pair is
+   * complete.
    *
    * @author WoFabian
    */
@@ -195,8 +189,8 @@ public class SocketConnector {
   }
 
   /**
-   * Updates pair tracking after a receive event.
-   * If the last event was a send, the pair is complete.
+   * Updates pair tracking after a receive event. If the last event was a send, the pair is
+   * complete.
    *
    * @author WoFabian
    */
@@ -209,8 +203,8 @@ public class SocketConnector {
   }
 
   /**
-   * Finishes a full send/receive pair and prints separators / headers.
-   * Also applies delayed turn switching (used for "pass") after the pair is complete.
+   * Finishes a full send/receive pair and prints separators / headers. Also applies delayed turn
+   * switching (used for "pass") after the pair is complete.
    *
    * @author WoFabian
    */
@@ -312,8 +306,7 @@ public class SocketConnector {
   }
 
   /**
-   * Parses the integer argument from an "answer" message.
-   * Expected format: "answer <number>"
+   * Parses the integer argument from an "answer" message. Expected format: "answer <number>"
    *
    * @param msg full message line
    * @return parsed answer value, or -1 if parsing fails

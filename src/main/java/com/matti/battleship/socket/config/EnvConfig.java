@@ -16,9 +16,8 @@ public class EnvConfig {
   }
 
   /**
-   *
-   * @return DEFAULT_Port -> gives the private static final int DEFAULT_PORT = 50000,
-   *         if it couldn't find the variable in .env
+   * @return DEFAULT_Port -> gives the private static final int DEFAULT_PORT = 50000, if it couldn't
+   *     find the variable in .env
    */
   public static int getPort() {
     String p = props.getProperty("PORT");
