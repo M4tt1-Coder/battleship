@@ -3,14 +3,11 @@ package com.matti.battleship.socket.discovery;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Defines the UDP discovery protocol used to find Battleship servers in the local network.
- * The protocol is intentionally simple and text-based:
- * - Clients broadcast a discovery request using {@link #DISCOVER}
- * - Free servers answer with a response starting with {@link #HERE_PREFIX}
+ * Defines the UDP discovery protocol used to find Battleship servers in the local network. The
+ * protocol is intentionally simple and text-based: - Clients broadcast a discovery request using
+ * {@link #DISCOVER} - Free servers answer with a response starting with {@link #HERE_PREFIX}
  *
- * Example:
- * Client sends: "BS_DISCOVER_V1"
- * Server replies: "BS_HERE_V1 <tcpPort> <serverName...>"
+ * <p>Example: Client sends: "BS_DISCOVER_V1" Server replies: "BS_HERE_V1 <tcpPort> <serverName...>"
  * This class also provides helper methods to convert between String and byte[] using UTF-8.
  *
  * @author WoFabian
@@ -43,9 +40,8 @@ public class DiscoveryProtocol {
   }
 
   /**
-   * Converts a portion of a byte array into a UTF-8 string and trims it.
-   * This is used for reading DatagramPacket content where the buffer is larger than the actual
-   * payload length.
+   * Converts a portion of a byte array into a UTF-8 string and trims it. This is used for reading
+   * DatagramPacket content where the buffer is larger than the actual payload length.
    *
    * @param buf byte buffer (e.g. from DatagramPacket.getData())
    * @param len actual message length (e.g. from DatagramPacket.getLength())
