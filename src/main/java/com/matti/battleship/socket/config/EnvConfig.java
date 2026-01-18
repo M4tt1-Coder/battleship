@@ -3,13 +3,12 @@ package com.matti.battleship.socket.config;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-
 /**
- * Provides environment / configuration values for the socket module.
- * The main purpose of this class is to provide a single source of truth for the port used
- * by both the TCP connection (client/server) and the UDP discovery (if enabled).
- * Configuration is read from a local ".env" file (project root / working directory).
- * If the file or the PORT entry is missing (or invalid), the default port is used.
+ * Provides environment / configuration values for the socket module. The main purpose of this class
+ * is to provide a single source of truth for the port used by both the TCP connection
+ * (client/server) and the UDP discovery (if enabled). Configuration is read from a local ".env"
+ * file (project root / working directory). If the file or the PORT entry is missing (or invalid),
+ * the default port is used.
  *
  * @author WoFabian
  */
@@ -40,9 +39,9 @@ public class EnvConfig {
   }
 
   /**
-   * Returns the port configured via the ".env" file.
-   * The method looks for a property named "PORT". If it is not set or cannot be parsed as an integer,
-   * the {@link #DEFAULT_PORT} value is returned.
+   * Returns the port configured via the ".env" file. The method looks for a property named "PORT".
+   * If it is not set or cannot be parsed as an integer, the {@link #DEFAULT_PORT} value is
+   * returned.
    *
    * @return the configured port number or {@link #DEFAULT_PORT} if not available/invalid
    * @author WoFabian
