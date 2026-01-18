@@ -22,6 +22,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
 
+// option + shift + f -> formatieren
 public class Scenecontroller extends Application {
 
   private Scene scene1;
@@ -395,19 +396,58 @@ public class Scenecontroller extends Application {
 
               cell.setOnDragDropped(
                   ev -> {
-                    // TODO: Remove ship from old corresponding field and add it to the new field
-                    // if (!this.board.addShip()) {
-                    // set ship temporary red -> show user he / she can t place ship here
-                    // }
+                    if (!ev.getDragboard().hasString()) return;
 
-                    // Prüfung ob gültig
-                    Rectangle ship = (Rectangle) ev.getGestureSource();
-                    cell.getChildren().clear();
-                    cell.getChildren().add(ship);
-                    StackPane.setAlignment(ship, Pos.CENTER);
+                    Rectangle shipNode = (Rectangle) ev.getGestureSource();
+
+                    // aus altem Parent entfernen
+                    if (shipNode.getParent() != null) {
+                      ((javafx.scene.layout.Pane) shipNode.getParent())
+                          .getChildren()
+                          .remove(shipNode);
+                    }
+
+                    // int startCol;
+                    /*switch(shipNode.getlength()) {
+                        case 2:
+                            startCol = Math.max(0, c - 1);
+                            GridPane.setColumnSpan(shipNode, 2);
+                            break;
+                        case 3:
+                            startCol = Math.max(0, c - 2);
+                             GridPane.setColumnSpan(shipNode, 3);
+                            break;
+                        case 4:
+                            startCol = Math.max(0, c - 3);
+                            GridPane.setColumnSpan(shipNode, 4);
+                            break;
+                        case 5:
+                            startCol = Math.max(0, c - 4);
+                            GridPane.setColumnSpan(shipNode, 5);
+                            break;
+                        default:
+                            // throw exception
+                    }
+                     */
+
+                    int startCol = Math.max(0, c - 2);
+                    int row = r;
+
+                    // Schiff direkt ins Grid legen und spannen
+                    battleGrid.getChildren().add(shipNode);
+                    GridPane.setRowIndex(shipNode, row);
+                    GridPane.setColumnIndex(shipNode, startCol);
+                    GridPane.setRowSpan(shipNode, 1);
+                    GridPane.setColumnSpan(shipNode, 3);
+
+                    GridPane.setHalignment(shipNode, javafx.geometry.HPos.CENTER);
+                    GridPane.setValignment(shipNode, javafx.geometry.VPos.CENTER);
+
                     ev.setDropCompleted(true);
                     ev.consume();
-                    System.out.println("Zelle belegt: (" + r + "," + c + ")");
+
+                    System.out.println(
+                        "Ship spanning: (" + row + "," + startCol + ") + (" + row + "," + c + ")");
                   });
 
               battleGrid.add(cell, c, r);
@@ -433,12 +473,64 @@ public class Scenecontroller extends Application {
           imageview_ship_length5.setFitWidth(cellSize * 0.8);
           imageview_ship_length5.setFitHeight(cellSize * 0.8);
 
-          Rectangle ship = new Rectangle(cellSize * 0.8, cellSize * 0.8, Color.DARKGRAY);
+          /*
+           Rectangle ship;
+
+          switch (length) {
+              case 2:
+                  ship = new Rectangle(cellSize * 2, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              case 3:
+                  ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              case 4:
+                  ship = new Rectangle(cellSize * 4, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              case 5:
+                  ship = new Rectangle(cellSize * 5, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              default:
+                  throw new IllegalArgumentException("Invalid ship length");
+          }
+                       */
+
+          /*
+           Ship ship = new Ship();
+
+          switch (ship.getLength()) {
+              case 2:
+                  Image ship_length2 =
+                          new Image(
+                                  getClass()
+                                          .getResource(ship.getPicPath())
+                                          .toExternalForm());
+                  ImageViews imageview_ship_length2 = new ImageViews(ship_length3);
+                  imageview_ship_length2.setFitWidth(cellSize * 0.8);
+                  imageview_ship_length2.setFitHeight(cellSize * 0.8);
+                  break;
+              case 3:
+                  ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              case 4:
+                  ship = new Rectangle(cellSize * 4, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              case 5:
+                  ship = new Rectangle(cellSize * 5, cellSize * 0.8, Color.DARKGRAY);
+                  break;
+              default:
+                  throw new IllegalArgumentException("Invalid ship length");
+          }
+                       */
+
+          Rectangle ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
+          ship.setArcWidth(10);
+          ship.setArcHeight(10);
+
           ship.setOnDragDetected(
               ev -> {
                 Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
-                content.putString("SHIP");
+                content.putString("SHIP_LEN2_LEFT");
                 db.setContent(content);
                 ev.consume();
               });
