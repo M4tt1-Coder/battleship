@@ -22,13 +22,13 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
 
-public class Scenecontroller extends Application {
+public class BattleShipApp extends Application {
 
   private Scene scene1;
   int selected_field_size = 10;
   int selected_amount_of_boats = 5;
 
-  // ----- Temorary Game -----
+  // ----- Temporary Game -----
   private Game game;
   private PlayingMode playingMode;
   @Nullable private AIDifficulty difficulty;

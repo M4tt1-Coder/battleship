@@ -9,7 +9,6 @@ public class Starter {
   /** Entrypoint for the whole application! */
   public static void main(String[] args) {
     logger.info("Starting Game ... ");
-    Scenecontroller.main(args);
-    ;
+    BattleShipApp.main(args);
   }
 }

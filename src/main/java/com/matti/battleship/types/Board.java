@@ -107,7 +107,9 @@ public class Board {
 
   // TODO: Add rotate ship method
   // TODO: Add remove ship method
-
+  
+  
+  
   /**
    * Since the 'Size' property of can only be set during initialization it isn't mutated. The method
    * clears the 'board' and sets the 'number_of_ships' to null.
