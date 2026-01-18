@@ -58,14 +58,16 @@ public class FileWriterService {
    * @return {@code true} if the game state was successfully saved; {@code false} otherwise.
    */
   public static boolean safeGameStateToFile(Game game, @Nullable String fileName) {
-    // use the hash code of an object as file name when the game is initial saved locally
+    // use the hash code of an object as file name when the game is initial saved
+    // locally
     // safe file directly in the directory where .jar file is executed
     String _fileName =
         Objects.requireNonNullElseGet(fileName, () -> Integer.toString(game.hashCode()));
     _fileName = _fileName.replace("-", "_");
     _fileName = _fileName + ".txt";
 
-    // get path to root directory where .jar placed -> uses the app entry point (Starter)
+    // get path to root directory where .jar placed -> uses the app entry point
+    // (Starter)
     String jarFilePath = getJarDirectory(Starter.class);
 
     if (jarFilePath == null) {
@@ -181,7 +183,8 @@ public class FileWriterService {
    */
   private static void generateElementPlayerDataString(
       Player player, boolean isOpponent, StringBuilder sb) {
-    // decide heading line based on the player is the player or the opponent in the game -> the rest
+    // decide heading line based on the player is the player or the opponent in the
+    // game -> the rest
     // is the same referring to the data
 
     String lineSeparator = System.lineSeparator();

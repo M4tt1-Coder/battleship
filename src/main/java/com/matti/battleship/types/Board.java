@@ -1,5 +1,6 @@
 package com.matti.battleship.types;
 
+import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.ShipUtils;
@@ -22,7 +23,7 @@ public class Board {
    *
    * <p>Here 30% of the fields need to occupied by a ship.
    */
-  private static final float shareOfShipsOnTheBoard = 0.3f;
+  public static final float shareOfShipsOnTheBoard = 0.3f;
 
   /** Size of the board instance. Maximum size is 15x15 fields. */
   private final int size;
@@ -79,7 +80,8 @@ public class Board {
    * @return {@code true} if the ship was successfully added; {@code false} otherwise
    */
   public boolean addShip(Ship ship) {
-    // when the maximum capacity of ships is reached it automatically shouldn't be possible to add a
+    // when the maximum capacity of ships is reached it automatically shouldn't be
+    // possible to add a
     // ship anymore
     if (isTheMaxCapacityForShipsReached()) return false;
     var canBePlaced = BoardUtils.canShipBePlacedOnBoard(this, ship);
@@ -101,6 +103,69 @@ public class Board {
     }
 
     logger.debug("Added ship to the board!");
+    return true;
+  }
+
+  /**
+   * Attempts to rotate the specified ship to a new direction on the board.
+   *
+   * <p>The method first unmarks the current fields occupied by the ship, then updates the ship's
+   * direction, and checks if the ship can be placed at its current location with the new
+   * orientation. If placement is valid, the ship's fields are updated accordingly; otherwise, the
+   * ship's direction and occupied fields are reverted to their original state.
+   *
+   * @param shipCoordinates the coordinates of the ship's current position on the board
+   * @param newDirection the desired new direction to rotate the ship
+   * @return {@code true} if the rotation was successful; {@code false} otherwise
+   */
+  public boolean rotateShip(Coordinates shipCoordinates, Direction newDirection) {
+    Field field = this.getFieldOnBoardByCoordinates(shipCoordinates);
+    if (field.getShip() == null) {
+      logger.error("Ship couldn't be found at {}! Can't rotate it!", shipCoordinates.toString());
+      return false;
+    }
+    Ship ship = field.getShip();
+    Direction oldDirection = ship.getDirection();
+    // reset all fields of the ship that are occupied by it
+    unmarkAllFieldsAsOccupied(ship);
+    // update direction of the ship
+    ship.setDirection(newDirection);
+    field.setShip(null);
+    // check if the ship can be placed there
+    if (BoardUtils.canShipBePlacedOnBoard(this, ship)) {
+      // mark the new fields
+      field.setShip(ship);
+      markFieldsOfShipAsOccupied(ship);
+      return true;
+    } else {
+      ship.setDirection(oldDirection);
+      field.setShip(ship);
+      markFieldsOfShipAsOccupied(ship);
+      // reset to the old placement if the new one is invalid
+      return false;
+    }
+  }
+
+  /**
+   * Removes the ship located at the specified coordinates from the board.
+   *
+   * <p>The method unmarks all fields occupied by the ship and clears the ship reference from the
+   * specified field. If no ship is found at the given coordinates, it logs an error and returns
+   * {@code false}.
+   *
+   * @param shipCoordinates the coordinates where the ship is located
+   * @return {@code true} if the ship was successfully removed; {@code false} if no ship was found
+   *     at the specified location
+   */
+  public boolean removeShip(Coordinates shipCoordinates) {
+    Field field = this.getFieldOnBoardByCoordinates(shipCoordinates);
+    if (field.getShip() == null) {
+      logger.error("Ship couldn't be found at {}! Can't remove it!", shipCoordinates.toString());
+      return false;
+    }
+    Ship ship = field.getShip();
+    unmarkAllFieldsAsOccupied(ship);
+    field.setShip(null);
     return true;
   }
 
@@ -254,17 +319,6 @@ public class Board {
   }
 
   /**
-   * Calculates the number of ships needed to exactly occupy the specified share of the board.
-   *
-   * @return the number of ships required.
-   */
-  public int getNumberForExactNumberOfMandatoryOccupiedFields() {
-    int totalCells = this.size * this.size;
-    double requiredShips = totalCells / shareOfShipsOnTheBoard;
-    return (int) Math.ceil(requiredShips);
-  }
-
-  /**
    * Counts the total number of fields on the board that are currently occupied.
    *
    * <p>Iterates through each field in the 2D board array and increments a counter for every field
@@ -300,6 +354,24 @@ public class Board {
   }
 
   // ----- Private Methods -----
+
+  /**
+   * Resets the occupation status of all fields occupied by the specified ship.
+   *
+   * <p>This method retrieves all the fields associated with the given ship and sets their occupied
+   * status to {@code false}, effectively unmarking them as occupied on the board.
+   *
+   * @param ship the {@link Ship} object whose occupied fields are to be unmarked
+   */
+  private void unmarkAllFieldsAsOccupied(Ship ship) {
+    var fields = ShipUtils.getFieldsOfShip(this, ship);
+    for (var c : fields) {
+      var field = this.getFieldOnBoardByCoordinates(c);
+      if (field != null) {
+        field.setOccupied(false);
+      }
+    }
+  }
 
   /**
    * Marks all fields of a ship as occupied on the board.
@@ -347,7 +419,8 @@ public class Board {
    * @return true if the maximum capacity for ships has been reached or exceeded; false otherwise.
    */
   private boolean isTheMaxCapacityForShipsReached() {
-    int numberOfMandatoryOccupiedFields = getNumberForExactNumberOfMandatoryOccupiedFields();
+    int numberOfMandatoryOccupiedFields =
+        BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(this.size);
     int numberOfOccupiedFields = getNumberOfOccupiedFields();
     // count the occupied fields on the field
     return numberOfOccupiedFields >= numberOfMandatoryOccupiedFields;

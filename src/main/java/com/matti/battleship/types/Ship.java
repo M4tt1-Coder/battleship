@@ -31,15 +31,34 @@ public class Ship {
   /** How long a ship can be! Either 2, 3, 4 or 5. */
   private final ShipLength length;
 
-  public Ship(Coordinates start, Direction direction, ShipLength length) {
+  /** The file path to the picture or image associated with this object. */
+  private final String picPath;
+
+  public Ship(Coordinates start, Direction direction, ShipLength length, String picPath) {
     this.start = start;
     this.direction = direction;
     this.length = length;
     this.id = UUID.randomUUID();
     this.hasSunk = false;
+    // path to the ship picture (png, jpg, etc. ...)
+    // -> can't be empty or don't lead to an existing file (checked before the
+    // initialisation of the Ship object)
+    if (picPath.isEmpty()) {
+      throw new IllegalArgumentException("The path to a ship picture can't be empty!");
+    }
+    this.picPath = picPath;
   }
 
   // ----- Methods -----
+
+  /**
+   * Returns the file path to the picture corresponding with the ship and its length.
+   *
+   * @return Picture path as a STRING
+   */
+  public String getPicPath() {
+    return this.picPath;
+  }
 
   /**
    * Retrieves the unique identifier of a ship.

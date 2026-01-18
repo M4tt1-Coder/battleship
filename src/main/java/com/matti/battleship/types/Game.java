@@ -1,5 +1,6 @@
 package com.matti.battleship.types;
 
+import com.matti.battleship.IO.ResourceProfiler;
 import com.matti.battleship.enums.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
@@ -10,16 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Add feature to load a game from a file -> validate syntax along the way and generate the
-// data objects
-
-// TODO: Add a property to the 'Ship' class which holds the information about the relative path to
-// the picture of the ship depending on its length
-
-// TODO: Add a property which defines what role you play in the network connection when playing with
-// another player
-
-// TODO: Additional logic for placing ships on the field is necessary
+// TODO: Add algorithm for VS_AI playing mode that tries to place ships randomly
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -66,7 +58,8 @@ public class Game {
       @NotNull Player opponent,
       PlayerTurn turn,
       ShipLength[] initialShipSetup) {
-    // validation method needs to be adjusted after critical changes in the logic or data structures
+    // validation method needs to be adjusted after critical changes in the logic or
+    // data structures
     if (!GameUtils.validateGameSetup(player, opponent, initialShipSetup)) {
       logger.error("A bad initial data input to create a 'Game' instance!");
       throw new IllegalArgumentException("Invalid initial data for game creation!");
@@ -220,7 +213,8 @@ public class Game {
       case SUNK -> {
         field.markAsShotAt();
         field.setOccupied(true);
-        // set one of the fields as 'starting point' to set the ship instance -> first in the list
+        // set one of the fields as 'starting point' to set the ship instance -> first
+        // in the list
         Coordinates[] occupiedFields =
             BoardUtils.getAllCurrentOccupiedFieldsOfSunkenShip(this.opponent.board);
         // make sure the field that was shot at is in the list
@@ -233,11 +227,10 @@ public class Game {
         // determine in which direction the ship is pointing to
         Direction shipDirection = ShipUtils.determineShipDirection(occupiedFields);
         // add ship to the field
+        ResourceProfiler prof = new ResourceProfiler();
+        ShipLength len = ShipUtils.shipLengthFromInt(occupiedFields.length);
         field.setShip(
-            new Ship(
-                field.getCoordinates(),
-                shipDirection,
-                ShipUtils.shipLengthFromInt(occupiedFields.length)));
+            new Ship(field.getCoordinates(), shipDirection, len, prof.getPictureOfShip(len)));
         this.opponent.board.numberOfShips++;
         if (!this.opponent.board.checkIfShipWasSunk()) {
           logger.error("No ship was marked sunk after one should have been!");
@@ -265,7 +258,8 @@ public class Game {
    */
   public ShotAttemptResult shotShot(Coordinates guessed) {
     // check if a ship has been sunk after the shot
-    // in case two players on different devices are playing, you don't know about where the
+    // in case two players on different devices are playing, you don't know about
+    // where the
     // opponents ships are placed -> only when playing against AI
     if (whoseTurn == PlayerTurn.PLAYER && playingMode == PlayingMode.VS_AI) { // Player's turn
       ShotAttemptResult shotResult = opponent.board.shotAtField(guessed);
