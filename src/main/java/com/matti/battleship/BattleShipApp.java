@@ -4,6 +4,7 @@ import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
+import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
 import java.io.File;
 import javafx.application.Application;
