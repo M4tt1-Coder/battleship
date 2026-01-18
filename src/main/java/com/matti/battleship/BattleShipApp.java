@@ -4,6 +4,7 @@ import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
+import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
 import java.io.File;
 import javafx.application.Application;
@@ -26,13 +27,12 @@ public class BattleShipApp extends Application {
 
   private Scene scene1;
   int selected_field_size = 10;
-  int selected_amount_of_boats = 5;
 
   // ----- Temporary Game -----
   private Game game;
   private PlayingMode playingMode;
   @Nullable private AIDifficulty difficulty;
-  // TODO: Create an algorithm that generates a ship setup that meets the 30%
+
   // percentage rule
   private ShipLength[] initialShipSetup;
 
@@ -41,7 +41,6 @@ public class BattleShipApp extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-
     // ---------------root 1
     // ---------------------------------------------------------------------
     // root1
@@ -353,25 +352,26 @@ public class BattleShipApp extends Application {
           // prüfen ob Eingabe über tf22 + 21
           if (!select_field_size_r2.getText().isEmpty()) {
             try {
-              selected_field_size = Integer.parseInt(select_field_size_r2.getText());
+              this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
+
             } catch (NumberFormatException ex) {
               System.out.println("Ungültige Feldgröße, Standardwert 10");
             }
           }
-
+          // prepare ship setup for ship placement
+          this.initialShipSetup =
+              BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
           // save current AIDifficulty
           String selectedDifficultyString =
               difficulty_selection_r2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
-          // TODO: Potentially adjust / add a temporary datastructure to documente the
-          // ship selection
           this.board = new Board(selected_field_size);
           double BOARD_SIZE = 400;
           double cellSize = BOARD_SIZE / selected_field_size;
 
-          GridPane battleGrid =
-              new GridPane(); // ev das global dann kann battle grid auch in anderen angezeigt
+          // ev das global dann kann battle grid auch in anderen angezeigt
+          GridPane battleGrid = new GridPane();
           // werden
           battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
