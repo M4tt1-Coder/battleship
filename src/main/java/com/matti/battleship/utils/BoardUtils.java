@@ -168,7 +168,8 @@ public class BoardUtils {
 
     while (numMandatoryFields > 0) {
       for (ShipLength length : ShipLength.values()) {
-        if (numMandatoryFields - length.getValue() >= 0) {
+        if (numMandatoryFields - length.getValue() >= 0
+            && numMandatoryFields - length.getValue() != 1) {
           initialShipSetup.add(length);
           numMandatoryFields -= length.getValue();
         }
@@ -185,7 +186,7 @@ public class BoardUtils {
    */
   public static int getNumberForExactNumberOfMandatoryOccupiedFields(int boardSize) {
     int totalCells = boardSize * boardSize;
-    double requiredShips = totalCells / Board.shareOfShipsOnTheBoard;
+    double requiredShips = totalCells * Board.shareOfShipsOnTheBoard;
     return (int) Math.ceil(requiredShips);
   }
 
