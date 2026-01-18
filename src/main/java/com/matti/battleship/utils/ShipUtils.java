@@ -57,7 +57,8 @@ public class ShipUtils {
   private static Coordinates[] calcFieldsOfShip(
       Coordinates shipCoordinates, Direction direction, int length) {
     Coordinates[] output = new Coordinates[length];
-    for (int i = 0; i < length; i++) {
+    output[0] = shipCoordinates;
+    for (int i = 0; i < length - 1; i++) {
       switch (direction) {
         case UP:
           output[i] = new Coordinates(shipCoordinates.x, shipCoordinates.y - 1);

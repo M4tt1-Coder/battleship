@@ -1,5 +1,6 @@
 package com.matti.battleship.utils;
 
+import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Ship;
@@ -146,6 +147,45 @@ public class BoardUtils {
     int Y = rand.nextInt(boardSize);
     // Create a Coordinates object for the generated point
     return new Coordinates(X, Y);
+  }
+
+  /**
+   * Generates a setup of ships for placement on the board based on the board size.
+   *
+   * <p>The method calculates the number of mandatory occupied fields based on the board size, then
+   * creates a list of ships by selecting an equal number of each ship size (represented by {@link
+   * ShipLength}). The selection continues until the total number of occupied fields matches the
+   * required number.
+   *
+   * @param boardSize the size of the board (e.g., length of one side)
+   * @return an array of {@link ShipLength} representing the initial ship setup for placement
+   */
+  public static ShipLength[] generateShipSetupForPlacement(int boardSize) {
+    int numMandatoryFields = getNumberForExactNumberOfMandatoryOccupiedFields(boardSize);
+
+    ArrayList<ShipLength> initialShipSetup = new ArrayList<ShipLength>();
+    // try to select an equal number of each ship size
+    while (numMandatoryFields > 0) {
+      for (ShipLength length : ShipLength.values()) {
+        if (numMandatoryFields - length.getValue() >= 0) {
+          initialShipSetup.add(length);
+          numMandatoryFields -= length.getValue();
+        }
+      }
+    }
+
+    return initialShipSetup.toArray(new ShipLength[0]);
+  }
+
+  /**
+   * Calculates the number of ships needed to exactly occupy the specified share of the board.
+   *
+   * @return the number of ships required.
+   */
+  public static int getNumberForExactNumberOfMandatoryOccupiedFields(int boardSize) {
+    int totalCells = boardSize * boardSize;
+    double requiredShips = totalCells / Board.shareOfShipsOnTheBoard;
+    return (int) Math.ceil(requiredShips);
   }
 
   // ----- private methods ------

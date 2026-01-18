@@ -11,8 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Additional logic for placing ships on the field while setting up the game is necessary
-
 // TODO: Add algorithm for VS_AI playing mode that tries to place ships randomly
 
 /**
