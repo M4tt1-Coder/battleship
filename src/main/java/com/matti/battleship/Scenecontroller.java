@@ -28,7 +28,6 @@ public class Scenecontroller extends Application {
   int selected_field_size = 10;
   int selected_amount_of_boats = 5;
 
-
   // ----- Temorary Game -----
   private Game game;
   private PlayingMode playingMode;
@@ -194,18 +193,20 @@ public class Scenecontroller extends Application {
     label_available_servers_r3.setAlignment(Pos.TOP_CENTER);
 
     // ---------------root 4
-      // ---------------------------------------------------------------------
+    // ---------------------------------------------------------------------
     // root4
     Buttons end_game_button_r4 = new Buttons(); // ändern
-      end_game_button_r4.setId("end_game_button");
+    end_game_button_r4.setId("end_game_button");
 
-    Buttons start_game_button_r4  = new Buttons("Start");
+    Buttons start_game_button_r4 = new Buttons("Start");
     start_game_button_r4.setId("start_game_button");
 
     Labels background_label_select_position_r4 = new Labels("Select the position of you boats");
     background_label_select_position_r4.setId("label_background");
 
-    StackPane root4 = new StackPane(end_game_button_r4, background_label_select_position_r4, start_game_button_r4);
+    StackPane root4 =
+        new StackPane(
+            end_game_button_r4, background_label_select_position_r4, start_game_button_r4);
     root4.setId("pane4");
 
     end_game_button_r4.position(root4, -0.4, -0.43);
@@ -234,233 +235,236 @@ public class Scenecontroller extends Application {
     StackPane root5 = new StackPane(end_game_button_r5, background_label_r5);
     root5.setId("pane5");
 
-      end_game_button_r5.position(root5, -0.4, -0.43);
-      end_game_button_r5.fontsize(root5, 0.01);
-      end_game_button_r5.size(root5, 0.15, 0.06);
+    end_game_button_r5.position(root5, -0.4, -0.43);
+    end_game_button_r5.fontsize(root5, 0.01);
+    end_game_button_r5.size(root5, 0.15, 0.06);
 
-      background_label_r5.position(root5, 0, -0.01);
-      background_label_r5.fontsize(root5, 0.03);
-      background_label_r5.size(root5, 0.6, 0.8);
-      background_label_r5.setAlignment(Pos.TOP_CENTER);
+    background_label_r5.position(root5, 0, -0.01);
+    background_label_r5.fontsize(root5, 0.03);
+    background_label_r5.size(root5, 0.6, 0.8);
+    background_label_r5.setAlignment(Pos.TOP_CENTER);
 
-      // ---------------root 6
-      // ---------------------------------------------------------------------
-      // root6
-      Image image_player_vs_player =
-              new Image(
-                      getClass()
-                              .getResource("/com/matti/battleship/images/player_vs_player.jpg")
-                              .toExternalForm());
-      ImageViews imageview_player_vs_player = new ImageViews(image_player_vs_player);
+    // ---------------root 6
+    // ---------------------------------------------------------------------
+    // root6
+    Image image_player_vs_player =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/player_vs_player.jpg")
+                .toExternalForm());
+    ImageViews imageview_player_vs_player = new ImageViews(image_player_vs_player);
 
-      Buttons back_button_r6 = new Buttons();
-      back_button_r6.setId("back_button");
+    Buttons back_button_r6 = new Buttons();
+    back_button_r6.setId("back_button");
 
-      Buttons start_game_button_r6 = new Buttons("Start Game");
-      start_game_button_r6.setId("start_game_button");
+    Buttons start_game_button_r6 = new Buttons("Start Game");
+    start_game_button_r6.setId("start_game_button");
 
-      TextFields select_field_size_r6 = new TextFields();
-      select_field_size_r6.setId("text_field_field_size");
-      select_field_size_r6.setPromptText("Type in field size");
+    TextFields select_field_size_r6 = new TextFields();
+    select_field_size_r6.setId("text_field_field_size");
+    select_field_size_r6.setPromptText("Type in field size");
 
-      Labels label_settings_r6 = new Labels("Settings");
-      label_settings_r6.setId("label_settings");
+    Labels label_settings_r6 = new Labels("Settings");
+    label_settings_r6.setId("label_settings");
 
-      Labels label_size_of_field_r6 = new Labels("Field Size:");
-      label_size_of_field_r6.setId("label_size_of_field");
+    Labels label_size_of_field_r6 = new Labels("Field Size:");
+    label_size_of_field_r6.setId("label_size_of_field");
 
-      StackPane root6 =
-              new StackPane(
-                      imageview_player_vs_player,
-                      back_button_r6,
-                      label_settings_r6,
-                      start_game_button_r6,
-                      select_field_size_r6,
-                      label_size_of_field_r6);
-      root6.setId("stack_pane_root6");
+    StackPane root6 =
+        new StackPane(
+            imageview_player_vs_player,
+            back_button_r6,
+            label_settings_r6,
+            start_game_button_r6,
+            select_field_size_r6,
+            label_size_of_field_r6);
+    root6.setId("stack_pane_root6");
 
-      imageview_player_vs_player.position(root6, 0.25, 0.00);
-      imageview_player_vs_player.size(root6, 0.5, 1);
+    imageview_player_vs_player.position(root6, 0.25, 0.00);
+    imageview_player_vs_player.size(root6, 0.5, 1);
 
-      back_button_r6.position(root6, -0.45, -0.43);
-      back_button_r6.fontsize(root6, 0.01);
-      back_button_r6.size(root6, 0.07, 0.1);
+    back_button_r6.position(root6, -0.45, -0.43);
+    back_button_r6.fontsize(root6, 0.01);
+    back_button_r6.size(root6, 0.07, 0.1);
 
-      start_game_button_r6.position(root6, -0.25, 0.05);
-      start_game_button_r6.fontsize(root6, 0.02);
-      start_game_button_r6.size(root6, 0.13, 0.05);
+    start_game_button_r6.position(root6, -0.25, 0.05);
+    start_game_button_r6.fontsize(root6, 0.02);
+    start_game_button_r6.size(root6, 0.13, 0.05);
 
-      select_field_size_r6.position(root6, -0.2, -0.07);
-      select_field_size_r6.fontsize(root6, 0.01);
-      select_field_size_r6.size(root6, 0.15, 0.05);
+    select_field_size_r6.position(root6, -0.2, -0.07);
+    select_field_size_r6.fontsize(root6, 0.01);
+    select_field_size_r6.size(root6, 0.15, 0.05);
 
-      label_settings_r6.position(root6, -0.255, -0.05);
-      label_settings_r6.fontsize(root6, 0.03);
-      label_settings_r6.size(root6, 0.3, 0.4);
-      label_settings_r6.setAlignment(Pos.TOP_CENTER);
+    label_settings_r6.position(root6, -0.255, -0.05);
+    label_settings_r6.fontsize(root6, 0.03);
+    label_settings_r6.size(root6, 0.3, 0.4);
+    label_settings_r6.setAlignment(Pos.TOP_CENTER);
 
-      label_size_of_field_r6.position(root6, -0.355, -0.07);
-      label_size_of_field_r6.fontsize(root6, 0.02);
-      label_size_of_field_r6.size(root6, 0.1, 0.07);
-      label_size_of_field_r6.setAlignment(Pos.CENTER);
+    label_size_of_field_r6.position(root6, -0.355, -0.07);
+    label_size_of_field_r6.fontsize(root6, 0.02);
+    label_size_of_field_r6.size(root6, 0.1, 0.07);
+    label_size_of_field_r6.setAlignment(Pos.CENTER);
 
-      // ---------------root 7
-      // ---------------------------------------------------------------------
-      // root7
+    // ---------------root 7
+    // ---------------------------------------------------------------------
+    // root7
 
-
-      // ---------------root 8
-      // ---------------------------------------------------------------------
-      // root8
-
-
+    // ---------------root 8
+    // ---------------------------------------------------------------------
+    // root8
 
     // ---------------button_actions---------------------------------------------------------------------
 
-      // --------------------------------- root 1
-      //----------------------
-      Singleplayer_button_r1.setOnAction(e -> {
-                  scene1.setRoot(root2);
-                  this.playingMode = PlayingMode.VS_AI;
-                  // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
-                  // turn, initialShipSetup)
-              });
-      Multiplayer_button_r1.setOnAction(e -> {
-                  scene1.setRoot(root3);
-                  this.playingMode = PlayingMode.VS_PLAYER;
-              });
+    // --------------------------------- root 1
+    // ----------------------
+    Singleplayer_button_r1.setOnAction(
+        e -> {
+          scene1.setRoot(root2);
+          this.playingMode = PlayingMode.VS_AI;
+          // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
+          // turn, initialShipSetup)
+        });
+    Multiplayer_button_r1.setOnAction(
+        e -> {
+          scene1.setRoot(root3);
+          this.playingMode = PlayingMode.VS_PLAYER;
+        });
 
-      // --------------------------------- root 2
-      //----------------------
-      back_button_r2.setOnAction(e -> scene1.setRoot(root1));
+    // --------------------------------- root 2
+    // ----------------------
+    back_button_r2.setOnAction(e -> scene1.setRoot(root1));
 
-      load_game_button_r2.setOnAction(
-              e -> {
-                  FileChooser fileChooser_r2 = new FileChooser();
-                  fileChooser_r2.setTitle("Vorheriges Spiel laden");
-                  fileChooser_r2.setInitialDirectory(new File("."));
-                  fileChooser_r2
-                          .getExtensionFilters()
-                          .add(
-                                  new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg") // anpassen
-                          );
-                  File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
-              });
+    load_game_button_r2.setOnAction(
+        e -> {
+          FileChooser fileChooser_r2 = new FileChooser();
+          fileChooser_r2.setTitle("Vorheriges Spiel laden");
+          fileChooser_r2.setInitialDirectory(new File("."));
+          fileChooser_r2
+              .getExtensionFilters()
+              .add(
+                  new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg") // anpassen
+                  );
+          File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
+        });
 
-      start_game_button_r2.setOnAction(
-              e -> {
+    start_game_button_r2.setOnAction(
+        e -> {
 
-                  // prüfen ob Eingabe über tf22 + 21
-                  if (!select_field_size_r2.getText().isEmpty()) {
-                      try {
-                          selected_field_size = Integer.parseInt(select_field_size_r2.getText());
-                      } catch (NumberFormatException ex) {
-                          System.out.println("Ungültige Feldgröße, Standardwert 10");
-                      }
-                  }
+          // prüfen ob Eingabe über tf22 + 21
+          if (!select_field_size_r2.getText().isEmpty()) {
+            try {
+              selected_field_size = Integer.parseInt(select_field_size_r2.getText());
+            } catch (NumberFormatException ex) {
+              System.out.println("Ungültige Feldgröße, Standardwert 10");
+            }
+          }
 
-                  // save current AIDifficulty
-                  String selectedDifficultyString =
-                          difficulty_selection_r2.getSelectionModel().getSelectedItem();
-                  this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
+          // save current AIDifficulty
+          String selectedDifficultyString =
+              difficulty_selection_r2.getSelectionModel().getSelectedItem();
+          this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
-                  // TODO: Potentially adjust / add a temporary datastructure to documente the
-                  // ship selection
-                  this.board = new Board(selected_field_size);
-                  double BOARD_SIZE = 400;
-                  double cellSize = BOARD_SIZE / selected_field_size;
+          // TODO: Potentially adjust / add a temporary datastructure to documente the
+          // ship selection
+          this.board = new Board(selected_field_size);
+          double BOARD_SIZE = 400;
+          double cellSize = BOARD_SIZE / selected_field_size;
 
-                  GridPane battleGrid =
-                          new GridPane(); // ev das global dann kann battle grid auch in anderen angezeigt
-                  // werden
-                  battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
-                  battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
-                  battleGrid.setStyle("-fx-background-color: transparent;");
+          GridPane battleGrid =
+              new GridPane(); // ev das global dann kann battle grid auch in anderen angezeigt
+          // werden
+          battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
+          battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
+          battleGrid.setStyle("-fx-background-color: transparent;");
 
-                  for (Field[] _row : board.board) {
-                      for (Field field : _row) {
-                          int c = field.getCoordinates().x;
-                          int r = field.getCoordinates().y;
-                          StackPane cell = new StackPane();
-                          cell.setPrefSize(cellSize, cellSize);
-                          cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
+          for (Field[] _row : board.board) {
+            for (Field field : _row) {
+              int c = field.getCoordinates().x;
+              int r = field.getCoordinates().y;
+              StackPane cell = new StackPane();
+              cell.setPrefSize(cellSize, cellSize);
+              cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
 
-                          cell.setOnDragOver(
-                                  ev -> {
-                                      if (ev.getGestureSource() != cell) { // zelle nicht serlbst gezogen
-                                          ev.acceptTransferModes(TransferMode.MOVE);
-                                      }
-                                      ev.consume();
-                                  });
+              cell.setOnDragOver(
+                  ev -> {
+                    if (ev.getGestureSource() != cell) { // zelle nicht serlbst gezogen
+                      ev.acceptTransferModes(TransferMode.MOVE);
+                    }
+                    ev.consume();
+                  });
 
-                          cell.setOnDragDropped(
-                                  ev -> {
-                                      // TODO: Remove ship from old corresponding field and add it to the new field
-                                      // if (!this.board.addShip()) {
-                                      // set ship temporary red -> show user he / she can t place ship here
-                                      // }
+              cell.setOnDragDropped(
+                  ev -> {
+                    // TODO: Remove ship from old corresponding field and add it to the new field
+                    // if (!this.board.addShip()) {
+                    // set ship temporary red -> show user he / she can t place ship here
+                    // }
 
-                                      // Prüfung ob gültig
-                                      Rectangle ship = (Rectangle) ev.getGestureSource();
-                                      cell.getChildren().clear();
-                                      cell.getChildren().add(ship);
-                                      StackPane.setAlignment(ship, Pos.CENTER);
-                                      ev.setDropCompleted(true);
-                                      ev.consume();
-                                      System.out.println("Zelle belegt: (" + r + "," + c + ")");
-                                  });
+                    // Prüfung ob gültig
+                    Rectangle ship = (Rectangle) ev.getGestureSource();
+                    cell.getChildren().clear();
+                    cell.getChildren().add(ship);
+                    StackPane.setAlignment(ship, Pos.CENTER);
+                    ev.setDropCompleted(true);
+                    ev.consume();
+                    System.out.println("Zelle belegt: (" + r + "," + c + ")");
+                  });
 
-                          battleGrid.add(cell, c, r);
-                      }
-                  }
+              battleGrid.add(cell, c, r);
+            }
+          }
 
-                  Image ship_length3 =
-                          new Image(
-                                  getClass()
-                                          .getResource("/com/matti/battleship/images/ships/destroyer_length2.png")
-                                          .toExternalForm());
-                  ImageViews imageview_ship_length3 = new ImageViews(ship_length3);
-                  imageview_ship_length3.setFitWidth(cellSize * 0.8);
-                  imageview_ship_length3.setFitHeight(cellSize * 0.8);
+          Image ship_length3 =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/ships/destroyer_length2.png")
+                      .toExternalForm());
+          ImageViews imageview_ship_length3 = new ImageViews(ship_length3);
+          imageview_ship_length3.setFitWidth(cellSize * 0.8);
+          imageview_ship_length3.setFitHeight(cellSize * 0.8);
 
-                  Image ship_length5 =
-                          new Image(
-                                  getClass()
-                                          .getResource(
-                                                  "/com/matti/battleship/images/ships/aircraft_carrier_length4.png")
-                                          .toExternalForm());
-                  ImageViews imageview_ship_length5 = new ImageViews(ship_length5);
-                  imageview_ship_length5.setFitWidth(cellSize * 0.8);
-                  imageview_ship_length5.setFitHeight(cellSize * 0.8);
+          Image ship_length5 =
+              new Image(
+                  getClass()
+                      .getResource(
+                          "/com/matti/battleship/images/ships/aircraft_carrier_length4.png")
+                      .toExternalForm());
+          ImageViews imageview_ship_length5 = new ImageViews(ship_length5);
+          imageview_ship_length5.setFitWidth(cellSize * 0.8);
+          imageview_ship_length5.setFitHeight(cellSize * 0.8);
 
-                  Rectangle ship = new Rectangle(cellSize * 0.8, cellSize * 0.8, Color.DARKGRAY);
-                  ship.setOnDragDetected(
-                          ev -> {
-                              Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
-                              ClipboardContent content = new ClipboardContent();
-                              content.putString("SHIP");
-                              db.setContent(content);
-                              ev.consume();
-                          });
-
-                  root4.getChildren().addAll(battleGrid, ship);
-                  StackPane.setAlignment(battleGrid, Pos.CENTER);
-                  StackPane.setAlignment(ship, Pos.TOP_CENTER);
-                  scene1.setRoot(root4);
+          Rectangle ship = new Rectangle(cellSize * 0.8, cellSize * 0.8, Color.DARKGRAY);
+          ship.setOnDragDetected(
+              ev -> {
+                Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
+                ClipboardContent content = new ClipboardContent();
+                content.putString("SHIP");
+                db.setContent(content);
+                ev.consume();
               });
 
-      // --------------------------------- root 3
-      //----------------------
+          root4.getChildren().addAll(battleGrid, ship);
+          StackPane.setAlignment(battleGrid, Pos.CENTER);
+          StackPane.setAlignment(ship, Pos.TOP_CENTER);
+          scene1.setRoot(root4);
+        });
 
-      back_button_r3.setOnAction(e -> scene1.setRoot(root1));
-      start_new_game_button_r3.setOnAction(e -> { scene1.setRoot(root6);});
+    // --------------------------------- root 3
+    // ----------------------
 
-      // --------------------------------- root 4
-      //----------------------
+    back_button_r3.setOnAction(e -> scene1.setRoot(root1));
+    start_new_game_button_r3.setOnAction(
+        e -> {
+          scene1.setRoot(root6);
+        });
 
-      end_game_button_r4.setOnAction(e -> scene1.setRoot(root1));
+    // --------------------------------- root 4
+    // ----------------------
 
-      start_game_button_r4.setOnAction(e -> {
+    end_game_button_r4.setOnAction(e -> scene1.setRoot(root1));
+
+    start_game_button_r4.setOnAction(
+        e -> {
           double BOARD_SIZE = 400;
           double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
 
@@ -512,14 +516,17 @@ public class Scenecontroller extends Application {
           scene1.setRoot(root5);
         });
 
-  // --------------------------------- root 5
-  // ----------------------
+    // --------------------------------- root 5
+    // ----------------------
     end_game_button_r5.setOnAction(e -> scene1.setRoot(root1));
 
-      // --------------------------------- root 6
-      //----------------------
-    back_button_r6.setOnAction(e -> { scene1.setRoot(root3);});
-    //start_game_button_r6.setOnAction(e -> { scene1.setRoot(root7);});
+    // --------------------------------- root 6
+    // ----------------------
+    back_button_r6.setOnAction(
+        e -> {
+          scene1.setRoot(root3);
+        });
+    // start_game_button_r6.setOnAction(e -> { scene1.setRoot(root7);});
 
     // ---------------Stage
     // Setup--------------------------------------------------------------
@@ -535,10 +542,7 @@ public class Scenecontroller extends Application {
     primaryStage.show();
   }
 
-
   public static void main(String[] args) {
     launch(args);
   }
 }
-
-
