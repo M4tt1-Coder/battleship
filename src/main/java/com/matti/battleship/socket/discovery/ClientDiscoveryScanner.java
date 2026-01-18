@@ -4,14 +4,12 @@ import java.net.*;
 import java.util.*;
 
 /**
- * Scans the local network for available Battleship servers using UDP broadcast discovery.
- * This class sends a broadcast message ("DISCOVER") to the configured port and then listens
- * for responses from servers that are currently free (not busy).
- * The discovery protocol is defined in {@link DiscoveryProtocol}.
- * Expected server reply format:
- * "BS_HERE_V1 <tcpPort> <serverName...>"
- * The result is a list of {@link DiscoveredServer} entries that can be displayed in the GUI
- * and used to establish a TCP connection afterwards.
+ * Scans the local network for available Battleship servers using UDP broadcast discovery. This
+ * class sends a broadcast message ("DISCOVER") to the configured port and then listens for
+ * responses from servers that are currently free (not busy). The discovery protocol is defined in
+ * {@link DiscoveryProtocol}. Expected server reply format: "BS_HERE_V1 <tcpPort> <serverName...>"
+ * The result is a list of {@link DiscoveredServer} entries that can be displayed in the GUI and
+ * used to establish a TCP connection afterwards.
  *
  * @author WoFabian
  */
@@ -31,13 +29,10 @@ public class ClientDiscoveryScanner {
   }
 
   /**
-   * Performs a discovery scan and returns a list of found servers.
-   * The scan works as follows:
-   * 1) Create a UDP socket with broadcast enabled
-   * 2) Send one broadcast datagram to 255.255.255.255:port
-   * 3) Collect server responses until the timeout expires
-   * 4) Deduplicate servers by host address (one entry per IP)
-   * 5) Sort results by host address for stable output
+   * Performs a discovery scan and returns a list of found servers. The scan works as follows: 1)
+   * Create a UDP socket with broadcast enabled 2) Send one broadcast datagram to
+   * 255.255.255.255:port 3) Collect server responses until the timeout expires 4) Deduplicate
+   * servers by host address (one entry per IP) 5) Sort results by host address for stable output
    *
    * @param timeoutMillis how long to wait for server responses
    * @return list of discovered servers (can be empty if no server answered)
@@ -78,7 +73,7 @@ public class ClientDiscoveryScanner {
           if (!msg.startsWith(DiscoveryProtocol.HERE_PREFIX)) continue;
 
           String[] parts = msg.split("\\s+");
-          if (parts.length < 3) continue;  // must at least contain prefix + port + name
+          if (parts.length < 3) continue; // must at least contain prefix + port + name
 
           // Parse TCP port from the response.
           int tcpPort;
@@ -111,8 +106,8 @@ public class ClientDiscoveryScanner {
   }
 
   /**
-   * Joins an array of string tokens from a given start index into a single string.
-   * This is used because the server name may contain spaces and is transmitted as multiple tokens.
+   * Joins an array of string tokens from a given start index into a single string. This is used
+   * because the server name may contain spaces and is transmitted as multiple tokens.
    *
    * @param parts the split message tokens
    * @param start the starting index (inclusive)
