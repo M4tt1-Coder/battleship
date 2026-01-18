@@ -4,6 +4,28 @@ import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.network.ServerConnection;
 import java.util.Scanner;
 
+/**
+ * GUI-ORIENTATION (Server Hosting + Discovery)
+ *
+ * What to copy into GUI (only if the GUI has a "Host server" button):
+ * - Starting the server:
+ *   ServerConnection server = new ServerConnection();
+ *   server.startServer(listener);
+ *
+ * Important note for GUI:
+ * - startServer(...) blocks internally on accept() until a client connects,
+ *   therefore it MUST run in a background thread in JavaFX.
+ *
+ * What this test demonstrates:
+ * - The server is discoverable via UDP while waiting for TCP accept().
+ * - After connect, a simple "ready" handshake can be used to show the connection worked.
+ *
+ * What NOT to copy (CLI-only):
+ * - Console typing loop, "exit" input handling
+ *
+ * @author WoFabian
+ */
+
 public class TestServerDiscovery {
 
   public static void main(String[] args) throws Exception {

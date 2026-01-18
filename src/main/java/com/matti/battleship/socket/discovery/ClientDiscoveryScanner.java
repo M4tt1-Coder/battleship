@@ -11,6 +11,15 @@ import java.util.*;
  * The result is a list of {@link DiscoveredServer} entries that can be displayed in the GUI and
  * used to establish a TCP connection afterwards.
  *
+ * GUI-IMPORTANT:
+ * Used by the GUI to build the "server list" screen.
+ * Important methods:
+ * - discover(timeoutMillis): scans the LAN via UDP broadcast and returns a List<DiscoveredServer>
+ * Typical GUI flow:
+ * - On "Search" button: new ClientDiscoveryScanner(EnvConfig.getPort()).discover(600)
+ * - Put the returned list into a ListView/TableView
+ * - On selection: use DiscoveredServer.host()/port() to connect via ClientConnection
+ *
  * @author WoFabian
  */
 public class ClientDiscoveryScanner {

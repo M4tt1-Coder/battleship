@@ -11,6 +11,18 @@ package com.matti.battleship.socket.discovery;
  * @param port TCP port of the discovered server
  * @param name human-readable server name
  * @param lastSeenMillis timestamp in milliseconds when this server was discovered
+ *
+ * GUI-IMPORTANT:
+ * Data model for one entry in the server list UI.
+ * Important fields (record components):
+ * - host: IP address of the server
+ * - port: TCP port to connect to
+ * - name: display name for UI
+ * - lastSeenMillis: optional timestamp (can be used for sorting / refreshing UI)
+ * Typical GUI usage:
+ * - Display: name + " @ " + host + ":" + port
+ * - Connect: selected.host() + selected.port()
+ *
  * @author WoFabian
  */
 public record DiscoveredServer(String host, int port, String name, long lastSeenMillis) {}

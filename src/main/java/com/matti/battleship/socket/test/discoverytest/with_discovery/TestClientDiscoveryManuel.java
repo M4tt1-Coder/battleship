@@ -8,6 +8,30 @@ import com.matti.battleship.socket.network.MessageListener;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * GUI-ORIENTATION (Discovery Manual Variant)
+ *
+ * What to copy into GUI:
+ * - Discovery scan:
+ *   ClientDiscoveryScanner scanner = new ClientDiscoveryScanner(EnvConfig.getPort());
+ *   List<DiscoveredServer> servers = scanner.discover(600);
+ * - Building a server list UI:
+ *   Use the returned List<DiscoveredServer> as ListView/TableView items.
+ * - Connect after user selection:
+ *   DiscoveredServer selected = servers.get(index)  (GUI: selectedItem from ListView)
+ *   client.connect(selected.host(), listener);
+ * - Fallback when list is empty:
+ *   Manual option: connect to "localhost" using EnvConfig.getPort()
+ *
+ * What NOT to copy (CLI-only):
+ * - Scanner(System.in), while-loops, command parsing like "0 verbinden", "scan", "exit"
+ * - The "chat typing" loop after connection (GUI will handle this differently)
+ *
+ *  Purpose of this test:
+ * - Demonstrates the "manual selection" user flow which matches a GUI list + connect button.
+ *
+ * @author WoFabian
+ */
 public class TestClientDiscoveryManuel {
 
   private static final int DISCOVER_TIMEOUT_MS = 600;

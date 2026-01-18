@@ -4,6 +4,18 @@ import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.logging.TurnLog;
 import java.net.Socket;
 
+/**
+ * GUI-IMPORTANT:
+ * Used by the GUI to connect to a selected server (TCP).
+ * Important methods:
+ * - connect(host, listener): establishes TCP connection to the host
+ * - send(msg): sends protocol messages, e.g. "ready" after connecting
+ * Typical GUI flow:
+ * - On "Connect" button: client.connect(selected.host(), listener)
+ * - After connect: client.send("ready") to verify connection
+ *
+ * @author WoFabian
+ */
 public class ClientConnection {
 
   private SocketConnector connector;
