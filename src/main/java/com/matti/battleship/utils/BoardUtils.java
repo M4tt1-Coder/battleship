@@ -166,7 +166,7 @@ public class BoardUtils {
     ArrayList<ShipLength> initialShipSetup = new ArrayList<ShipLength>();
     // try to select an equal number of each ship size
 
-      while (numMandatoryFields > 0) {
+    while (numMandatoryFields > 0) {
       for (ShipLength length : ShipLength.values()) {
         if (numMandatoryFields - length.getValue() >= 0) {
           initialShipSetup.add(length);
