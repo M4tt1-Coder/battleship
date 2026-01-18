@@ -5,8 +5,6 @@ import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.ShipUtils;
 import java.util.ArrayList;
-
-import jdk.jfr.consumer.RecordedStackTrace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -320,8 +318,6 @@ public class Board {
     return output_coordinates.toArray(new Coordinates[0]);
   }
 
-  
-
   /**
    * Counts the total number of fields on the board that are currently occupied.
    *
@@ -423,7 +419,8 @@ public class Board {
    * @return true if the maximum capacity for ships has been reached or exceeded; false otherwise.
    */
   private boolean isTheMaxCapacityForShipsReached() {
-    int numberOfMandatoryOccupiedFields = BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(this.size);
+    int numberOfMandatoryOccupiedFields =
+        BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(this.size);
     int numberOfOccupiedFields = getNumberOfOccupiedFields();
     // count the occupied fields on the field
     return numberOfOccupiedFields >= numberOfMandatoryOccupiedFields;

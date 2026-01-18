@@ -13,7 +13,7 @@ module com.matti.battleship {
   requires jdk.security.auth;
   requires org.checkerframework.checker.qual;
   requires com.google.common;
-    requires jdk.jfr;
+  requires jdk.jfr;
 
-    exports com.matti.battleship;
+  exports com.matti.battleship;
 }
