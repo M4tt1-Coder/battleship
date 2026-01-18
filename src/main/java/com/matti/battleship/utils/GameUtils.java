@@ -68,7 +68,8 @@ public class GameUtils {
     }
 
     // Verify if total ship length matches the board's required occupied fields
-    int requiredOccupiedFields = BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(player.board.getSize());
+    int requiredOccupiedFields =
+        BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(player.board.getSize());
 
     if (totalShipLength != requiredOccupiedFields) {
       logger.error(
