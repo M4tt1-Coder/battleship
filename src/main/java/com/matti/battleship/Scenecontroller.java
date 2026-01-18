@@ -42,8 +42,8 @@ public class Scenecontroller extends Application {
   @Override
   public void start(Stage primaryStage) {
 
-    // ---------------root
-    // 1---------------------------------------------------------------------
+    // ---------------root 1
+    // ---------------------------------------------------------------------
     // root1
 
     Buttons Singleplayer_button_r1 = new Buttons("Singleplayer");
@@ -74,8 +74,8 @@ public class Scenecontroller extends Application {
     label_battleship_lobby_r1.size(root1, 0.4, 0.1);
     label_battleship_lobby_r1.setAlignment(Pos.CENTER);
 
-    // ---------------root
-    // 2---------------------------------------------------------------------
+    // ---------------root 2
+    // ---------------------------------------------------------------------
     // root2
 
     Image image_player_vs_ai =
@@ -89,7 +89,7 @@ public class Scenecontroller extends Application {
     back_button_r2.setId("back_button");
 
     Buttons start_game_button_r2 = new Buttons("Start Game");
-    start_game_button_r2.setId("start_game_button_r2");
+    start_game_button_r2.setId("start_game_button");
 
     Buttons load_game_button_r2 = new Buttons("Load Game");
     load_game_button_r2.setId("load_game_button_r2");
@@ -97,22 +97,15 @@ public class Scenecontroller extends Application {
     ComboBoxes difficulty_selection_r2 = new ComboBoxes();
     difficulty_selection_r2.setId("combobox21");
 
-    TextFields select_amount_of_boats_r2 = new TextFields();
-    select_amount_of_boats_r2.setId("select_amount_of_boats_r2");
-    select_amount_of_boats_r2.setPromptText("Type in amount of boats");
-
     TextFields select_field_size_r2 = new TextFields();
-    select_field_size_r2.setId("tf22");
+    select_field_size_r2.setId("text_field_field_size");
     select_field_size_r2.setPromptText("Type in field size");
 
     Labels label_settings_r2 = new Labels("Settings");
-    label_settings_r2.setId("label_settings_r2");
+    label_settings_r2.setId("label_settings");
 
     Labels label_select_difficulty_r2 = new Labels("Difficulty:");
     label_select_difficulty_r2.setId("label_select_difficulty_r2");
-
-    Labels label_amount_of_boats_r2 = new Labels("Boat-\nAmount:");
-    label_amount_of_boats_r2.setId("label_amount_of_boats_r2");
 
     Labels label_size_of_field_r2 = new Labels("Field Size:");
     label_size_of_field_r2.setId("label_size_of_field_r2");
@@ -124,11 +117,9 @@ public class Scenecontroller extends Application {
             label_settings_r2,
             start_game_button_r2,
             load_game_button_r2,
-            select_amount_of_boats_r2,
             select_field_size_r2,
             difficulty_selection_r2,
             label_select_difficulty_r2,
-            label_amount_of_boats_r2,
             label_size_of_field_r2);
     root2.setId("stack_pane_root2");
 
@@ -139,49 +130,40 @@ public class Scenecontroller extends Application {
     back_button_r2.fontsize(root2, 0.01);
     back_button_r2.size(root2, 0.07, 0.1);
 
-    start_game_button_r2.position(root2, -0.325, 0.3);
+    start_game_button_r2.position(root2, -0.325, 0.25);
     start_game_button_r2.fontsize(root2, 0.02);
     start_game_button_r2.size(root2, 0.13, 0.05);
 
-    load_game_button_r2.position(root2, -0.185, 0.3);
+    load_game_button_r2.position(root2, -0.185, 0.25);
     load_game_button_r2.fontsize(root2, 0.02);
     load_game_button_r2.size(root2, 0.13, 0.05);
 
     difficulty_selection_r2.set_selections("Medium", "Easy", "Medium", "Hard");
-    difficulty_selection_r2.position(root2, -0.2, -0.15);
+    difficulty_selection_r2.position(root2, -0.2, -0.05);
     difficulty_selection_r2.fontsize(root2, 0.01);
     difficulty_selection_r2.size(root2, 0.15, 0.05);
 
-    select_amount_of_boats_r2.position(root2, -0.2, 0.00);
-    select_amount_of_boats_r2.fontsize(root2, 0.01);
-    select_amount_of_boats_r2.size(root2, 0.15, 0.05);
-
-    select_field_size_r2.position(root2, -0.2, 0.15);
+    select_field_size_r2.position(root2, -0.2, 0.1);
     select_field_size_r2.fontsize(root2, 0.01);
     select_field_size_r2.size(root2, 0.15, 0.05);
 
     label_settings_r2.position(root2, -0.255, 0.05);
     label_settings_r2.fontsize(root2, 0.03);
-    label_settings_r2.size(root2, 0.3, 0.7);
+    label_settings_r2.size(root2, 0.3, 0.6);
     label_settings_r2.setAlignment(Pos.TOP_CENTER);
 
-    label_select_difficulty_r2.position(root2, -0.355, -0.15);
+    label_select_difficulty_r2.position(root2, -0.355, -0.05);
     label_select_difficulty_r2.fontsize(root2, 0.02);
     label_select_difficulty_r2.size(root2, 0.1, 0.07);
     label_select_difficulty_r2.setAlignment(Pos.CENTER);
 
-    label_amount_of_boats_r2.position(root2, -0.355, 0.00);
-    label_amount_of_boats_r2.fontsize(root2, 0.02);
-    label_amount_of_boats_r2.size(root2, 0.1, 0.07);
-    label_amount_of_boats_r2.setAlignment(Pos.CENTER);
-
-    label_size_of_field_r2.position(root2, -0.355, 0.15);
+    label_size_of_field_r2.position(root2, -0.355, 0.1);
     label_size_of_field_r2.fontsize(root2, 0.02);
     label_size_of_field_r2.size(root2, 0.1, 0.07);
     label_size_of_field_r2.setAlignment(Pos.CENTER);
 
-    // ---------------root
-    // 3---------------------------------------------------------------------
+    // ---------------root 3
+    // ---------------------------------------------------------------------
     // root3
 
     Buttons back_button_r3 = new Buttons();
@@ -191,7 +173,7 @@ public class Scenecontroller extends Application {
     start_new_game_button_r3.setId("start_new_game_button_r3");
 
     Labels label_available_servers_r3 = new Labels("Join other players");
-    label_available_servers_r3.setId("label_available_servers_r3");
+    label_available_servers_r3.setId("label_background");
 
     StackPane root3 =
         new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
@@ -210,135 +192,170 @@ public class Scenecontroller extends Application {
     label_available_servers_r3.size(root3, 0.7, 0.8);
     label_available_servers_r3.setAlignment(Pos.TOP_CENTER);
 
-    // ---------------root
-    // 4---------------------------------------------------------------------
+    // ---------------root 4
+    // ---------------------------------------------------------------------
     // root4
-    Buttons button41e = new Buttons(); // ändern
-    button41e.setId("end_game_button");
+    Buttons end_game_button_r4 = new Buttons(); // ändern
+    end_game_button_r4.setId("end_game_button");
 
-    Buttons button42 = new Buttons("Start");
-    button42.setId("button11");
+    Buttons start_game_button_r4 = new Buttons("Start");
+    start_game_button_r4.setId("start_game_button");
 
-    Labels label41 = new Labels("Select the position of you boats");
-    label41.setId("label21");
+    Labels background_label_select_position_r4 = new Labels("Select the position of you boats");
+    background_label_select_position_r4.setId("label_background");
 
-    StackPane root4 = new StackPane(button41e, label41, button42);
+    StackPane root4 =
+        new StackPane(
+            end_game_button_r4, background_label_select_position_r4, start_game_button_r4);
     root4.setId("pane4");
 
-    button41e.position(root4, -0.4, -0.43);
-    button41e.fontsize(root4, 0.01);
-    button41e.size(root4, 0.15, 0.06);
+    end_game_button_r4.position(root4, -0.4, -0.43);
+    end_game_button_r4.fontsize(root4, 0.01);
+    end_game_button_r4.size(root4, 0.15, 0.06);
 
-    button42.position(root4, 0.25, 0.4);
-    button42.fontsize(root4, 0.02);
-    button42.size(root4, 0.15, 0.05);
+    start_game_button_r4.position(root4, 0.25, 0.4);
+    start_game_button_r4.fontsize(root4, 0.02);
+    start_game_button_r4.size(root4, 0.15, 0.05);
 
-    label41.position(root4, 0, -0.01);
-    label41.fontsize(root4, 0.03);
-    label41.size(root4, 0.6, 0.8);
-    label41.setAlignment(Pos.TOP_CENTER);
+    background_label_select_position_r4.position(root4, 0, -0.01);
+    background_label_select_position_r4.fontsize(root4, 0.03);
+    background_label_select_position_r4.size(root4, 0.6, 0.8);
+    background_label_select_position_r4.setAlignment(Pos.TOP_CENTER);
 
-    // ---------------root
-    // 5---------------------------------------------------------------------
+    // ---------------root 5
+    // ---------------------------------------------------------------------
     // root5
 
-    Buttons button51e = new Buttons();
-    button51e.setId("end_game_button");
+    Buttons end_game_button_r5 = new Buttons();
+    end_game_button_r5.setId("end_game_button");
 
-    Labels label51 = new Labels("Test");
-    label51.setId("label21");
+    Labels background_label_r5 = new Labels("");
+    background_label_r5.setId("label_background");
 
-    StackPane root5 = new StackPane(button51e, label51);
+    StackPane root5 = new StackPane(end_game_button_r5, background_label_r5);
     root5.setId("pane5");
 
-    button51e.position(root5, -0.4, -0.43);
-    button51e.fontsize(root5, 0.01);
-    button51e.size(root5, 0.15, 0.06);
+    end_game_button_r5.position(root5, -0.4, -0.43);
+    end_game_button_r5.fontsize(root5, 0.01);
+    end_game_button_r5.size(root5, 0.15, 0.06);
 
-    label51.position(root5, 0, -0.01);
-    label51.fontsize(root5, 0.03);
-    label51.size(root5, 0.6, 0.8);
-    label51.setAlignment(Pos.TOP_CENTER);
+    background_label_r5.position(root5, 0, -0.01);
+    background_label_r5.fontsize(root5, 0.03);
+    background_label_r5.size(root5, 0.6, 0.8);
+    background_label_r5.setAlignment(Pos.TOP_CENTER);
+
+    // ---------------root 6
+    // ---------------------------------------------------------------------
+    // root6
+    Image image_player_vs_player =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/player_vs_player.jpg")
+                .toExternalForm());
+    ImageViews imageview_player_vs_player = new ImageViews(image_player_vs_player);
+
+    Buttons back_button_r6 = new Buttons();
+    back_button_r6.setId("back_button");
+
+    Buttons start_game_button_r6 = new Buttons("Start Game");
+    start_game_button_r6.setId("start_game_button");
+
+    TextFields select_field_size_r6 = new TextFields();
+    select_field_size_r6.setId("text_field_field_size");
+    select_field_size_r6.setPromptText("Type in field size");
+
+    Labels label_settings_r6 = new Labels("Settings");
+    label_settings_r6.setId("label_settings");
+
+    Labels label_size_of_field_r6 = new Labels("Field Size:");
+    label_size_of_field_r6.setId("label_size_of_field");
+
+    StackPane root6 =
+        new StackPane(
+            imageview_player_vs_player,
+            back_button_r6,
+            label_settings_r6,
+            start_game_button_r6,
+            select_field_size_r6,
+            label_size_of_field_r6);
+    root6.setId("stack_pane_root6");
+
+    imageview_player_vs_player.position(root6, 0.25, 0.00);
+    imageview_player_vs_player.size(root6, 0.5, 1);
+
+    back_button_r6.position(root6, -0.45, -0.43);
+    back_button_r6.fontsize(root6, 0.01);
+    back_button_r6.size(root6, 0.07, 0.1);
+
+    start_game_button_r6.position(root6, -0.25, 0.05);
+    start_game_button_r6.fontsize(root6, 0.02);
+    start_game_button_r6.size(root6, 0.13, 0.05);
+
+    select_field_size_r6.position(root6, -0.2, -0.07);
+    select_field_size_r6.fontsize(root6, 0.01);
+    select_field_size_r6.size(root6, 0.15, 0.05);
+
+    label_settings_r6.position(root6, -0.255, -0.05);
+    label_settings_r6.fontsize(root6, 0.03);
+    label_settings_r6.size(root6, 0.3, 0.4);
+    label_settings_r6.setAlignment(Pos.TOP_CENTER);
+
+    label_size_of_field_r6.position(root6, -0.355, -0.07);
+    label_size_of_field_r6.fontsize(root6, 0.02);
+    label_size_of_field_r6.size(root6, 0.1, 0.07);
+    label_size_of_field_r6.setAlignment(Pos.CENTER);
+
+    // ---------------root 7
+    // ---------------------------------------------------------------------
+    // root7
+
+    // ---------------root 8
+    // ---------------------------------------------------------------------
+    // root8
 
     // ---------------button_actions---------------------------------------------------------------------
-    button42.setOnAction(
+
+    // --------------------------------- root 1
+    // ----------------------
+    Singleplayer_button_r1.setOnAction(
         e -> {
-          double BOARD_SIZE = 400;
-          double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
+          scene1.setRoot(root2);
+          this.playingMode = PlayingMode.VS_AI;
+          // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
+          // turn, initialShipSetup)
+        });
+    Multiplayer_button_r1.setOnAction(
+        e -> {
+          scene1.setRoot(root3);
+          this.playingMode = PlayingMode.VS_PLAYER;
+        });
 
-          GridPane grid = new GridPane();
-          grid.setHgap(0);
-          grid.setVgap(0);
-          grid.setPadding(new Insets(12));
+    // --------------------------------- root 2
+    // ----------------------
+    back_button_r2.setOnAction(e -> scene1.setRoot(root1));
 
-          Image imgMiss =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                      .toExternalForm());
-          Image imgHit =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
-                      .toExternalForm());
-
-          for (int r = 0; r < selected_field_size; r++) {
-            for (int c = 0; c < selected_field_size; c++) {
-              Buttons btn = new Buttons();
-              btn.setStyle(
-                  "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
-              btn.setPrefSize(BUTTON_SIZE, BUTTON_SIZE);
-
-              final int rr = r;
-              final int cc = c;
-
-              btn.setOnAction(
-                  ev -> {
-                    System.out.println("Clicked: row=" + rr + " col=" + cc);
-                    // hier prüfuzng ob treffer oder nicht
-                    /*
-                     * if(ship_was hit == false) {
-                     *
-                     * }
-                     * else if(ship_was hit == true && ship_sunken == false) {
-                     *
-                     * } else {
-                     *
-                     * }
-                     */
-
-                    ImageViews iv = new ImageViews(imgMiss);
-                    iv.setFitWidth(BUTTON_SIZE * 0.4);
-                    iv.setFitHeight(BUTTON_SIZE * 0.4);
-                    iv.setPreserveRatio(false);
-                    btn.setGraphic(iv);
-                  });
-
-              grid.add(btn, c, r);
-            }
-          }
-          root5.getChildren().addAll(grid);
-          grid.setAlignment(Pos.CENTER);
-          scene1.setRoot(root5);
+    load_game_button_r2.setOnAction(
+        e -> {
+          FileChooser fileChooser_r2 = new FileChooser();
+          fileChooser_r2.setTitle("Vorheriges Spiel laden");
+          fileChooser_r2.setInitialDirectory(new File("."));
+          fileChooser_r2
+              .getExtensionFilters()
+              .add(
+                  new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg") // anpassen
+                  );
+          File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
     start_game_button_r2.setOnAction(
         e -> {
+
           // prüfen ob Eingabe über tf22 + 21
           if (!select_field_size_r2.getText().isEmpty()) {
             try {
               selected_field_size = Integer.parseInt(select_field_size_r2.getText());
             } catch (NumberFormatException ex) {
               System.out.println("Ungültige Feldgröße, Standardwert 10");
-            }
-          }
-
-          // TODO: Remove manual setting of number of boats
-          if (!select_amount_of_boats_r2.getText().isEmpty()) {
-            try {
-              selected_amount_of_boats = Integer.parseInt(select_amount_of_boats_r2.getText());
-            } catch (NumberFormatException ex) {
-              System.out.println("Ungültige Bootanzahl, Standardwert 5");
             }
           }
 
@@ -432,34 +449,84 @@ public class Scenecontroller extends Application {
           scene1.setRoot(root4);
         });
 
-    Singleplayer_button_r1.setOnAction(
+    // --------------------------------- root 3
+    // ----------------------
+
+    back_button_r3.setOnAction(e -> scene1.setRoot(root1));
+    start_new_game_button_r3.setOnAction(
         e -> {
-          scene1.setRoot(root2);
-          this.playingMode = PlayingMode.VS_AI;
-          // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
-          // turn, initialShipSetup)
+          scene1.setRoot(root6);
         });
-    Multiplayer_button_r1.setOnAction(
+
+    // --------------------------------- root 4
+    // ----------------------
+
+    end_game_button_r4.setOnAction(e -> scene1.setRoot(root1));
+
+    start_game_button_r4.setOnAction(
+        e -> {
+          double BOARD_SIZE = 400;
+          double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
+
+          GridPane grid = new GridPane();
+          grid.setHgap(0);
+          grid.setVgap(0);
+          grid.setPadding(new Insets(12));
+
+          Image imgMiss =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                      .toExternalForm());
+          Image imgHit =
+              new Image(
+                  getClass()
+                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
+                      .toExternalForm());
+
+          for (int r = 0; r < selected_field_size; r++) {
+            for (int c = 0; c < selected_field_size; c++) {
+              Buttons btn = new Buttons();
+              btn.setStyle(
+                  "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
+              btn.setPrefSize(BUTTON_SIZE, BUTTON_SIZE);
+
+              final int rr = r;
+              final int cc = c;
+
+              btn.setOnAction(
+                  ev -> {
+                    System.out.println("Clicked: row=" + rr + " col=" + cc);
+                    // hier prüfuzng ob treffer oder nicht
+
+                    ImageViews iv = new ImageViews(imgMiss);
+                    iv.setFitWidth(BUTTON_SIZE * 0.4);
+                    iv.setFitHeight(BUTTON_SIZE * 0.4);
+                    iv.setPreserveRatio(false);
+                    btn.setGraphic(iv);
+                  });
+
+              grid.add(btn, c, r);
+            }
+          }
+
+          root5.getChildren().addAll(grid);
+          grid.setAlignment(Pos.CENTER);
+          end_game_button_r5.toFront();
+          scene1.setRoot(root5);
+        });
+
+    // --------------------------------- root 5
+    // ----------------------
+    end_game_button_r5.setOnAction(e -> scene1.setRoot(root1));
+
+    // --------------------------------- root 6
+    // ----------------------
+    back_button_r6.setOnAction(
         e -> {
           scene1.setRoot(root3);
-          this.playingMode = PlayingMode.VS_PLAYER;
         });
-    back_button_r2.setOnAction(e -> scene1.setRoot(root1));
-    back_button_r3.setOnAction(e -> scene1.setRoot(root1));
-    button41e.setOnAction(e -> scene1.setRoot(root1));
-    button51e.setOnAction(e -> scene1.setRoot(root1));
-    load_game_button_r2.setOnAction(
-        e -> {
-          FileChooser fileChooser_r2 = new FileChooser();
-          fileChooser_r2.setTitle("Vorheriges Spiel laden");
-          fileChooser_r2.setInitialDirectory(new File("."));
-          fileChooser_r2
-              .getExtensionFilters()
-              .add(
-                  new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg") // anpassen
-                  );
-          File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
-        });
+    // start_game_button_r6.setOnAction(e -> { scene1.setRoot(root7);});
 
     // ---------------Stage
     // Setup--------------------------------------------------------------
@@ -479,41 +546,3 @@ public class Scenecontroller extends Application {
     launch(args);
   }
 }
-
-// Aufruf
-// int boats[] = {2, 3, 3, 4, 5};
-// for (int i = 0; i < selected_amount_of_boats; i++) {
-// int length = boat[i % 4];
-// add_ship()
-// }
-
-// auslagerung in ship als funktion
-/*
- * boolean add_ship(Ship ship) {
- * cell.setOnDragDropped(
- * ev -> {
- * // hier ev noch bedingung ob möglich von matti
- * Rectangle ship = (Rectangle) ev.getGestureSource();
- * cell.getChildren().clear();
- * cell.getChildren().add(ship);
- * ship.setStart(,this)
- * StackPane.setAlignment(ship, Pos.CENTER);
- * ev.setDropCompleted(true);
- * ev.consume();
- * System.out.println("Zelle belegt: (" + r + "," + c + ")");
- * });
- *
- * battleGrid.add(cell, col, row);
- *
- *
- * ship.setOnDragDetected(
- * ev -> {
- * Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
- * ClipboardContent content = new ClipboardContent();
- * content.putString("SHIP");
- * db.setContent(content);
- * ev.consume();
- * });
- * StackPane.setAlignment(ship, Pos.TOP_CENTER);
- * }
- */

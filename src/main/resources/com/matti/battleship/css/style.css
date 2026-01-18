@@ -55,22 +55,6 @@
 /*-----------------------------------------------------------------------------*/
 /* root 2 */
 
-#start_game_button_r2 {
-    -fx-background-color: linear-gradient(to bottom, #ffffff, #a9d0ff);
-    -fx-text-fill: black;
-    -fx-opacity: 0.95;
-    -fx-font-family: "Montserrat";
-    -fx-border-color: #000000;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
-}
-#start_game_button_r2:hover {
-    -fx-opacity: 0.6;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
 #load_game_button_r2 {
     -fx-background-color: linear-gradient(to bottom, #c0392b, #992d22);
     -fx-text-fill: white;
@@ -87,7 +71,7 @@
     -fx-scale-y: 1.03;
 }
 
-#label_settings_r2 {
+#label_settings {
     -fx-background-color: #3498db;
     -fx-text-fill: white;
     -fx-font-family: "Montserrat";
@@ -122,14 +106,7 @@
     -fx-scale-y: 1.03;
 }
 
-#label_available_servers_r3 {
-    -fx-background-color: #3498db;
-    -fx-text-fill: white;
-    -fx-font-family: "Montserrat";
-    -fx-padding: 10px 20px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-}
+
 
 
 /*----------------------------------------------------------------------------*/
@@ -149,3 +126,32 @@
     -fx-background-size: 100% 100%;
     -fx-background-color: transparent;
 }
+
+#start_game_button {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #a9d0ff);
+    -fx-text-fill: black;
+    -fx-opacity: 0.95;
+    -fx-font-family: "Montserrat";
+    -fx-border-color: #000000;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
+}
+#start_game_button:hover {
+    -fx-opacity: 0.6;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+#label_background {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-family: "Montserrat";
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+#text_field_field_size {
+
+  }
