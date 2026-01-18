@@ -8,28 +8,22 @@ import com.matti.battleship.socket.network.MessageListener;
 import java.util.List;
 import java.util.Scanner;
 
-
 /**
  * GUI-ORIENTATION (Discovery Manual Variant)
  *
- * What to copy into GUI:
- * - Discovery scan:
- *   ClientDiscoveryScanner scanner = new ClientDiscoveryScanner(EnvConfig.getPort());
- *   List<DiscoveredServer> servers = scanner.discover(600);
- * - Building a server list UI:
- *   Use the returned List<DiscoveredServer> as ListView/TableView items.
- * - Connect after user selection:
- *   DiscoveredServer selected = servers.get(index)  (GUI: selectedItem from ListView)
- *   client.connect(selected.host(), listener);
- * - Fallback when list is empty:
- *   Manual option: connect to "localhost" using EnvConfig.getPort()
+ * <p>What to copy into GUI: - Discovery scan: ClientDiscoveryScanner scanner = new
+ * ClientDiscoveryScanner(EnvConfig.getPort()); List<DiscoveredServer> servers =
+ * scanner.discover(600); - Building a server list UI: Use the returned List<DiscoveredServer> as
+ * ListView/TableView items. - Connect after user selection: DiscoveredServer selected =
+ * servers.get(index) (GUI: selectedItem from ListView) client.connect(selected.host(), listener); -
+ * Fallback when list is empty: Manual option: connect to "localhost" using EnvConfig.getPort()
  *
- * What NOT to copy (CLI-only):
- * - Scanner(System.in), while-loops, command parsing like "0 verbinden", "scan", "exit"
- * - The "chat typing" loop after connection (GUI will handle this differently)
+ * <p>What NOT to copy (CLI-only): - Scanner(System.in), while-loops, command parsing like "0
+ * verbinden", "scan", "exit" - The "chat typing" loop after connection (GUI will handle this
+ * differently)
  *
- * Purpose of this test:
- * - Demonstrates the "manual selection" user flow which matches a GUI list + connect button.
+ * <p>Purpose of this test: - Demonstrates the "manual selection" user flow which matches a GUI list
+ * + connect button.
  *
  * @author WoFabian
  */
@@ -107,7 +101,7 @@ public class TestClientDiscoveryManuel {
   /**
    * Runs discovery and prints the list to console.
    *
-   * GUI: Replace the printing with updating the ListView/TableView.
+   * <p>GUI: Replace the printing with updating the ListView/TableView.
    *
    * @param scanner discovery scanner
    * @return list of found servers
@@ -139,7 +133,8 @@ public class TestClientDiscoveryManuel {
   /**
    * Connects via TCP and performs a small "ready" handshake to prove the connection works.
    *
-   * GUI: After connecting you would usually switch screens and pass the connection to your GameFlow.
+   * <p>GUI: After connecting you would usually switch screens and pass the connection to your
+   * GameFlow.
    *
    * @param host target host (selected server or fallback localhost)
    * @param port target port (usually EnvConfig.getPort())
