@@ -57,9 +57,7 @@ public class EnvConfig {
     try {
       return Integer.parseInt(p.trim());
     } catch (NumberFormatException e) {
-
-      // Invalid PORT value -> use default.
-
+      // Invalid PORT value; fall back to default.
       return DEFAULT_PORT;
     }
   }
