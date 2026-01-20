@@ -6,7 +6,9 @@ import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
+import com.matti.battleship.utils.PlayingUtils;
 import java.io.File;
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -349,6 +351,10 @@ public class BattleShipApp extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
+    // TODO: When pressing 'EndGame' in root4 the GridPane is not removed and shown
+    // again when
+    // starting a new game
+
     start_game_button_r2.setOnAction(
         e -> {
           // prüfen ob Eingabe über tf22 + 21
@@ -360,9 +366,12 @@ public class BattleShipApp extends Application {
               System.out.println("Ungültige Feldgröße, Standardwert 10");
             }
           }
+
           // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+          System.out.println(Arrays.toString(this.initialShipSetup));
+
           // save current AIDifficulty
           String selectedDifficultyString =
               difficulty_selection_r2.getSelectionModel().getSelectedItem();
@@ -386,6 +395,9 @@ public class BattleShipApp extends Application {
               StackPane cell = new StackPane();
               cell.setPrefSize(cellSize, cellSize);
               cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
+
+              // TODO: Apply the logic add, remove or rotate ships from the board data
+              // structure
 
               cell.setOnDragOver(
                   ev -> {
@@ -461,14 +473,14 @@ public class BattleShipApp extends Application {
                 ev -> {
                   Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
                   ClipboardContent content = new ClipboardContent();
-                  content.putString("SHIP_LEN2_LEFT");
+                  content.putString(String.format("SHIP_WIDTH_%d", PlayingUtils.getRandomInt()));
                   db.setContent(content);
                   ev.consume();
                 });
-            root4.getChildren().addAll(battleGrid, ship);
+            root4.getChildren().add(ship);
             StackPane.setAlignment(ship, Pos.TOP_CENTER);
           }
-
+          root4.getChildren().add(battleGrid);
           StackPane.setAlignment(battleGrid, Pos.CENTER);
           scene1.setRoot(root4);
         });
