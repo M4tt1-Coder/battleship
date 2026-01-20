@@ -122,8 +122,6 @@ public class TestClientDiscoveryManuel {
       System.out.println("[DISCOVERY] Gefundene freie Server:");
       for (int i = 0; i < servers.size(); i++) {
         DiscoveredServer s = servers.get(i);
-
-        // GUI: Core logic for discovery -> this returns the list for the UI.
         System.out.println("  [" + i + "] " + s.name() + " @ " + s.host() + ":" + s.port());
       }
     }
