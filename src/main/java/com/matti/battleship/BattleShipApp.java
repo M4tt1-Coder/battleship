@@ -351,7 +351,6 @@ public class BattleShipApp extends Application {
 
     start_game_button_r2.setOnAction(
         e -> {
-
           // prüfen ob Eingabe über tf22 + 21
           if (!select_field_size_r2.getText().isEmpty()) {
             try {
@@ -369,8 +368,6 @@ public class BattleShipApp extends Application {
               difficulty_selection_r2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
-          // TODO: Potentially adjust / add a temporary datastructure to documente the
-          // ship selection
           this.board = new Board(selected_field_size);
           double BOARD_SIZE = 400;
           double cellSize = BOARD_SIZE / selected_field_size;
@@ -410,29 +407,6 @@ public class BattleShipApp extends Application {
                           .getChildren()
                           .remove(shipNode);
                     }
-
-                    // int startCol;
-                    /*switch(shipNode.getlength()) {
-                        case 2:
-                            startCol = Math.max(0, c - 1);
-                            GridPane.setColumnSpan(shipNode, 2);
-                            break;
-                        case 3:
-                            startCol = Math.max(0, c - 2);
-                             GridPane.setColumnSpan(shipNode, 3);
-                            break;
-                        case 4:
-                            startCol = Math.max(0, c - 3);
-                            GridPane.setColumnSpan(shipNode, 4);
-                            break;
-                        case 5:
-                            startCol = Math.max(0, c - 4);
-                            GridPane.setColumnSpan(shipNode, 5);
-                            break;
-                        default:
-                            // throw exception
-                    }
-                     */
 
                     int startCol = Math.max(0, c - 2);
                     int row = r;
@@ -477,71 +451,25 @@ public class BattleShipApp extends Application {
           imageview_ship_length5.setFitWidth(cellSize * 0.8);
           imageview_ship_length5.setFitHeight(cellSize * 0.8);
 
-          /*
-           Rectangle ship;
+          for (ShipLength length : this.initialShipSetup) {
+            Rectangle ship =
+                new Rectangle(cellSize * length.getValue(), cellSize * 0.8, Color.DARKGRAY);
+            ship.setArcWidth(10);
+            ship.setArcHeight(10);
 
-          switch (length) {
-              case 2:
-                  ship = new Rectangle(cellSize * 2, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 3:
-                  ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 4:
-                  ship = new Rectangle(cellSize * 4, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 5:
-                  ship = new Rectangle(cellSize * 5, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              default:
-                  throw new IllegalArgumentException("Invalid ship length");
+            ship.setOnDragDetected(
+                ev -> {
+                  Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
+                  ClipboardContent content = new ClipboardContent();
+                  content.putString("SHIP_LEN2_LEFT");
+                  db.setContent(content);
+                  ev.consume();
+                });
+            root4.getChildren().addAll(battleGrid, ship);
+            StackPane.setAlignment(ship, Pos.TOP_CENTER);
           }
-                       */
 
-          /*
-           Ship ship = new Ship();
-
-          switch (ship.getLength()) {
-              case 2:
-                  Image ship_length2 =
-                          new Image(
-                                  getClass()
-                                          .getResource(ship.getPicPath())
-                                          .toExternalForm());
-                  ImageViews imageview_ship_length2 = new ImageViews(ship_length3);
-                  imageview_ship_length2.setFitWidth(cellSize * 0.8);
-                  imageview_ship_length2.setFitHeight(cellSize * 0.8);
-                  break;
-              case 3:
-                  ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 4:
-                  ship = new Rectangle(cellSize * 4, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 5:
-                  ship = new Rectangle(cellSize * 5, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              default:
-                  throw new IllegalArgumentException("Invalid ship length");
-          }
-                       */
-
-          Rectangle ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
-          ship.setArcWidth(10);
-          ship.setArcHeight(10);
-
-          ship.setOnDragDetected(
-              ev -> {
-                Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString("SHIP_LEN2_LEFT");
-                db.setContent(content);
-                ev.consume();
-              });
-
-          root4.getChildren().addAll(battleGrid, ship);
           StackPane.setAlignment(battleGrid, Pos.CENTER);
-          StackPane.setAlignment(ship, Pos.TOP_CENTER);
           scene1.setRoot(root4);
         });
 
