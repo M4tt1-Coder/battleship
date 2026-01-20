@@ -8,6 +8,22 @@ import com.matti.battleship.socket.network.MessageListener;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * GUI-ORIENTATION (Discovery Auto-Fallback Variant)
+ *
+ * <p>What to copy into GUI: - Discovery scan (same as manual variant): List<DiscoveredServer>
+ * servers = new ClientDiscoveryScanner(EnvConfig.getPort()).discover(600); - If list is NOT empty:
+ * Show list and connect using selected.host()/selected.port() - If list IS empty: Auto fallback
+ * logic: client.connect("localhost", listener); (Port via EnvConfig inside ClientConnection)
+ * client.send("ready"); (optional "proof of connection")
+ *
+ * <p>What NOT to copy (CLI-only): - Console command parsing, while-loops, "exit" handling
+ *
+ * <p>Purpose of this test: - Shows how the GUI could behave if you want "auto-connect to localhost"
+ * when no server is found.
+ *
+ * @author WoFabian
+ */
 public class TestClientDiscoveryAuto {
 
   private static final int DISCOVER_TIMEOUT_MS = 600;

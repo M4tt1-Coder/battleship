@@ -7,6 +7,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * GUI-OPTIONAL (Host-Button): Used if the GUI allows starting a server locally. Important methods:
+ * - startServer(listener): starts UDP discovery responder + TCP accept (blocks internally) -
+ * send(msg): sends messages to connected client Note: - startServer(...) should be called from a
+ * background thread in the GUI, because accept() blocks until a client connects.
+ *
+ * @author WoFabian
+ */
 public class ServerConnection {
 
   private SocketConnector connector;
