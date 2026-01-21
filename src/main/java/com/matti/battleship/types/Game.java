@@ -1,6 +1,5 @@
 package com.matti.battleship.types;
 
-import com.matti.battleship.IO.ResourceProfiler;
 import com.matti.battleship.enums.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
@@ -10,8 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-// TODO: Add algorithm for VS_AI playing mode that tries to place ships randomly
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -227,10 +224,8 @@ public class Game {
         // determine in which direction the ship is pointing to
         Direction shipDirection = ShipUtils.determineShipDirection(occupiedFields);
         // add ship to the field
-        ResourceProfiler prof = new ResourceProfiler();
         ShipLength len = ShipUtils.shipLengthFromInt(occupiedFields.length);
-        field.setShip(
-            new Ship(field.getCoordinates(), shipDirection, len, prof.getPictureOfShip(len)));
+        field.setShip(new Ship(field.getCoordinates(), shipDirection, len));
         this.opponent.board.numberOfShips++;
         if (!this.opponent.board.checkIfShipWasSunk()) {
           logger.error("No ship was marked sunk after one should have been!");
