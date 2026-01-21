@@ -3,12 +3,11 @@ package com.matti.battleship.socket.protocol;
 /**
  * Callback interface for receiving parsed protocol events.
  *
- * Implementations of this interface are typically located in the gameflow/controller layer.
- * A {@link ProtocolHandler} parses raw socket lines into {@link Message} objects and forwards them
- * to this listener.
+ * <p>Implementations of this interface are typically located in the gameflow/controller layer. A
+ * {@link ProtocolHandler} parses raw socket lines into {@link Message} objects and forwards them to
+ * this listener.
  *
- * Typical usage:
- * - onMessage(...): update state machine, update game model, trigger GUI updates
+ * <p>Typical usage: - onMessage(...): update state machine, update game model, trigger GUI updates
  * - onClosed(...): handle disconnect (disable UI, return to menu, show error)
  *
  * @author WoFabian

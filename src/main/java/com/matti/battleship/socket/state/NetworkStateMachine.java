@@ -6,9 +6,9 @@ import com.matti.battleship.socket.protocol.MessageType;
 /**
  * Protocol state machine matching the official Battleship communication protocol.
  *
- * GUI/LOGIC IMPORTANT:
- * The GUI can use canSend(...) to enable/disable actions (e.g. SHOT button only in MY_TURN).
- * After sending a message successfully, always call onMessageSent(...) to keep the state correct.
+ * <p>GUI/LOGIC IMPORTANT: The GUI can use canSend(...) to enable/disable actions (e.g. SHOT button
+ * only in MY_TURN). After sending a message successfully, always call onMessageSent(...) to keep
+ * the state correct.
  *
  * <p>New game: Server -> size N Client -> done Server -> ships ... Client -> done Server -> ready
  * Client -> ready Server starts -> gameplay

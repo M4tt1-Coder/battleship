@@ -6,14 +6,13 @@ import com.matti.battleship.socket.network.SocketConnector;
 /**
  * High-level protocol bridge between the low-level socket connector and the game/protocol logic.
  *
- * This class implements {@link MessageListener} so it can receive raw text lines from
- * {@link SocketConnector}. Every received line is parsed using {@link MessageParser} and forwarded
- * as a {@link Message} object to a {@link ProtocolListener}.
+ * <p>This class implements {@link MessageListener} so it can receive raw text lines from {@link
+ * SocketConnector}. Every received line is parsed using {@link MessageParser} and forwarded as a
+ * {@link Message} object to a {@link ProtocolListener}.
  *
- * This is useful if you want to separate responsibilities:
- * - SocketConnector: raw TCP send/receive + debug logging
- * - ProtocolHandler: parsing strings into Message objects + forwarding events
- * - ProtocolListener: reacts to parsed messages (state machine / gameflow / GUI)
+ * <p>This is useful if you want to separate responsibilities: - SocketConnector: raw TCP
+ * send/receive + debug logging - ProtocolHandler: parsing strings into Message objects + forwarding
+ * events - ProtocolListener: reacts to parsed messages (state machine / gameflow / GUI)
  *
  * @author WoFabian
  */
@@ -28,7 +27,8 @@ public class ProtocolHandler implements MessageListener {
   /**
    * Creates a new ProtocolHandler and registers itself on the given connector.
    *
-   * After construction, the handler automatically receives all incoming messages from the socket.
+   * <p>After construction, the handler automatically receives all incoming messages from the
+   * socket.
    *
    * @param connector connected socket wrapper used for send/receive
    * @author WoFabian
@@ -64,7 +64,8 @@ public class ProtocolHandler implements MessageListener {
   /**
    * Called by {@link SocketConnector} whenever a raw line is received.
    *
-   * This method parses the line into a {@link Message} and forwards it to the {@link ProtocolListener}.
+   * <p>This method parses the line into a {@link Message} and forwards it to the {@link
+   * ProtocolListener}.
    *
    * @param message raw received protocol line
    * @author WoFabian

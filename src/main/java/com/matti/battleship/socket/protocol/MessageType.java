@@ -3,13 +3,11 @@ package com.matti.battleship.socket.protocol;
 /**
  * Enum of all supported protocol commands for the Battleship socket communication.
  *
- * Each {@link MessageType} represents the first keyword of a protocol line.
- * The arguments depend on the command, for example:
- * - SIZE   -> "size <rows>"
- * - SHOT   -> "shot <row> <col>"
- * - ANSWER -> "answer <a>"
+ * <p>Each {@link MessageType} represents the first keyword of a protocol line. The arguments depend
+ * on the command, for example: - SIZE -> "size <rows>" - SHOT -> "shot <row> <col>" - ANSWER ->
+ * "answer <a>"
  *
- * UNKNOWN is used when the parser receives an unexpected or invalid command.
+ * <p>UNKNOWN is used when the parser receives an unexpected or invalid command.
  *
  * @author WoFabian
  */

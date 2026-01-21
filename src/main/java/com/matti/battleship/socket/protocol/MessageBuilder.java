@@ -3,15 +3,11 @@ package com.matti.battleship.socket.protocol;
 /**
  * Utility class to build protocol messages as raw strings.
  *
- * This class is used by the network/gameflow layer to create correct command lines that are sent
+ * <p>This class is used by the network/gameflow layer to create correct command lines that are sent
  * over the TCP connection. Each method returns exactly one line (without newline), which can be
  * passed to ClientConnection/ServerConnection send(...).
  *
- * Protocol examples:
- * - size 10
- * - ships 5 4 3 3 2
- * - shot 3 7
- * - answer 0
+ * <p>Protocol examples: - size 10 - ships 5 4 3 3 2 - shot 3 7 - answer 0
  *
  * @author WoFabian
  */
@@ -20,7 +16,7 @@ public class MessageBuilder {
   /**
    * Builds a SIZE command.
    *
-   * Example: "size 10"
+   * <p>Example: "size 10"
    *
    * @param rows board size (number of rows/columns)
    * @return protocol line for size
@@ -33,7 +29,7 @@ public class MessageBuilder {
   /**
    * Builds a SHIPS command.
    *
-   * Example: "ships 5 4 3 3 2"
+   * <p>Example: "ships 5 4 3 3 2"
    *
    * @param l ship lengths
    * @return protocol line for ships
@@ -48,7 +44,7 @@ public class MessageBuilder {
   /**
    * Builds a DONE command.
    *
-   * DONE is typically used as acknowledgement after receiving SIZE or SHIPS.
+   * <p>DONE is typically used as acknowledgement after receiving SIZE or SHIPS.
    *
    * @return protocol line "done"
    * @author WoFabian
@@ -60,7 +56,7 @@ public class MessageBuilder {
   /**
    * Builds a READY command.
    *
-   * READY is used to indicate that the player finished setup and is ready to start.
+   * <p>READY is used to indicate that the player finished setup and is ready to start.
    *
    * @return protocol line "ready"
    * @author WoFabian
@@ -72,10 +68,10 @@ public class MessageBuilder {
   /**
    * Builds a SHOT command.
    *
-   * IMPORTANT: The official protocol uses 1-based coordinates (row/col start at 1).
-   * If your internal board uses 0-based indices, convert before calling this method.
+   * <p>IMPORTANT: The official protocol uses 1-based coordinates (row/col start at 1). If your
+   * internal board uses 0-based indices, convert before calling this method.
    *
-   * Example: "shot 3 7"
+   * <p>Example: "shot 3 7"
    *
    * @param r row coordinate (usually 1-based in the protocol)
    * @param c column coordinate (usually 1-based in the protocol)
@@ -89,12 +85,9 @@ public class MessageBuilder {
   /**
    * Builds an ANSWER command.
    *
-   * Protocol meaning:
-   * - 0 = water (miss)
-   * - 1 = hit
-   * - 2 = hit + sunk
+   * <p>Protocol meaning: - 0 = water (miss) - 1 = hit - 2 = hit + sunk
    *
-   * Example: "answer 0"
+   * <p>Example: "answer 0"
    *
    * @param a answer code (0/1/2)
    * @return protocol line for answer
@@ -107,7 +100,7 @@ public class MessageBuilder {
   /**
    * Builds a PASS command.
    *
-   * PASS is used after a miss (answer 0) to clearly switch the turn to the opponent.
+   * <p>PASS is used after a miss (answer 0) to clearly switch the turn to the opponent.
    *
    * @return protocol line "pass"
    * @author WoFabian
@@ -119,7 +112,7 @@ public class MessageBuilder {
   /**
    * Builds a SAVE command.
    *
-   * Example: "save 123456"
+   * <p>Example: "save 123456"
    *
    * @param id save id
    * @return protocol line for save
@@ -132,7 +125,7 @@ public class MessageBuilder {
   /**
    * Builds a LOAD command.
    *
-   * Example: "load 123456"
+   * <p>Example: "load 123456"
    *
    * @param id save id
    * @return protocol line for load
@@ -145,7 +138,7 @@ public class MessageBuilder {
   /**
    * Builds an OK command.
    *
-   * OK is typically used as acknowledgement after receiving SAVE or LOAD.
+   * <p>OK is typically used as acknowledgement after receiving SAVE or LOAD.
    *
    * @return protocol line "ok"
    * @author WoFabian

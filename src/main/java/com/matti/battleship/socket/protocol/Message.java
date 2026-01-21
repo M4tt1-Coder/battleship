@@ -5,9 +5,9 @@ import java.util.Arrays;
 /**
  * Represents one parsed protocol message.
  *
- * A message consists of a {@link MessageType} (command) and optional string arguments.
- * This class is typically created by {@link MessageParser} and then used by logic/state machine
- * to react to incoming network commands.
+ * <p>A message consists of a {@link MessageType} (command) and optional string arguments. This
+ * class is typically created by {@link MessageParser} and then used by logic/state machine to react
+ * to incoming network commands.
  *
  * @author WoFabian
  */
@@ -54,9 +54,8 @@ public class Message {
   /**
    * Parses the argument at the given index as an int.
    *
-   * Used for commands like:
-   * - "size 10" -> getIntArg(0) == 10
-   * - "shot 3 5" -> getIntArg(0) == 3, getIntArg(1) == 5
+   * <p>Used for commands like: - "size 10" -> getIntArg(0) == 10 - "shot 3 5" -> getIntArg(0) == 3,
+   * getIntArg(1) == 5
    *
    * @param index index in args array
    * @return parsed integer value
@@ -71,9 +70,8 @@ public class Message {
   /**
    * Parses the argument at the given index as a long.
    *
-   * Used for commands like:
-   * - "save 123456" -> getArglong(0) == 123456
-   * - "load 123456" -> getArglong(0) == 123456
+   * <p>Used for commands like: - "save 123456" -> getArglong(0) == 123456 - "load 123456" ->
+   * getArglong(0) == 123456
    *
    * @param index index in args array
    * @return parsed long value

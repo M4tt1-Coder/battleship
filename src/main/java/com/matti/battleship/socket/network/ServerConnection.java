@@ -11,52 +11,48 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * GUI-OPTIONAL (Host-Button): Used if the GUI allows starting a server locally. Important methods:
  * - startServer(listener): starts UDP discovery responder + TCP accept (blocks internally)
  *
- * This class starts:
- * - a UDP discovery responder (so clients can find this server in the LAN)
- * - a TCP server socket that blocks on accept() until a client connects
+ * <p>This class starts: - a UDP discovery responder (so clients can find this server in the LAN) -
+ * a TCP server socket that blocks on accept() until a client connects
  *
- * After a client connects, the server is marked as "busy" so it will stop responding to discovery
- * requests. This prevents other clients from seeing or selecting a server that is already in use.
+ * <p>After a client connects, the server is marked as "busy" so it will stop responding to
+ * discovery requests. This prevents other clients from seeing or selecting a server that is already
+ * in use.
  *
- * Important methods for GUI integration:
- * - startServer(listener): starts discovery responder and waits for a TCP client connection
- * - send(msg): sends protocol messages to the connected client
+ * <p>Important methods for GUI integration: - startServer(listener): starts discovery responder and
+ * waits for a TCP client connection - send(msg): sends protocol messages to the connected client
  *
- * Note for GUI:
- * startServer(...) blocks internally at accept(). If you call it from JavaFX/Swing UI thread,
- * your UI will freeze. Always run startServer(...) in a background thread/task.
+ * <p>Note for GUI: startServer(...) blocks internally at accept(). If you call it from JavaFX/Swing
+ * UI thread, your UI will freeze. Always run startServer(...) in a background thread/task.
  *
  * @author WoFabian
  */
 public class ServerConnection {
 
-    /** Handles the actual TCP send/receive logic and turn logging. */
+  /** Handles the actual TCP send/receive logic and turn logging. */
   private SocketConnector connector;
 
-    /**
-     * Busy flag for discovery: true means a client is connected, so we should not respond to discovery.
-     * AtomicBoolean is used because discovery runs in a separate thread.
-     */
+  /**
+   * Busy flag for discovery: true means a client is connected, so we should not respond to
+   * discovery. AtomicBoolean is used because discovery runs in a separate thread.
+   */
   private final AtomicBoolean busy = new AtomicBoolean(false);
 
   /** UDP discovery responder instance (runs in its own thread). */
   private ServerDiscoveryResponder discovery;
 
-    /**
-     * Starts the server:
-     * - reads the port from EnvConfig
-     * - starts the UDP discovery responder in a daemon thread
-     * - opens a TCP ServerSocket and waits for one client via accept()
-     * - wraps the listener so we can reset "busy" when the client disconnects
-     *
-     * @param listener callback receiving all incoming protocol lines from the connected client
-     * @throws Exception if sockets cannot be created or binding fails
-     * @author WoFabian
-     */
+  /**
+   * Starts the server: - reads the port from EnvConfig - starts the UDP discovery responder in a
+   * daemon thread - opens a TCP ServerSocket and waits for one client via accept() - wraps the
+   * listener so we can reset "busy" when the client disconnects
+   *
+   * @param listener callback receiving all incoming protocol lines from the connected client
+   * @throws Exception if sockets cannot be created or binding fails
+   * @author WoFabian
+   */
   public void startServer(MessageListener listener) throws Exception {
     int port = EnvConfig.getPort();
 
-      // Start UDP discovery responder in the background so clients can find this server.
+    // Start UDP discovery responder in the background so clients can find this server.
     discovery = new ServerDiscoveryResponder(port, busy, "Battleship-Server");
     Thread discoveryThread = new Thread(discovery, "Discovery-Responder");
     discoveryThread.setDaemon(true);
@@ -98,9 +94,8 @@ public class ServerConnection {
   /**
    * Sends a raw protocol message to the connected client.
    *
-   * Typical usage:
-   * - server sends setup: "size", "ships", "ready"
-   * - server sends gameplay: "answer", "pass"
+   * <p>Typical usage: - server sends setup: "size", "ships", "ready" - server sends gameplay:
+   * "answer", "pass"
    *
    * @param msg message line to send (one protocol command)
    * @throws Exception if sending fails or no client is connected

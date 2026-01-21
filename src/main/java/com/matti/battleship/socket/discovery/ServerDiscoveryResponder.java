@@ -8,12 +8,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * UDP Discovery responder for the Battleship server.
  *
- * This runnable listens on a UDP port for a specific DISCOVER message. If the server is currently
- * not busy, it replies directly to the sender (client) with a HERE message containing the TCP port
- * and a server name. This allows clients to discover available servers in the local network.
+ * <p>This runnable listens on a UDP port for a specific DISCOVER message. If the server is
+ * currently not busy, it replies directly to the sender (client) with a HERE message containing the
+ * TCP port and a server name. This allows clients to discover available servers in the local
+ * network.
  *
- * Important: The "busy" flag is used so that only free servers are visible in the discovery list.
- * If a server is already in a match, it will not respond to discovery requests.
+ * <p>Important: The "busy" flag is used so that only free servers are visible in the discovery
+ * list. If a server is already in a match, it will not respond to discovery requests.
  *
  * @author WoFabian
  */
@@ -23,8 +24,8 @@ public class ServerDiscoveryResponder implements Runnable {
   private final int port;
 
   /**
-   * Indicates whether this server is currently busy (already has a connected client).
-   * If busy == true, discovery requests will be ignored.
+   * Indicates whether this server is currently busy (already has a connected client). If busy ==
+   * true, discovery requests will be ignored.
    */
   private final AtomicBoolean busy;
 
@@ -50,9 +51,9 @@ public class ServerDiscoveryResponder implements Runnable {
   /**
    * Main loop of the responder.
    *
-   * Opens a UDP socket on the discovery port and waits for incoming packets.
-   * If the packet contains the DISCOVER message and the server is not busy,
-   * it replies to the sender with "BS_HERE_V1 <port> <serverName>".
+   * <p>Opens a UDP socket on the discovery port and waits for incoming packets. If the packet
+   * contains the DISCOVER message and the server is not busy, it replies to the sender with
+   * "BS_HERE_V1 <port> <serverName>".
    *
    * @author WoFabian
    */

@@ -3,14 +3,11 @@ package com.matti.battleship.socket.protocol;
 /**
  * Parses raw protocol lines (received via TCP) into {@link Message} objects.
  *
- * The socket layer receives text lines like:
- * - "size 10"
- * - "ships 5 4 3 3 2"
- * - "shot 3 7"
- * - "answer 0"
+ * <p>The socket layer receives text lines like: - "size 10" - "ships 5 4 3 3 2" - "shot 3 7" -
+ * "answer 0"
  *
- * This parser converts the first token into a {@link MessageType} and stores the remaining tokens
- * as string arguments inside a {@link Message}.
+ * <p>This parser converts the first token into a {@link MessageType} and stores the remaining
+ * tokens as string arguments inside a {@link Message}.
  *
  * @author WoFabian
  */
@@ -19,8 +16,8 @@ public class MessageParser {
   /**
    * Parses one received text line from the socket into a {@link Message} object.
    *
-   * If the line is null/blank, an UNKNOWN message is returned. Unknown commands are also mapped to
-   * UNKNOWN, but the arguments are still attached so debugging is easier.
+   * <p>If the line is null/blank, an UNKNOWN message is returned. Unknown commands are also mapped
+   * to UNKNOWN, but the arguments are still attached so debugging is easier.
    *
    * @param line complete raw line (e.g. "shot 3 4")
    * @return parsed {@link Message} containing type and arguments

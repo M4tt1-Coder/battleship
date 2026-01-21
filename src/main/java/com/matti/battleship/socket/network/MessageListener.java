@@ -3,18 +3,17 @@ package com.matti.battleship.socket.network;
 /**
  * GUI / LOGIC IMPORTANT: Callback interface used by the socket layer to deliver incoming messages.
  *
- * Every time the network receives one complete protocol line, {@link #onMessageReceived(String)}
+ * <p>Every time the network receives one complete protocol line, {@link #onMessageReceived(String)}
  * is called. If the connection is closed or an error occurs, {@link #onConnectionClosed(Exception)}
  * is called.
  *
- * Typical GUI usage:
- * The GUI or a controller registers an implementation of this interface when connecting.
- * The implementation can forward received lines to the protocol parser and state machine,
- * and update the GUI accordingly (for example enabling buttons when "ready" is reached).
+ * <p>Typical GUI usage: The GUI or a controller registers an implementation of this interface when
+ * connecting. The implementation can forward received lines to the protocol parser and state
+ * machine, and update the GUI accordingly (for example enabling buttons when "ready" is reached).
  *
- * Typical logic usage:
- * A GameFlow/NetworkGameController can implement this interface to parse messages and react
- * by sending responses (for example answering shots or sending acknowledgements).
+ * <p>Typical logic usage: A GameFlow/NetworkGameController can implement this interface to parse
+ * messages and react by sending responses (for example answering shots or sending
+ * acknowledgements).
  *
  * @author WoFabian
  */
