@@ -10,6 +10,9 @@ import java.net.Socket;
  * Forward received messages to a {@link MessageListener} - Maintain turn information
  * (SERVER/CLIENT) for logging and debugging - Print separators after complete send/receive pairs
  * (pair/duo tracking)
+ * * Note:
+ *  * This class only transports messages and provides debug logging.
+ *  * The real protocol/game flow should be handled by higher layers (NetworkGameController + NetworkStateMachine).
  *
  * @author WoFabian
  */
@@ -222,6 +225,13 @@ public class SocketConnector {
     }
   }
 
+  /**
+   * IMPORTANT:
+   * Turn handling inside SocketConnector is only used for readable console output (TurnLog).
+   * It does not replace the protocol/game state machine.
+   *
+   * @author WoFabian
+   */
   /* ===================== TURN LOGIC ===================== */
 
   /**
