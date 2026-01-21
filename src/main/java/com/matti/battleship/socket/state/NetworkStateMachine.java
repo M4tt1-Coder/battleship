@@ -6,23 +6,13 @@ import com.matti.battleship.socket.protocol.MessageType;
 /**
  * Protocol state machine matching the official Battleship communication protocol.
  *
- * New game:
- *   Server -> size N
- *   Client -> done
- *   Server -> ships ...
- *   Client -> done
- *   Server -> ready
- *   Client -> ready
- *   Server starts -> gameplay
+ * <p>New game: Server -> size N Client -> done Server -> ships ... Client -> done Server -> ready
+ * Client -> ready Server starts -> gameplay
  *
- * Load game:
- *   Server -> load ID
- *   Client -> ok
- *   Server -> ready
- *   Client -> ready
- *   Server starts -> gameplay
+ * <p>Load game: Server -> load ID Client -> ok Server -> ready Client -> ready Server starts ->
+ * gameplay
  *
- * This class manages protocol flow only (no hit detection / ship logic).
+ * <p>This class manages protocol flow only (no hit detection / ship logic).
  *
  * @author WoFabian
  */
@@ -90,8 +80,13 @@ public class NetworkStateMachine {
           if (t == MessageType.ANSWER) state = GameState.OPPONENT_TURN;
         }
 
-        case MY_TURN, OPPONENT_TURN, GAME_OVER,
-             C_NEED_DONE_AFTER_SIZE, C_NEED_DONE_AFTER_SHIPS, C_NEED_READY, C_NEED_OK_AFTER_LOAD -> {
+        case MY_TURN,
+            OPPONENT_TURN,
+            GAME_OVER,
+            C_NEED_DONE_AFTER_SIZE,
+            C_NEED_DONE_AFTER_SHIPS,
+            C_NEED_READY,
+            C_NEED_OK_AFTER_LOAD -> {
           // No transition here. Those are handled by onMessageSent for client side.
         }
 
@@ -128,8 +123,7 @@ public class NetworkStateMachine {
         if (t == MessageType.ANSWER) state = GameState.OPPONENT_TURN;
       }
 
-      case MY_TURN, GAME_OVER,
-           S_CAN_SEND_SIZE_OR_LOAD, S_CAN_SEND_SHIPS, S_CAN_SEND_READY -> {
+      case MY_TURN, GAME_OVER, S_CAN_SEND_SIZE_OR_LOAD, S_CAN_SEND_SHIPS, S_CAN_SEND_READY -> {
         // Sending transitions handled by onMessageSent.
       }
 

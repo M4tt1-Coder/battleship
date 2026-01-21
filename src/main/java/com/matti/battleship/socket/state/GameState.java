@@ -3,9 +3,8 @@ package com.matti.battleship.socket.state;
 /**
  * Protocol states matching the agreed Battleship communication protocol.
  *
- * The protocol is ping-pong like:
- * - Server sends setup commands, client acknowledges with DONE/OK/READY
- * - After READY/READY, server starts the game
+ * <p>The protocol is ping-pong like: - Server sends setup commands, client acknowledges with
+ * DONE/OK/READY - After READY/READY, server starts the game
  *
  * @author WoFabian
  */
