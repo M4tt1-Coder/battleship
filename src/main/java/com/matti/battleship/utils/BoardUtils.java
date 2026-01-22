@@ -94,7 +94,7 @@ public class BoardUtils {
     // get all occupied fields
     ArrayList<Coordinates> allOccupiedFields = board.getCoordinatesOfOccupiedFields();
     for (Coordinates c : allOccupiedFields) {
-      var field = board.getFieldOnBoardByCoordinates(c);
+      // var field = board.getFieldOnBoardByCoordinates(c);
       allOccupiedFields.remove(c);
       ArrayList<Coordinates> temp = new ArrayList<>();
       temp.add(c);
@@ -115,7 +115,8 @@ public class BoardUtils {
         logger.error("A ship of an invalid size is on the board of the opponent!");
         throw new IllegalStateException("A ship can only be of the size from 2 to 5!");
       }
-      // check if a ship has been registered -> if not return 'temp' since that's the ship that was
+      // check if a ship has been registered -> if not return 'temp' since that's the
+      // ship that was
       // freshly sunken
       boolean shipAlreadyRegistered = false;
       for (Coordinates coordinates : temp) {

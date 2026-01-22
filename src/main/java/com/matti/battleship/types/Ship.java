@@ -1,5 +1,6 @@
 package com.matti.battleship.types;
 
+import com.matti.battleship.IO.ResourceProfiler;
 import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.utils.BoardUtils;
@@ -34,19 +35,16 @@ public class Ship {
   /** The file path to the picture or image associated with this object. */
   private final String picPath;
 
-  public Ship(Coordinates start, Direction direction, ShipLength length, String picPath) {
+  public Ship(Coordinates start, Direction direction, ShipLength length) {
     this.start = start;
     this.direction = direction;
     this.length = length;
     this.id = UUID.randomUUID();
     this.hasSunk = false;
-    // path to the ship picture (png, jpg, etc. ...)
-    // -> can't be empty or don't lead to an existing file (checked before the
-    // initialisation of the Ship object)
-    if (picPath.isEmpty()) {
-      throw new IllegalArgumentException("The path to a ship picture can't be empty!");
-    }
-    this.picPath = picPath;
+
+    ResourceProfiler profiler = new ResourceProfiler();
+
+    this.picPath = profiler.getPictureOfShip(length);
   }
 
   // ----- Methods -----
