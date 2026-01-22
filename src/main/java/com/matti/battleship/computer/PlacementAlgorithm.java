@@ -11,6 +11,12 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The PlacementAlgorithm class provides a framework for placing ships on a game board.
+ *
+ * <p>Currently, this class contains a placeholder for future ship placement algorithms. The static
+ * method {@link #placeShips(Board, ShipLength[])} implements a basic random placement strategy.
+ */
 public class PlacementAlgorithm {
   private static final Logger logger = LogManager.getLogger(PlacementAlgorithm.class);
 
