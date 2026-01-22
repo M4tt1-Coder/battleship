@@ -206,9 +206,7 @@ public class FileReaderService {
 
     if (startStr == null || dir == null || len == null) return null;
 
-    ResourceProfiler prof = new ResourceProfiler();
-
-    Ship ship = new Ship(parseCoordinates(startStr), dir, len, prof.getPictureOfShip(len));
+    Ship ship = new Ship(parseCoordinates(startStr), dir, len);
 
     if (hasSunk) ship.alterHasSunk();
     return ship;

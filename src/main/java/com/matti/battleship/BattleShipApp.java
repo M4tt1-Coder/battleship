@@ -1,12 +1,16 @@
 package com.matti.battleship;
 
 import com.matti.battleship.enums.AIDifficulty;
+import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
+import com.matti.battleship.utils.PlayingUtils;
+import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,19 +31,24 @@ import org.jetbrains.annotations.Nullable;
 public class BattleShipApp extends Application {
 
   private Scene scene1;
-  int selected_field_size = 10;
-  int selected_amount_of_boats = 5;
+  private int selected_field_size = 10;
+  private double BOARD_SIZE = 400;
+  private double cellSize = BOARD_SIZE / selected_field_size;
+  private int selected_amount_of_boats = 5;
 
   // ----- Temporary Game -----
   private Game game;
   private PlayingMode playingMode;
   @Nullable private AIDifficulty difficulty;
 
-  // percentage rule
+  // percentage rule ... 30% of the field must be occupied by ships
   private ShipLength[] initialShipSetup;
 
   // ----- Player -----
   private Board board;
+
+  // ----- Game Logic -----
+  private int[] coordinatesOfLastDraggedShip = new int[2];
 
   @Override
   public void start(Stage primaryStage) {
@@ -349,31 +358,33 @@ public class BattleShipApp extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
+    // TODO: When pressing 'EndGame' in root4 the GridPane is not removed and shown
+    // again when
+    // starting a new game
+
     start_game_button_r2.setOnAction(
         e -> {
-
           // prüfen ob Eingabe über tf22 + 21
           if (!select_field_size_r2.getText().isEmpty()) {
             try {
               this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
-
+              this.cellSize = BOARD_SIZE / selected_field_size;
             } catch (NumberFormatException ex) {
               System.out.println("Ungültige Feldgröße, Standardwert 10");
             }
           }
+
           // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+          System.out.println(Arrays.toString(this.initialShipSetup));
+
           // save current AIDifficulty
           String selectedDifficultyString =
               difficulty_selection_r2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
-          // TODO: Potentially adjust / add a temporary datastructure to documente the
-          // ship selection
           this.board = new Board(selected_field_size);
-          double BOARD_SIZE = 400;
-          double cellSize = BOARD_SIZE / selected_field_size;
 
           // ev das global dann kann battle grid auch in anderen angezeigt
           GridPane battleGrid = new GridPane();
@@ -382,81 +393,8 @@ public class BattleShipApp extends Application {
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setStyle("-fx-background-color: transparent;");
 
-          for (Field[] _row : board.board) {
-            for (Field field : _row) {
-              int c = field.getCoordinates().x;
-              int r = field.getCoordinates().y;
-              StackPane cell = new StackPane();
-              cell.setPrefSize(cellSize, cellSize);
-              cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
-
-              cell.setOnDragOver(
-                  ev -> {
-                    if (ev.getGestureSource() != cell) { // zelle nicht serlbst gezogen
-                      ev.acceptTransferModes(TransferMode.MOVE);
-                    }
-                    ev.consume();
-                  });
-
-              cell.setOnDragDropped(
-                  ev -> {
-                    if (!ev.getDragboard().hasString()) return;
-
-                    Rectangle shipNode = (Rectangle) ev.getGestureSource();
-
-                    // aus altem Parent entfernen
-                    if (shipNode.getParent() != null) {
-                      ((javafx.scene.layout.Pane) shipNode.getParent())
-                          .getChildren()
-                          .remove(shipNode);
-                    }
-
-                    // int startCol;
-                    /*switch(shipNode.getlength()) {
-                        case 2:
-                            startCol = Math.max(0, c - 1);
-                            GridPane.setColumnSpan(shipNode, 2);
-                            break;
-                        case 3:
-                            startCol = Math.max(0, c - 2);
-                             GridPane.setColumnSpan(shipNode, 3);
-                            break;
-                        case 4:
-                            startCol = Math.max(0, c - 3);
-                            GridPane.setColumnSpan(shipNode, 4);
-                            break;
-                        case 5:
-                            startCol = Math.max(0, c - 4);
-                            GridPane.setColumnSpan(shipNode, 5);
-                            break;
-                        default:
-                            // throw exception
-                    }
-                     */
-
-                    int startCol = Math.max(0, c - 2);
-                    int row = r;
-
-                    // Schiff direkt ins Grid legen und spannen
-                    battleGrid.getChildren().add(shipNode);
-                    GridPane.setRowIndex(shipNode, row);
-                    GridPane.setColumnIndex(shipNode, startCol);
-                    GridPane.setRowSpan(shipNode, 1);
-                    GridPane.setColumnSpan(shipNode, 3);
-
-                    GridPane.setHalignment(shipNode, javafx.geometry.HPos.CENTER);
-                    GridPane.setValignment(shipNode, javafx.geometry.VPos.CENTER);
-
-                    ev.setDropCompleted(true);
-                    ev.consume();
-
-                    System.out.println(
-                        "Ship spanning: (" + row + "," + startCol + ") + (" + row + "," + c + ")");
-                  });
-
-              battleGrid.add(cell, c, r);
-            }
-          }
+          // initialize the grid with cells
+          initializePlacementBoard(battleGrid);
 
           Image ship_length3 =
               new Image(
@@ -477,71 +415,10 @@ public class BattleShipApp extends Application {
           imageview_ship_length5.setFitWidth(cellSize * 0.8);
           imageview_ship_length5.setFitHeight(cellSize * 0.8);
 
-          /*
-           Rectangle ship;
+          prepareShipRectangles(root4);
 
-          switch (length) {
-              case 2:
-                  ship = new Rectangle(cellSize * 2, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 3:
-                  ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 4:
-                  ship = new Rectangle(cellSize * 4, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 5:
-                  ship = new Rectangle(cellSize * 5, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              default:
-                  throw new IllegalArgumentException("Invalid ship length");
-          }
-                       */
-
-          /*
-           Ship ship = new Ship();
-
-          switch (ship.getLength()) {
-              case 2:
-                  Image ship_length2 =
-                          new Image(
-                                  getClass()
-                                          .getResource(ship.getPicPath())
-                                          .toExternalForm());
-                  ImageViews imageview_ship_length2 = new ImageViews(ship_length3);
-                  imageview_ship_length2.setFitWidth(cellSize * 0.8);
-                  imageview_ship_length2.setFitHeight(cellSize * 0.8);
-                  break;
-              case 3:
-                  ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 4:
-                  ship = new Rectangle(cellSize * 4, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              case 5:
-                  ship = new Rectangle(cellSize * 5, cellSize * 0.8, Color.DARKGRAY);
-                  break;
-              default:
-                  throw new IllegalArgumentException("Invalid ship length");
-          }
-                       */
-
-          Rectangle ship = new Rectangle(cellSize * 3, cellSize * 0.8, Color.DARKGRAY);
-          ship.setArcWidth(10);
-          ship.setArcHeight(10);
-
-          ship.setOnDragDetected(
-              ev -> {
-                Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
-                ClipboardContent content = new ClipboardContent();
-                content.putString("SHIP_LEN2_LEFT");
-                db.setContent(content);
-                ev.consume();
-              });
-
-          root4.getChildren().addAll(battleGrid, ship);
+          root4.getChildren().add(battleGrid);
           StackPane.setAlignment(battleGrid, Pos.CENTER);
-          StackPane.setAlignment(ship, Pos.TOP_CENTER);
           scene1.setRoot(root4);
         });
 
@@ -637,6 +514,132 @@ public class BattleShipApp extends Application {
     primaryStage.setScene(scene1);
     primaryStage.show();
   }
+
+  // ----- Helpers -----
+
+  private void prepareShipRectangles(StackPane root) {
+    for (ShipLength length : this.initialShipSetup) {
+      Rectangle ship = new Rectangle(cellSize * 0.8, cellSize * length.getValue(), Color.DARKGRAY);
+      ship.setArcWidth(10);
+      ship.setArcHeight(10);
+      ship.setUserData(
+          new ShipGridElement(
+              new Coordinates(0, 0), Direction.DOWN, length, (int) this.BOARD_SIZE));
+
+      ship.setOnDragDetected(
+          ev -> {
+            // TODO: Add logic to rotate ship by pressing a key while dragging
+            Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(String.format("SHIP_WIDTH_%d", PlayingUtils.getRandomInt()));
+            db.setContent(content);
+            ev.consume();
+          });
+      // ships are first added to the root when starting the game
+      root.getChildren().add(ship);
+      StackPane.setAlignment(ship, Pos.TOP_CENTER);
+    }
+  }
+
+  private void initializePlacementBoard(GridPane grid) {
+    double cellSize = BOARD_SIZE / selected_field_size;
+
+    for (Field[] row : board.board) {
+      for (Field field : row) {
+        int X = field.getCoordinates().x;
+        int Y = field.getCoordinates().y;
+
+        StackPane cell = new StackPane();
+        cell.setPrefSize(cellSize, cellSize);
+        cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
+
+        // TODO: Apply the logic add, remove or rotate ships from the board data
+        // structure
+
+        cell.setOnDragOver(
+            ev -> {
+              if (ev.getGestureSource() != cell) { // zelle nicht serlbst gezogen
+                ev.acceptTransferModes(TransferMode.MOVE);
+              }
+              ev.consume();
+            });
+
+        cell.setOnDragDropped(
+            ev -> {
+              if (!ev.getDragboard().hasString()) return;
+
+              Rectangle shipNode = (Rectangle) ev.getGestureSource();
+              ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();
+
+              // aus altem Parent entfernen
+              if (shipNode.getParent() != null) {
+                ((javafx.scene.layout.Pane) shipNode.getParent()).getChildren().remove(shipNode);
+              }
+
+              int columnIndex = Math.max(0, X - shipData.getLength().getValue() + 1);
+              int rowIndex = Y;
+
+              // apply grid layout to rectangle
+              applyGrisLayoutToRectangle(
+                  shipNode,
+                  grid,
+                  rowIndex,
+                  columnIndex,
+                  shipData.getDirection(),
+                  shipData.getLength().getValue());
+
+              // update "userData" of the rectangle
+              shipData.setCoordinates(new Coordinates(columnIndex, rowIndex));
+              shipNode.setUserData(shipData);
+
+              ev.setDropCompleted(true);
+              ev.consume();
+
+              System.out.println(
+                  "Ship spanning: (" + rowIndex + "," + columnIndex + ") + (" + Y + "," + X + ")");
+            });
+
+        grid.add(cell, X, Y);
+      }
+    }
+  }
+
+  private void applyGrisLayoutToRectangle(
+      Rectangle rect, GridPane grid, int row, int col, Direction direction, int length) {
+    // Schiff direkt ins Grid legen und spannen
+    grid.getChildren().add(rect);
+    switch (direction) {
+      case DOWN:
+        GridPane.setRowIndex(rect, row);
+        GridPane.setColumnIndex(rect, col);
+        GridPane.setRowSpan(rect, length);
+        GridPane.setColumnSpan(rect, 1);
+
+        break;
+      case RIGHT:
+        GridPane.setRowIndex(rect, row);
+        GridPane.setColumnIndex(rect, col);
+        GridPane.setRowSpan(rect, 1);
+        GridPane.setColumnSpan(rect, length);
+        break;
+      case UP:
+        GridPane.setRowIndex(rect, row);
+        GridPane.setColumnIndex(rect, col);
+        GridPane.setRowSpan(rect, -length);
+        GridPane.setColumnSpan(rect, 1);
+        break;
+      case LEFT:
+        GridPane.setRowIndex(rect, row);
+        GridPane.setColumnIndex(rect, col);
+        GridPane.setRowSpan(rect, 1);
+        GridPane.setColumnSpan(rect, -length);
+        break;
+    }
+    GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
+    GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
+  }
+
+  // Entry Point -> main function
 
   public static void main(String[] args) {
     launch(args);
