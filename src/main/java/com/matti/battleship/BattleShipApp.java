@@ -392,6 +392,7 @@ public class BattleShipApp extends Application {
           // werden
           battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
+          battleGrid.setMinSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setStyle("-fx-background-color: transparent;");
 
           // initialize the grid with cells
@@ -604,7 +605,6 @@ public class BattleShipApp extends Application {
     }
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
-    StackPane.setAlignment(grid, Pos.CENTER);
   }
 
   /**
