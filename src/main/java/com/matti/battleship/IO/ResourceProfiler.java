@@ -31,16 +31,20 @@ public class ResourceProfiler {
   // !!Need to be update when the names of the files are changed!!
 
   /** File path to the image of a destroyer ship with length 2. */
-  private static final String Ship2PicPath = "images/ships/destroyer_length2.png";
+  private static final String Ship2PicPath =
+      "com/matti/battleship/images/ships/destroyer_length2.png";
 
   /** File path to the image of a submarine with length 3. */
-  private static final String Ship3PicPath = "images/ships/submarine_length3.png";
+  private static final String Ship3PicPath =
+      "com/matti/battleship/images/ships/submarine_length3.png";
 
   /** File path to the image of an aircraft carrier with length 4. */
-  private static final String Ship4PicPath = "images/ships/aircraft_carrier_length4.png";
+  private static final String Ship4PicPath =
+      "com/matti/battleship/images/ships/aircraft_carrier_length4.png";
 
   /** File path to the image of a cruiser with length 5. */
-  private static final String Ship5PicPath = "images/ships/cruiser_length5.png";
+  private static final String Ship5PicPath =
+      "com/matti/battleship/images/ships/cruiser_length5.png";
 
   // __________________________________
 

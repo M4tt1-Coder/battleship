@@ -85,7 +85,7 @@ public class Ship {
    * @return TRUE, if the 'start' coordinates have been mutated.
    */
   public boolean setStart(Coordinates start, int boardSize) {
-    if (BoardUtils.isCoordinateOnBoard(start, boardSize)) {
+    if (!BoardUtils.isCoordinateOnBoard(start, boardSize)) {
       return false;
     }
     if (this.start != start) {

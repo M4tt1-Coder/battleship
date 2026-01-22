@@ -102,7 +102,7 @@ public class Board {
       return false;
     }
 
-    logger.debug("Added ship to the board!");
+    logger.info("Added ship to the board!");
     return true;
   }
 
@@ -147,26 +147,27 @@ public class Board {
   }
 
   /**
-   * Removes the ship located at the specified coordinates from the board.
+   * Removes a ship from the game board based on the provided coordinates.
    *
-   * <p>The method unmarks all fields occupied by the ship and clears the ship reference from the
-   * specified field. If no ship is found at the given coordinates, it logs an error and returns
-   * {@code false}.
+   * <p>The method locates the ship occupying the specified position, unmarks all fields occupied by
+   * the ship, and removes it from the board. If no ship is found at the given coordinates, the
+   * method logs an error and returns null.
    *
-   * @param shipCoordinates the coordinates where the ship is located
-   * @return {@code true} if the ship was successfully removed; {@code false} if no ship was found
-   *     at the specified location
+   * @param shipCoordinates the coordinates where part of the ship is located
+   * @return the removed Ship object if removal was successful; null otherwise
    */
-  public boolean removeShip(Coordinates shipCoordinates) {
+  public Ship removeShip(Coordinates shipCoordinates) {
     Field field = this.getFieldOnBoardByCoordinates(shipCoordinates);
     if (field.getShip() == null) {
       logger.error("Ship couldn't be found at {}! Can't remove it!", shipCoordinates.toString());
-      return false;
+      return null;
     }
     Ship ship = field.getShip();
     unmarkAllFieldsAsOccupied(ship);
     field.setShip(null);
-    return true;
+    this.numberOfShips--;
+    logger.debug("Removed ship {} from the board!", ship.toString());
+    return ship;
   }
 
   /**
@@ -286,7 +287,8 @@ public class Board {
   public Field getFieldOnBoardByCoordinates(Coordinates coordinates) {
     for (Field[] row : this.board) {
       for (Field field : row) {
-        if (field.getCoordinates().equals(coordinates)) {
+        if (field.getCoordinates().x == coordinates.x
+            && field.getCoordinates().y == coordinates.y) {
           return field;
         }
       }
@@ -310,7 +312,7 @@ public class Board {
       for (Field field : rows) {
         for (Coordinates coord : shipCoordinates) {
           if (coord.isNeighbourDiagonal(field.getCoordinates())) {
-            output_coordinates.add(coord);
+            output_coordinates.add(field.getCoordinates());
           }
         }
       }

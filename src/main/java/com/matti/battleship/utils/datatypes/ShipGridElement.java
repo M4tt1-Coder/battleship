@@ -20,6 +20,9 @@ public class ShipGridElement {
   /** The length of the ship. */
   private ShipLength length;
 
+  /** Indicates whether the ship has been placed on the board. */
+  private boolean isPlaced = false;
+
   /**
    * Constructs a ShipGridElement with specified coordinates, direction, length, and board size.
    * Validates that the provided coordinates are within the bounds of the board.
@@ -38,6 +41,24 @@ public class ShipGridElement {
     this.coordinates = coordinates;
     this.direction = direction;
     this.length = length;
+  }
+
+  /**
+   * Sets whether the ship has been placed on the board.
+   *
+   * @param placed true if the ship is placed, false otherwise
+   */
+  public void setPlaced(boolean placed) {
+    this.isPlaced = placed;
+  }
+
+  /**
+   * Checks if the ship has been placed on the board.
+   *
+   * @return true if the ship is placed, false otherwise
+   */
+  public boolean isPlaced() {
+    return isPlaced;
   }
 
   /**

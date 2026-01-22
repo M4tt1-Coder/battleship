@@ -359,10 +359,6 @@ public class BattleShipApp extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
-    // TODO: When pressing 'EndGame' in root4 the GridPane is not removed and shown
-    // again when
-    // starting a new game
-
     start_game_button_r2.setOnAction(
         e -> {
           // prüfen ob Eingabe über tf22 + 21
@@ -539,9 +535,6 @@ public class BattleShipApp extends Application {
         cell.setPrefSize(cellSize, cellSize);
         cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
 
-        // TODO: Apply the logic add, remove ships from the board data
-        // structure
-
         cell.setOnDragOver(
             ev -> {
               if (ev.getGestureSource() != cell) { // zelle nicht serlbst gezogen
@@ -553,9 +546,49 @@ public class BattleShipApp extends Application {
         cell.setOnDragDropped(
             ev -> {
               if (!ev.getDragboard().hasString()) return;
+              Coordinates coords = new Coordinates(X, Y);
 
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
               ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();
+              // TODO: Synchronise user data and board state properly
+
+              // first operate on the board data structure -> check if placement is valid
+              Ship ship;
+              Coordinates previousShipCoords = shipData.getCoordinates();
+              boolean freshlyPlaced = false;
+              if (shipData.isPlaced()) {
+                ship = this.board.removeShip(shipData.getCoordinates());
+                previousShipCoords = ship.getStartCoordinates();
+                // update the new ship
+                if (!ship.setStart(coords, this.board.getSize())) {
+                  System.out.println("Failed to update ship start to " + coords);
+                }
+              } else {
+                ship = new Ship(coords, shipData.getDirection(), shipData.getLength());
+                shipData.setPlaced(true);
+                freshlyPlaced = true;
+              }
+
+              if (!this.board.addShip(ship)) {
+                // revert changes in ship
+                ship.setStart(previousShipCoords, this.board.getSize());
+                // try to add back the ship to the old position
+                // if a ship was just placed freshly, no need to place is somewhere back on the
+                // board
+                if (!freshlyPlaced) {
+                  if (!this.board.addShip(ship)) {
+                    throw new IllegalStateException(
+                        "Could not revert ship placement on the board!");
+                  }
+                } else {
+                  shipData.setPlaced(false);
+                }
+                System.out.println("Invalid placement at " + coords);
+                ev.setDropCompleted(false);
+                ev.consume();
+                return;
+              }
+              BoardUtils.logBoardToConsole(this.board);
 
               // aus altem Parent entfernen
               if (shipNode.getParent() != null) {
@@ -564,10 +597,16 @@ public class BattleShipApp extends Application {
 
               // apply grid layout to rectangle
               applyGridLayoutToRectangle(
-                  shipNode, grid, Y, X, shipData.getDirection(), shipData.getLength().getValue());
+                  shipNode,
+                  grid,
+                  Y,
+                  X,
+                  shipData.getDirection(),
+                  shipData.getLength().getValue(),
+                  this.board.getSize());
 
               // update "userData" of the rectangle
-              shipData.setCoordinates(new Coordinates(X, Y));
+              shipData.setCoordinates(coords);
               shipNode.setUserData(shipData);
 
               ev.setDropCompleted(true);
@@ -580,13 +619,22 @@ public class BattleShipApp extends Application {
   }
 
   private void applyGridLayoutToRectangle(
-      Rectangle rect, GridPane grid, int row, int col, Direction direction, int length) {
+      Rectangle rect,
+      GridPane grid,
+      int row,
+      int col,
+      Direction direction,
+      int length,
+      int boardSize) {
     // Schiff direkt ins Grid legen und spannen
     grid.getChildren().add(rect);
     switch (direction) {
       case DOWN:
         int finalColD = col;
-        int finalRowD = Math.max(0, row - length + 1);
+        int finalRowD = row;
+        if (row + (length - 1) > boardSize) {
+          finalRowD = boardSize - length;
+        }
 
         GridPane.setRowIndex(rect, finalRowD);
         GridPane.setColumnIndex(rect, finalColD);
@@ -597,6 +645,7 @@ public class BattleShipApp extends Application {
       case RIGHT:
         int finalColR = Math.max(0, col - length + 1);
         int finalRowR = row;
+
         GridPane.setRowIndex(rect, finalRowR);
         GridPane.setColumnIndex(rect, finalColR);
         GridPane.setRowSpan(rect, 1);
@@ -607,19 +656,6 @@ public class BattleShipApp extends Application {
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
   }
 
-  /**
-   * Image ship_length3 = new Image( getClass()
-   * .getResource("/com/matti/battleship/images/ships/destroyer_length2.png") .toExternalForm());
-   * ImageViews imageview_ship_length3 = new ImageViews(ship_length3);
-   * imageview_ship_length3.setFitWidth(cellSize * 0.8);
-   * imageview_ship_length3.setFitHeight(cellSize * 0.8);
-   *
-   * <p>Image ship_length5 = new Image( getClass() .getResource(
-   * "/com/matti/battleship/images/ships/aircraft_carrier_length4.png") .toExternalForm());
-   * ImageViews imageview_ship_length5 = new ImageViews(ship_length5);
-   * imageview_ship_length5.setFitWidth(cellSize * 0.8);
-   * imageview_ship_length5.setFitHeight(cellSize * 0.8)
-   */
   // Entry Point -> main function
 
   public static void main(String[] args) {
