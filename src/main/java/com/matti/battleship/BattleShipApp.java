@@ -35,7 +35,6 @@ public class BattleShipApp extends Application {
   private int selected_field_size = 10;
   private double BOARD_SIZE = 400;
   private double cellSize = BOARD_SIZE / selected_field_size;
-  private int selected_amount_of_boats = 5;
 
   // ----- Temporary Game -----
   private Game game;
@@ -216,9 +215,10 @@ public class BattleShipApp extends Application {
     Labels background_label_select_position_r4 = new Labels("Select the position of your boats");
     background_label_select_position_r4.setId("label_background");
 
-    StackPane root4 =
-        new StackPane(
-            end_game_button_r4, background_label_select_position_r4, start_game_button_r4);
+    Labels background_label_ships_r4 = new Labels("");
+    background_label_ships_r4.setId("label_background");
+
+    StackPane root4 = new StackPane();
     root4.setId("pane4");
 
     end_game_button_r4.position(root4, -0.4, -0.43);
@@ -233,6 +233,10 @@ public class BattleShipApp extends Application {
     background_label_select_position_r4.fontsize(root4, 0.03);
     background_label_select_position_r4.size(root4, 0.6, 0.8);
     background_label_select_position_r4.setAlignment(Pos.TOP_CENTER);
+
+    background_label_ships_r4.position(root4, 0, 0.3);
+    background_label_ships_r4.fontsize(root4, 0.03);
+    background_label_ships_r4.size(root4, 0.8, 0.3);
 
     // ---------------root 5
     // ---------------------------------------------------------------------
@@ -365,6 +369,14 @@ public class BattleShipApp extends Application {
 
     start_game_button_r2.setOnAction(
         e -> {
+          root4
+              .getChildren()
+              .addAll(
+                  end_game_button_r4,
+                  background_label_select_position_r4,
+                  background_label_ships_r4,
+                  start_game_button_r4);
+
           // prüfen ob Eingabe über tf22 + 21
           if (!select_field_size_r2.getText().isEmpty()) {
             try {
@@ -417,11 +429,14 @@ public class BattleShipApp extends Application {
     // --------------------------------- root 4
     // ----------------------
 
-    end_game_button_r4.setOnAction(e -> scene1.setRoot(root1));
+    end_game_button_r4.setOnAction(
+        e -> {
+          root4.getChildren().clear();
+          scene1.setRoot(root1);
+        });
 
     start_game_button_r4.setOnAction(
         e -> {
-          double BOARD_SIZE = 400;
           double BUTTON_SIZE = BOARD_SIZE / selected_field_size;
 
           GridPane grid = new GridPane();
@@ -474,7 +489,11 @@ public class BattleShipApp extends Application {
 
     // --------------------------------- root 5
     // ----------------------
-    end_game_button_r5.setOnAction(e -> scene1.setRoot(root1));
+    end_game_button_r5.setOnAction(
+        e -> {
+          root4.getChildren().clear();
+          scene1.setRoot(root1);
+        });
 
     // --------------------------------- root 6
     // ----------------------
@@ -488,6 +507,18 @@ public class BattleShipApp extends Application {
     // Setup--------------------------------------------------------------
     scene1 = new Scene(root1, 800, 600);
     scene1.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
+    scene1
+        .widthProperty()
+        .addListener(
+            (obs, oldV, newV) -> {
+              System.out.println("Scene width: " + newV);
+            });
+    scene1
+        .heightProperty()
+        .addListener(
+            (obs, oldV, newV) -> {
+              System.out.println("Scene height: " + newV);
+            });
 
     primaryStage.setTitle("Battleship");
     Image icon =
@@ -505,12 +536,12 @@ public class BattleShipApp extends Application {
   private void prepareShipRectangles(Pane root) {
     for (ShipLength length : this.initialShipSetup) {
       Rectangle ship =
-          new Rectangle(cellSize * 0.8, cellSize * length.getValue() * 0.95, Color.DARKGRAY);
+          new Rectangle(cellSize * length.getValue() * 0.95, cellSize * 0.8, Color.DARKGRAY);
       ship.setArcWidth(10);
       ship.setArcHeight(10);
       ship.setUserData(
           new ShipGridElement(
-              new Coordinates(0, 0), Direction.DOWN, length, (int) this.BOARD_SIZE));
+              new Coordinates(0, 0), Direction.RIGHT, length, (int) this.BOARD_SIZE));
 
       ship.setOnDragDetected(
           ev -> {
