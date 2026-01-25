@@ -94,6 +94,7 @@ public class SocketConnector {
    * @author WoFabian
    */
   public void setMessageListener(MessageListener listener) {
+
     this.listener = listener;
   }
 
@@ -125,41 +126,26 @@ public class SocketConnector {
 
   /* ===================== RECEIVE ===================== */
 
-  /**
-   * Starts a background thread which continuously listens for incoming messages. For every received
-   * line: - turn logic is updated (for readable logging) - the message is logged - pair tracking is
-   * updated - the message is forwarded to the {@link MessageListener}
-   *
-   * @author WoFabian
-   */
-  public void startListening() {
-    Thread t =
-        new Thread(
-            () -> {
-              try {
-                String line;
-                while ((line = reader.readLine()) != null) {
 
-                  // Update turn state based on incoming command.
-                  handleTurnOnReceive(line);
+  public void listenLoop() {
+    try {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        handleTurnOnReceive(line);
 
-                  // Log incoming message and update pairing.
-                  log.received(line);
-                  onReceivedForPair();
+        log.received(line);
+        onReceivedForPair();
 
-                  // Forward to game logic / higher layers.
-                  if (listener != null) {
-                    listener.onMessageReceived(line);
-                  }
-                }
-              } catch (Exception e) {
-                if (listener != null) listener.onConnectionClosed(e);
-              }
-            });
-    // Daemon thread: does not block JVM shutdown.
-    t.setDaemon(true);
-    t.start();
+        if (listener != null) listener.onMessageReceived(line);
+      }
+
+      if (listener != null) listener.onConnectionClosed(null);
+
+    } catch (Exception e) {
+      if (listener != null) listener.onConnectionClosed(e);
+    }
   }
+
 
   /**
    * Closes the underlying socket connection.

@@ -31,77 +31,68 @@ public class ServerConnection {
   /** Handles the actual TCP send/receive logic and turn logging. */
   private SocketConnector connector;
 
+  private ServerSocket serverSocket;
   /**
    * Busy flag for discovery: true means a client is connected, so we should not respond to
    * discovery. AtomicBoolean is used because discovery runs in a separate thread.
    */
   private final AtomicBoolean busy = new AtomicBoolean(false);
 
-  /** UDP discovery responder instance (runs in its own thread). */
-  private ServerDiscoveryResponder discovery;
+  public AtomicBoolean getBusyFlag() {
+    return busy;
+  }
 
-  /**
-   * Starts the server: - reads the port from EnvConfig - starts the UDP discovery responder in a
-   * daemon thread - opens a TCP ServerSocket and waits for one client via accept() - wraps the
-   * listener so we can reset "busy" when the client disconnects
-   *
-   * @param listener callback receiving all incoming protocol lines from the connected client
-   * @throws Exception if sockets cannot be created or binding fails
-   * @author WoFabian
-   */
-  public void startServer(MessageListener listener) throws Exception {
+  public void openServerSocket() throws Exception {
     int port = EnvConfig.getPort();
-
-    // Start UDP discovery responder in the background so clients can find this server.
-    discovery = new ServerDiscoveryResponder(port, busy, "Battleship-Server");
-    Thread discoveryThread = new Thread(discovery, "Discovery-Responder");
-    discoveryThread.setDaemon(true);
-    discoveryThread.start();
-
-    // Start TCP server socket. This will block at accept() until a client connects.
-    ServerSocket serverSocket = new ServerSocket(port);
+    serverSocket = new ServerSocket(port);
     System.out.println("[SERVER] wartet auf Verbindung... (TCP " + port + ")");
+  }
 
-    // accept() blocks here until a client connects
+  public void acceptClient(MessageListener listener) throws Exception {
+    if (serverSocket == null) throw new IllegalStateException("ServerSocket nicht geöffnet.");
+
     Socket client = serverSocket.accept();
-
-    // Mark server as busy, so discovery will no longer respond to DISCOVER requests.
     busy.set(true);
 
     System.out.println("[SERVER] Client verbunden: " + client.getInetAddress());
 
-    // Wrap the listener so we can reset busy when the client disconnects or an error happens.
     MessageListener wrapped =
-        new MessageListener() {
-          @Override
-          public void onMessageReceived(String message) {
-            listener.onMessageReceived(message);
-          }
+            new MessageListener() {
+              @Override
+              public void onMessageReceived(String message) {
+                listener.onMessageReceived(message);
+              }
 
-          @Override
-          public void onConnectionClosed(Exception e) {
-            busy.set(false);
-            listener.onConnectionClosed(e);
-          }
-        };
+              @Override
+              public void onConnectionClosed(Exception e) {
+                busy.set(false);
+                listener.onConnectionClosed(e);
+              }
+            };
 
-    // Create the connector which handles send/receive in a background thread.
     connector = new SocketConnector(client, new TurnLog(TurnLog.Side.SERVER));
     connector.setMessageListener(wrapped);
-    connector.startListening();
   }
 
-  /**
-   * Sends a raw protocol message to the connected client.
-   *
-   * <p>Typical usage: - server sends setup: "size", "ships", "ready" - server sends gameplay:
-   * "answer", "pass"
-   *
-   * @param msg message line to send (one protocol command)
-   * @throws Exception if sending fails or no client is connected
-   * @author WoFabian
-   */
+  public void listenLoop() {
+    if (connector != null) connector.listenLoop();
+  }
+
   public void send(String msg) throws Exception {
-    connector.sendMessage(msg);
+    if (connector != null) connector.sendMessage(msg);
+  }
+
+  public void close() {
+    try {
+      if (connector != null) connector.close();
+    } catch (Exception ignored) {}
+
+    try {
+      if (serverSocket != null) serverSocket.close();
+    } catch (Exception ignored) {}
+  }
+
+  public ServerDiscoveryResponder createDiscoveryResponder(String serverName) {
+    return new ServerDiscoveryResponder(EnvConfig.getPort(), busy, serverName);
   }
 }

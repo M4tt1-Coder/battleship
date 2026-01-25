@@ -53,7 +53,10 @@ public class ClientConnection {
 
     // Forward received messages to the given listener and start reading loop.
     connector.setMessageListener(listener);
-    connector.startListening();
+  }
+
+  public void listenLoop() {
+    if (connector != null) connector.listenLoop();
   }
 
   /**
