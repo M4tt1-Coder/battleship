@@ -630,14 +630,18 @@ public class BattleShipApp extends Application {
                     ship.setUserData(data); // neue data für ship speichern
 
                     if (newDir == Direction.UP) { // hier eig umdrehen
-                      ship.setRotate(90); //
+                      ship.setRotate(
+                          90); // dreht immer nur in der mitte deshalb ist danach ausgleich nötig
 
                       // Ausgleich: top-left soll gleich bleiben
                       double W = ship.getWidth();
                       double H = ship.getHeight();
-                      double d = (W - H) / 2.0;
+                      double d =
+                          (W - H)
+                              / 2.0; // durch diese formel wird ein ausgleich der bei der rotation
+                                     // entsteht berechent
 
-                      rotFix.setX(-d);
+                      rotFix.setX(-d); // ausgleich durtchgeführt
                       rotFix.setY(+d);
                     } else {
                       ship.setRotate(0);
