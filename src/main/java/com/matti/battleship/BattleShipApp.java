@@ -763,72 +763,32 @@ public class BattleShipApp extends Application {
                     data.setDirection(newDir);
                     ship.setUserData(data); // neue data für ship speichern
 
-                    if (newDir == Direction.DOWN) { // hier eig umdrehen
+                    // first remove ship
+                    Ship removedShip = this.board.removeShip(data.getCoordinates());
+                    if (removedShip == null) {
+                      throw new IllegalStateException(
+                          "While trying to rotate a ship in the process the aimed ship could not be temporarilly removed from the board!");
+                    }
+                    // update the ship and try to place it if not valid revert the changes
+                    removedShip.setDirection(newDir);
+                    if (!this.board.addShip(removedShip)) {
+                      removedShip.setDirection(oldDirection);
+                      data.setDirection(oldDirection);
+                      ship.setUserData(data);
 
-                      // first remove ship
-                      Ship removedShip = this.board.removeShip(data.getCoordinates());
-                      if (removedShip == null) {
-                        throw new IllegalStateException(
-                            "While trying to rotate a ship in the process the aimed ship could not be temporarilly removed from the board!");
-                      }
-                      // update the ship and try to place it if not valid revert the changes
-                      removedShip.setDirection(newDir);
                       if (!this.board.addShip(removedShip)) {
-                        removedShip.setDirection(oldDirection);
-                        data.setDirection(oldDirection);
-                        ship.setUserData(data);
-
-                        if (!this.board.addShip(removedShip)) {
-                          throw new IllegalStateException(
-                              "Failed to place a ship back on its old position after rotation attempt!");
-                        }
-                      } else {
-
-                        // TODO: Remove the rectangle and add a new one with the new direction
-                        // representing the ship
-
-                        System.out.println("Here after rotating on the data structure board");
-                        rotateRectangleOnGridPane(
-                            ship,
-                            data.getCoordinates().y,
-                            data.getCoordinates().x,
-                            data.getLength().getValue(),
-                            this.board.getSize(),
-                            newDir);
+                        throw new IllegalStateException(
+                            "Failed to place a ship back on its old position after rotation attempt!");
                       }
                     } else {
-                      // first remove ship
-                      Ship removedShip = this.board.removeShip(data.getCoordinates());
-                      if (removedShip == null) {
-                        throw new IllegalStateException(
-                            "While trying to rotate a ship in the process the aimed ship could not be temporarilly removed from the board!");
-                      }
-                      // update the ship and try to place it if not valid revert the changes
-                      removedShip.setDirection(newDir);
-                      if (!this.board.addShip(removedShip)) {
-                        removedShip.setDirection(oldDirection);
-                        data.setDirection(oldDirection);
-                        ship.setUserData(data);
-
-                        if (!this.board.addShip(removedShip)) {
-                          throw new IllegalStateException(
-                              "Failed to place a ship back on its old position after rotation attempt!");
-                        }
-                      } else {
-                        // ship.setRotate(0);
-                        // rotFix.setX(0);
-                        // rotFix.setY(0);
-                        rotateRectangleOnGridPane(
-                            ship,
-                            data.getCoordinates().y,
-                            data.getCoordinates().x,
-                            data.getLength().getValue(),
-                            this.board.getSize(),
-                            newDir);
-                      }
+                      rotateRectangleOnGridPane(
+                          ship,
+                          data.getCoordinates().y,
+                          data.getCoordinates().x,
+                          data.getLength().getValue(),
+                          this.board.getSize(),
+                          newDir);
                     }
-                    BoardUtils.logBoardToConsole(this.board);
-                    root.requestFocus();
                   }
                 });
 
