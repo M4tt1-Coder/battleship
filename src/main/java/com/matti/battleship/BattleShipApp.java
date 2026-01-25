@@ -16,6 +16,8 @@ import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
 import javafx.beans.property.DoubleProperty; // NEW
 import javafx.beans.property.SimpleDoubleProperty; // NEW
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -375,8 +377,10 @@ public class BattleShipApp extends Application {
     // again when
     // starting a new game
 
-    start_game_button_r2.setOnAction(
-        e -> {
+    final EventHandler<ActionEvent> startHandler =
+        (ActionEvent e) -> {
+          Buttons source = (Buttons) e.getSource();
+
           root4
               .getChildren()
               .addAll(
@@ -395,22 +399,17 @@ public class BattleShipApp extends Application {
             }
           }
 
-          // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
           System.out.println(Arrays.toString(this.initialShipSetup));
 
-          // save current AIDifficulty
           String selectedDifficultyString =
               difficulty_selection_r2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
           this.board = new Board(selected_field_size);
 
-          // ev das global dann kann battle grid auch in anderen angezeigt
           GridPane battleGrid = new GridPane();
-
-          // NEW: Grid skaliert mit boardSize
           battleGrid.prefWidthProperty().bind(boardSize);
           battleGrid.prefHeightProperty().bind(boardSize);
           battleGrid.minWidthProperty().bind(boardSize);
@@ -420,15 +419,15 @@ public class BattleShipApp extends Application {
 
           battleGrid.setStyle("-fx-background-color: transparent;");
 
-          // initialize the grid with cells
           initializePlacementBoard(battleGrid);
-
           prepareShipRectangles(root4);
 
           root4.getChildren().add(battleGrid);
           StackPane.setAlignment(battleGrid, Pos.CENTER);
           scene1.setRoot(root4);
-        });
+        };
+
+    start_game_button_r2.setOnAction(startHandler);
 
     // --------------------------------- root 3
     // ----------------------
@@ -523,7 +522,9 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3);
         });
-    // start_game_button_r6.setOnAction(e -> { scene1.setRoot(root7);});
+
+    start_game_button_r6.setOnAction(startHandler);
+    // --------------------------------- Create_board_where_ships_are_placed
 
     // ---------------Stage
     // Setup--------------------------------------------------------------
