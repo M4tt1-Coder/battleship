@@ -18,10 +18,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.binding.Bindings; // NEW
-import javafx.beans.binding.DoubleBinding; // NEW
-import javafx.beans.property.DoubleProperty; // NEW
-import javafx.beans.property.SimpleDoubleProperty; // NEW
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -392,7 +388,7 @@ public class BattleShipApp extends Application {
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
           System.out.println(source);
-          
+
           root4
               .getChildren()
               .addAll(
@@ -494,7 +490,7 @@ public class BattleShipApp extends Application {
           this.game.opponent.board = opponentBoard;
           this.game.player.board = this.board;
           BoardUtils.logBoardToConsole(opponentBoard);
-          
+
           // NEW: dynamische Buttongröße (statt BOARD_SIZE)
           DoubleBinding BUTTON_SIZE =
               Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
@@ -626,12 +622,12 @@ public class BattleShipApp extends Application {
 
       ship.setOnDragDetected(
           ev -> {
-            // TODO: Add logic to rotate ship by pressing a key while dragging
             // ---------- rotate logic
             scene1.getRoot().requestFocus();
             scene1.setOnKeyPressed(
                 e -> {
                   if (e.getCode() == KeyCode.R) { // Wenn R gedrückt
+                    System.out.println("Pressed R");
                     ShipGridElement data = (ShipGridElement) ship.getUserData();
 
                     Direction newDir = // neue direction
@@ -707,9 +703,6 @@ public class BattleShipApp extends Application {
 
         cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
 
-        // TODO: Apply the logic add, remove ships from the board data
-        // structure
-
         cell.setOnDragOver(
             ev -> {
               if (ev.getGestureSource() != cell) {
@@ -725,7 +718,6 @@ public class BattleShipApp extends Application {
 
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
               ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();
-              // TODO: Synchronise user data and board state properly
 
               // first operate on the board data structure -> check if placement is valid
               Ship ship;
