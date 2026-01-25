@@ -733,7 +733,10 @@ public class BattleShipApp extends Application {
 
         break;
       case RIGHT:
-        int finalColR = Math.max(0, col - length + 1);
+        int finalColR = col;
+        if (col + (length - 1) > boardSize) {
+          finalColR = boardSize - length;
+        }
         int finalRowR = row;
         GridPane.setRowIndex(rect, finalRowR);
         GridPane.setColumnIndex(rect, finalColR);
