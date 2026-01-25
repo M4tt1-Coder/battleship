@@ -32,6 +32,7 @@ public class ServerConnection {
   private SocketConnector connector;
 
   private ServerSocket serverSocket;
+
   /**
    * Busy flag for discovery: true means a client is connected, so we should not respond to
    * discovery. AtomicBoolean is used because discovery runs in a separate thread.
@@ -57,18 +58,18 @@ public class ServerConnection {
     System.out.println("[SERVER] Client verbunden: " + client.getInetAddress());
 
     MessageListener wrapped =
-            new MessageListener() {
-              @Override
-              public void onMessageReceived(String message) {
-                listener.onMessageReceived(message);
-              }
+        new MessageListener() {
+          @Override
+          public void onMessageReceived(String message) {
+            listener.onMessageReceived(message);
+          }
 
-              @Override
-              public void onConnectionClosed(Exception e) {
-                busy.set(false);
-                listener.onConnectionClosed(e);
-              }
-            };
+          @Override
+          public void onConnectionClosed(Exception e) {
+            busy.set(false);
+            listener.onConnectionClosed(e);
+          }
+        };
 
     connector = new SocketConnector(client, new TurnLog(TurnLog.Side.SERVER));
     connector.setMessageListener(wrapped);
@@ -85,11 +86,13 @@ public class ServerConnection {
   public void close() {
     try {
       if (connector != null) connector.close();
-    } catch (Exception ignored) {}
+    } catch (Exception ignored) {
+    }
 
     try {
       if (serverSocket != null) serverSocket.close();
-    } catch (Exception ignored) {}
+    } catch (Exception ignored) {
+    }
   }
 
   public ServerDiscoveryResponder createDiscoveryResponder(String serverName) {

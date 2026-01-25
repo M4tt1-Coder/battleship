@@ -126,7 +126,6 @@ public class SocketConnector {
 
   /* ===================== RECEIVE ===================== */
 
-
   public void listenLoop() {
     try {
       String line;
@@ -145,7 +144,6 @@ public class SocketConnector {
       if (listener != null) listener.onConnectionClosed(e);
     }
   }
-
 
   /**
    * Closes the underlying socket connection.
