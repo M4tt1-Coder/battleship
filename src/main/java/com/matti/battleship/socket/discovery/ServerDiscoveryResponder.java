@@ -5,6 +5,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Responds to UDP broadcast discovery requests for Battleship servers.
+ *
+ * This class listens for DISCOVER messages and replies with a HERE response that contains
+ * the TCP game port and a human-readable server name.
+ *
+ * LOGIC-IMPORTANT:
+ * If the server is already connected to a client (busy == true), discovery requests are ignored
+ * so the server does not appear in the client's server list anymore.
+ *
+ * @author WoFabian
+ */
 public class ServerDiscoveryResponder {
 
   /** UDP port used for discovery. In this project it is the same as the TCP game port. */
@@ -37,10 +49,28 @@ public class ServerDiscoveryResponder {
     this.serverName = (serverName == null || serverName.isBlank()) ? "Battleship" : serverName;
   }
 
+  /**
+   * Stops the responder loop.
+   *
+   * LOGIC-IMPORTANT:
+   * This only flips the running flag. If receive(...) is currently blocking, the loop will end
+   * after the next packet arrives or the socket is closed from outside.
+   *
+   * @author WoFabian
+   */
   public void stop() {
     running = false;
   }
 
+  /**
+   * Main loop that listens for UDP discovery packets and answers valid requests.
+   *
+   * Protocol:
+   * - Incoming: DISCOVER
+   * - Outgoing: HERE port servername
+   *
+   * @author WoFabian
+   */
   public void runLoop() {
     try (DatagramSocket socket = new DatagramSocket(port)) {
       socket.setBroadcast(true);
