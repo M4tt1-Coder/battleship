@@ -148,6 +148,7 @@ public class BoardUtils {
    */
   public static Coordinates randomCoordinatesOnField(int boardSize, Random rand) {
     // Generate random X and Y within the board boundaries
+    // -> must be bigger then 0
     int X = rand.nextInt(boardSize);
     int Y = rand.nextInt(boardSize);
     // Create a Coordinates object for the generated point

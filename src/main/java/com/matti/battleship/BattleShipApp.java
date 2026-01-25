@@ -1,7 +1,9 @@
 package com.matti.battleship;
 
+import com.matti.battleship.computer.PlacementAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.Direction;
+import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
@@ -10,7 +12,6 @@ import com.matti.battleship.utils.GameUtils;
 import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
-import java.util.Arrays;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
@@ -347,8 +348,6 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root2);
           this.playingMode = PlayingMode.VS_AI;
-          // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
-          // turn, initialShipSetup)
         });
     Multiplayer_button_r1.setOnAction(
         e -> {
@@ -370,10 +369,6 @@ public class BattleShipApp extends Application {
               .add(new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg"));
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
-
-    // TODO: When pressing 'EndGame' in root4 the GridPane is not removed and shown
-    // again when
-    // starting a new game
 
     start_game_button_r2.setOnAction(
         e -> {
@@ -398,7 +393,6 @@ public class BattleShipApp extends Application {
           // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
-          System.out.println(Arrays.toString(this.initialShipSetup));
 
           // save current AIDifficulty
           String selectedDifficultyString =
@@ -446,6 +440,22 @@ public class BattleShipApp extends Application {
     start_game_button_r4.setOnAction(
         e -> {
 
+          // TODO: Add the case for playing against another player -> no board needs to be
+          // added
+          System.out.println("Starting game with board:");
+          BoardUtils.logBoardToConsole(this.board);
+          Board opponentBoard = new Board(this.selected_field_size);
+          PlacementAlgorithm.placeShips(opponentBoard, this.initialShipSetup);
+          this.game =
+              new Game(
+                  this.playingMode,
+                  new Player("Player", this.selected_field_size),
+                  new Player("Opponent", this.selected_field_size),
+                  PlayerTurn.PLAYER,
+                  this.initialShipSetup);
+          this.game.opponent.board = opponentBoard;
+          this.game.player.board = this.board;
+          BoardUtils.logBoardToConsole(opponentBoard);
           // NEW: dynamische Buttongröße (statt BOARD_SIZE)
           DoubleBinding BUTTON_SIZE =
               Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
@@ -615,9 +625,6 @@ public class BattleShipApp extends Application {
 
         cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
 
-        // TODO: Apply the logic add, remove ships from the board data
-        // structure
-
         cell.setOnDragOver(
             ev -> {
               if (ev.getGestureSource() != cell) {
@@ -633,8 +640,6 @@ public class BattleShipApp extends Application {
 
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
               ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();
-              // TODO: Synchronise user data and board state properly
-
               // first operate on the board data structure -> check if placement is valid
               Ship ship;
               Coordinates previousShipCoords = shipData.getCoordinates();
@@ -666,7 +671,9 @@ public class BattleShipApp extends Application {
                 } else {
                   shipData.setPlaced(false);
                 }
-                System.out.println("Invalid placement at " + coords);
+                System.out.println(
+                    "Could not place the ship back on its old field due to unknown reasons! Invalid placement at "
+                        + coords);
                 ev.setDropCompleted(false);
                 ev.consume();
                 return;
