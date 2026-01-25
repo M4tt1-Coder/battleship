@@ -639,7 +639,7 @@ public class BattleShipApp extends Application {
                       double d =
                           (W - H)
                               / 2.0; // durch diese formel wird ein ausgleich der bei der rotation
-                                     // entsteht berechent
+                      // entsteht berechent
 
                       rotFix.setX(-d); // ausgleich durtchgeführt
                       rotFix.setY(+d);
