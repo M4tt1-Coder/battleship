@@ -8,12 +8,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Responds to UDP broadcast discovery requests for Battleship servers.
  *
- * This class listens for DISCOVER messages and replies with a HERE response that contains
- * the TCP game port and a human-readable server name.
+ * <p>This class listens for DISCOVER messages and replies with a HERE response that contains the
+ * TCP game port and a human-readable server name.
  *
- * LOGIC-IMPORTANT:
- * If the server is already connected to a client (busy == true), discovery requests are ignored
- * so the server does not appear in the client's server list anymore.
+ * <p>LOGIC-IMPORTANT: If the server is already connected to a client (busy == true), discovery
+ * requests are ignored so the server does not appear in the client's server list anymore.
  *
  * @author WoFabian
  */
@@ -52,9 +51,8 @@ public class ServerDiscoveryResponder {
   /**
    * Stops the responder loop.
    *
-   * LOGIC-IMPORTANT:
-   * This only flips the running flag. If receive(...) is currently blocking, the loop will end
-   * after the next packet arrives or the socket is closed from outside.
+   * <p>LOGIC-IMPORTANT: This only flips the running flag. If receive(...) is currently blocking,
+   * the loop will end after the next packet arrives or the socket is closed from outside.
    *
    * @author WoFabian
    */
@@ -65,9 +63,7 @@ public class ServerDiscoveryResponder {
   /**
    * Main loop that listens for UDP discovery packets and answers valid requests.
    *
-   * Protocol:
-   * - Incoming: DISCOVER
-   * - Outgoing: HERE port servername
+   * <p>Protocol: - Incoming: DISCOVER - Outgoing: HERE port servername
    *
    * @author WoFabian
    */
