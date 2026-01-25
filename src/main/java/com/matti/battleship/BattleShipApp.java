@@ -1,7 +1,9 @@
 package com.matti.battleship;
 
+import com.matti.battleship.computer.PlacementAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.Direction;
+import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.*;
@@ -399,16 +401,19 @@ public class BattleShipApp extends Application {
             }
           }
 
+          // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
           System.out.println(Arrays.toString(this.initialShipSetup));
 
+          // save current AIDifficulty
           String selectedDifficultyString =
               difficulty_selection_r2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
           this.board = new Board(selected_field_size);
 
+          // ev das global dann kann battle grid auch in anderen angezeigt
           GridPane battleGrid = new GridPane();
           battleGrid.prefWidthProperty().bind(boardSize);
           battleGrid.prefHeightProperty().bind(boardSize);
@@ -419,7 +424,9 @@ public class BattleShipApp extends Application {
 
           battleGrid.setStyle("-fx-background-color: transparent;");
 
+          // initialize the grid with cells
           initializePlacementBoard(battleGrid);
+
           prepareShipRectangles(root4);
 
           root4.getChildren().add(battleGrid);
@@ -445,6 +452,22 @@ public class BattleShipApp extends Application {
     start_game_button_r4.setOnAction(
         e -> {
 
+          // TODO: Add the case for playing against another player -> no board needs to be
+          // added
+          System.out.println("Starting game with board:");
+          BoardUtils.logBoardToConsole(this.board);
+          Board opponentBoard = new Board(this.selected_field_size);
+          PlacementAlgorithm.placeShips(opponentBoard, this.initialShipSetup);
+          this.game =
+              new Game(
+                  this.playingMode,
+                  new Player("Player", this.selected_field_size),
+                  new Player("Opponent", this.selected_field_size),
+                  PlayerTurn.PLAYER,
+                  this.initialShipSetup);
+          this.game.opponent.board = opponentBoard;
+          this.game.player.board = this.board;
+          BoardUtils.logBoardToConsole(opponentBoard);
           // NEW: dynamische Buttongröße (statt BOARD_SIZE)
           DoubleBinding BUTTON_SIZE =
               Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
@@ -667,7 +690,9 @@ public class BattleShipApp extends Application {
                 } else {
                   shipData.setPlaced(false);
                 }
-                System.out.println("Invalid placement at " + coords);
+                System.out.println(
+                    "Could not place the ship back on its old field due to unknown reasons! Invalid placement at "
+                        + coords);
                 ev.setDropCompleted(false);
                 ev.consume();
                 return;
@@ -734,7 +759,10 @@ public class BattleShipApp extends Application {
 
         break;
       case RIGHT:
-        int finalColR = Math.max(0, col - length + 1);
+        int finalColR = col;
+        if (col + (length - 1) > boardSize) {
+          finalColR = boardSize - length;
+        }
         int finalRowR = row;
         GridPane.setRowIndex(rect, finalRowR);
         GridPane.setColumnIndex(rect, finalColR);
