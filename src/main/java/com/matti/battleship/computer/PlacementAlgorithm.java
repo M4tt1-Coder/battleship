@@ -39,6 +39,10 @@ public class PlacementAlgorithm {
 
     ArrayList<Coordinates> alreadyTriedCoordinates = new ArrayList<>();
 
+    // TODO: Takes to long with bigger boards / more ships - improve algorithm!
+    // remember tried coordinates to not try the same field again with the same ship
+    // size
+
     // loop through each ship length in the setup
     for (ShipLength shipLength : shipSetup) {
       boolean placed = false;
@@ -70,5 +74,6 @@ public class PlacementAlgorithm {
     }
 
     logger.info("Ship placement algorithm completed.");
+    BoardUtils.logBoardToConsole(board);
   }
 }

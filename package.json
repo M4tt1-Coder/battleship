@@ -1,6 +1,6 @@
 {
   "name": "battleship",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Battleship game implementation in Java!",
   "scripts": {
     "format": "python3 run_maven_format.py",

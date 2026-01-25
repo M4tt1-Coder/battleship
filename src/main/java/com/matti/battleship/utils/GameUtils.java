@@ -25,7 +25,7 @@ public class GameUtils {
     // validate opponent
     if (!validatePlayerInstance(opponent)) return false;
     // validate initial ship setup
-    return !validateShipSetup(initialShipSetup, player);
+    return validateShipSetup(initialShipSetup, player);
   }
 
   /**
