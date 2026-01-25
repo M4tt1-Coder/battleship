@@ -24,8 +24,6 @@ public class PlacementAlgorithm {
 
   private static final Random random = new Random();
 
-  // Placeholder for future implementation of ship placement algorithms
-
   /**
    * Places a set of ships on the given board based on the provided ship setup.
    *
@@ -40,10 +38,6 @@ public class PlacementAlgorithm {
     logger.info("Starting ship placement algorithm.");
 
     ArrayList<Coordinates> alreadyTriedCoordinates = new ArrayList<>();
-
-    // TODO: Takes to long with bigger boards / more ships - improve algorithm!
-    // remember tried coordinates to not try the same field again with the same ship
-    // size
 
     // loop through each ship length in the setup
     for (ShipLength shipLength : shipSetup) {

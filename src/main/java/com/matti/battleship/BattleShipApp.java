@@ -39,6 +39,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Refactor code -> extract indenpendent snippets into external functions 
+
 // option + shift + f -> formatieren
 public class BattleShipApp extends Application {
 
@@ -58,7 +60,8 @@ public class BattleShipApp extends Application {
   // ----- Temporary Game -----
   private Game game;
   private PlayingMode playingMode;
-  @Nullable private AIDifficulty difficulty;
+  @Nullable
+  private AIDifficulty difficulty;
 
   // percentage rule ... 30% of the field must be occupied by ships
   private ShipLength[] initialShipSetup;
@@ -85,8 +88,7 @@ public class BattleShipApp extends Application {
     Labels label_battleship_lobby_r1 = new Labels("Battleship");
     label_battleship_lobby_r1.setId("label_battleship_lobby_r1");
 
-    StackPane root1 =
-        new StackPane(Singleplayer_button_r1, Multiplayer_button_r1, label_battleship_lobby_r1);
+    StackPane root1 = new StackPane(Singleplayer_button_r1, Multiplayer_button_r1, label_battleship_lobby_r1);
     root1.setId("stack_pane_root1");
 
     // Layout root1:
@@ -108,11 +110,10 @@ public class BattleShipApp extends Application {
     // ---------------------------------------------------------------------
     // root2
 
-    Image image_player_vs_ai =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/player_vs_ai.jpg")
-                .toExternalForm());
+    Image image_player_vs_ai = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/player_vs_ai.jpg")
+            .toExternalForm());
     ImageViews imageview_player_vs_ai = new ImageViews(image_player_vs_ai);
 
     Buttons back_button_r2 = new Buttons();
@@ -140,17 +141,16 @@ public class BattleShipApp extends Application {
     Labels label_size_of_field_r2 = new Labels("Field Size:");
     label_size_of_field_r2.setId("label_size_of_field_r2");
 
-    StackPane root2 =
-        new StackPane(
-            imageview_player_vs_ai,
-            back_button_r2,
-            label_settings_r2,
-            start_game_button_r2,
-            load_game_button_r2,
-            select_field_size_r2,
-            difficulty_selection_r2,
-            label_select_difficulty_r2,
-            label_size_of_field_r2);
+    StackPane root2 = new StackPane(
+        imageview_player_vs_ai,
+        back_button_r2,
+        label_settings_r2,
+        start_game_button_r2,
+        load_game_button_r2,
+        select_field_size_r2,
+        difficulty_selection_r2,
+        label_select_difficulty_r2,
+        label_size_of_field_r2);
     root2.setId("stack_pane_root2");
 
     imageview_player_vs_ai.position(root2, 0.25, 0.00);
@@ -205,8 +205,7 @@ public class BattleShipApp extends Application {
     Labels label_available_servers_r3 = new Labels("Join other players");
     label_available_servers_r3.setId("label_background");
 
-    StackPane root3 =
-        new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
+    StackPane root3 = new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
     root3.setId("stack_pane_root3");
 
     back_button_r3.position(root3, -0.45, -0.43);
@@ -282,11 +281,10 @@ public class BattleShipApp extends Application {
     // ---------------root 6
     // ---------------------------------------------------------------------
     // root6
-    Image image_player_vs_player =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/player_vs_player.jpg")
-                .toExternalForm());
+    Image image_player_vs_player = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/player_vs_player.jpg")
+            .toExternalForm());
     ImageViews imageview_player_vs_player = new ImageViews(image_player_vs_player);
 
     Buttons back_button_r6 = new Buttons();
@@ -305,14 +303,13 @@ public class BattleShipApp extends Application {
     Labels label_size_of_field_r6 = new Labels("Field Size:");
     label_size_of_field_r6.setId("label_size_of_field");
 
-    StackPane root6 =
-        new StackPane(
-            imageview_player_vs_player,
-            back_button_r6,
-            label_settings_r6,
-            start_game_button_r6,
-            select_field_size_r6,
-            label_size_of_field_r6);
+    StackPane root6 = new StackPane(
+        imageview_player_vs_player,
+        back_button_r6,
+        label_settings_r6,
+        start_game_button_r6,
+        select_field_size_r6,
+        label_size_of_field_r6);
     root6.setId("stack_pane_root6");
 
     imageview_player_vs_player.position(root6, 0.25, 0.00);
@@ -384,75 +381,72 @@ public class BattleShipApp extends Application {
     // again when
     // starting a new game
 
-    final EventHandler<ActionEvent> startHandler =
-        (ActionEvent e) -> {
-          Buttons source = (Buttons) e.getSource();
-          System.out.println(source);
+    final EventHandler<ActionEvent> startHandler = (ActionEvent e) -> {
+      Buttons source = (Buttons) e.getSource();
+      System.out.println(source);
 
-          root4
-              .getChildren()
-              .addAll(
-                  end_game_button_r4,
-                  background_label_select_position_r4,
-                  background_label_ships_r4,
-                  start_game_button_r4);
+      root4
+          .getChildren()
+          .addAll(
+              end_game_button_r4,
+              background_label_select_position_r4,
+              background_label_ships_r4,
+              start_game_button_r4);
 
-          if (source == start_game_button_r2) {
-            if (!select_field_size_r2.getText().isEmpty()) {
-              try {
-                this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
-              } catch (NumberFormatException ex) {
-                System.out.println("Ungültige Feldgröße, Standardwert 10");
-                this.selected_field_size = 10;
-              }
-            }
-          } else if (source == start_game_button_r6) {
-            if (!select_field_size_r6.getText().isEmpty()) {
-              try {
-                this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
-              } catch (NumberFormatException ex) {
-                System.out.println("Ungültige Feldgröße, Standardwert 10");
-                this.selected_field_size = 10;
-              }
-            }
+      if (source == start_game_button_r2) {
+        if (!select_field_size_r2.getText().isEmpty()) {
+          try {
+            this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
+            this.cellSize = BOARD_SIZE / selected_field_size;
+          } catch (NumberFormatException ex) {
+            System.out.println("Ungültige Feldgröße, Standardwert 10");
+            this.selected_field_size = 10;
           }
+        }
+      } else if (source == start_game_button_r6) {
+        if (!select_field_size_r6.getText().isEmpty()) {
+          try {
+            this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
+            this.cellSize = BOARD_SIZE / selected_field_size;
+          } catch (NumberFormatException ex) {
+            System.out.println("Ungültige Feldgröße, Standardwert 10");
+            this.selected_field_size = 10;
+          }
+        }
+      }
 
-          // prepare ship setup for ship placement
-          this.initialShipSetup =
-              BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
-          System.out.println(Arrays.toString(this.initialShipSetup));
+      // prepare ship setup for ship placement
+      this.initialShipSetup = BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+      System.out.println(Arrays.toString(this.initialShipSetup));
 
-          // save current AIDifficulty
-          String selectedDifficultyString =
-              difficulty_selection_r2.getSelectionModel().getSelectedItem();
-          this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
+      // save current AIDifficulty
+      String selectedDifficultyString = difficulty_selection_r2.getSelectionModel().getSelectedItem();
+      this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
-          this.board = new Board(selected_field_size);
+      this.board = new Board(selected_field_size);
 
-          // ev das global dann kann battle grid auch in anderen angezeigt
-          GridPane battleGrid = new GridPane();
+      // ev das global dann kann battle grid auch in anderen angezeigt
+      GridPane battleGrid = new GridPane();
 
-          // NEW: Grid skaliert mit boardSize
-          battleGrid.prefWidthProperty().bind(boardSize);
-          battleGrid.prefHeightProperty().bind(boardSize);
-          battleGrid.minWidthProperty().bind(boardSize);
-          battleGrid.minHeightProperty().bind(boardSize);
-          battleGrid.maxWidthProperty().bind(boardSize);
-          battleGrid.maxHeightProperty().bind(boardSize);
+      // NEW: Grid skaliert mit boardSize
+      battleGrid.prefWidthProperty().bind(boardSize);
+      battleGrid.prefHeightProperty().bind(boardSize);
+      battleGrid.minWidthProperty().bind(boardSize);
+      battleGrid.minHeightProperty().bind(boardSize);
+      battleGrid.maxWidthProperty().bind(boardSize);
+      battleGrid.maxHeightProperty().bind(boardSize);
 
-          battleGrid.setStyle("-fx-background-color: transparent;");
+      battleGrid.setStyle("-fx-background-color: transparent;");
 
-          // initialize the grid with cells
-          initializePlacementBoard(battleGrid);
+      // initialize the grid with cells
+      initializePlacementBoard(battleGrid);
 
-          prepareShipRectangles(root4);
+      prepareShipRectangles(root4);
 
-          root4.getChildren().add(battleGrid);
-          StackPane.setAlignment(battleGrid, Pos.CENTER);
-          scene1.setRoot(root4);
-        };
+      root4.getChildren().add(battleGrid);
+      StackPane.setAlignment(battleGrid, Pos.CENTER);
+      scene1.setRoot(root4);
+    };
 
     start_game_button_r2.setOnAction(startHandler);
 
@@ -469,31 +463,37 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root1);
         });
 
-    // TODO: Button should only by clickable when all ships have been placed on the
-    // board
     start_game_button_r4.setOnAction(
         e -> {
+          // prevent starting a game when not all ships have been placed
+          if (this.board.getNumberOfOccupiedFields() != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
+              this.board.getSize())) {
+            System.out.println(
+                "You can't start a game if you don't have placed all ships on the board!");
+            e.consume();
+            return;
+          }
 
           // TODO: Add the case for playing against another player -> no board needs to be
           // added
+
           System.out.println("Starting game with board:");
           BoardUtils.logBoardToConsole(this.board);
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
-          this.game =
-              new Game(
-                  this.playingMode,
-                  new Player("Player", this.selected_field_size),
-                  new Player("Opponent", this.selected_field_size),
-                  PlayerTurn.PLAYER,
-                  this.initialShipSetup);
+          this.game = new Game(
+              this.playingMode,
+              new Player("Player", this.selected_field_size),
+              new Player("Opponent", this.selected_field_size),
+              PlayerTurn.PLAYER,
+              this.initialShipSetup);
           this.game.opponent.board = opponentBoard;
           this.game.player.board = this.board;
           BoardUtils.logBoardToConsole(opponentBoard);
 
           // NEW: dynamische Buttongröße (statt BOARD_SIZE)
-          DoubleBinding BUTTON_SIZE =
-              Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+          DoubleBinding BUTTON_SIZE = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size,
+              boardSize);
 
           GridPane grid = new GridPane();
           grid.setHgap(0);
@@ -504,16 +504,14 @@ public class BattleShipApp extends Application {
           grid.prefWidthProperty().bind(boardSize);
           grid.prefHeightProperty().bind(boardSize);
 
-          Image imgMiss =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                      .toExternalForm());
-          Image imgHit =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
-                      .toExternalForm());
+          Image imgMiss = new Image(
+              getClass()
+                  .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                  .toExternalForm());
+          Image imgHit = new Image(
+              getClass()
+                  .getResource("/com/matti/battleship/images/game/tile_hit.png")
+                  .toExternalForm());
 
           for (int r = 0; r < selected_field_size; r++) {
             for (int c = 0; c < selected_field_size; c++) {
@@ -581,9 +579,8 @@ public class BattleShipApp extends Application {
     boardSize.bind(Bindings.min(scene1.widthProperty(), scene1.heightProperty()).multiply(0.65));
 
     primaryStage.setTitle("Battleship");
-    Image icon =
-        new Image(
-            getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
+    Image icon = new Image(
+        getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
     primaryStage.getIcons().add(icon);
     primaryStage.setScene(scene1);
     primaryStage.show();
@@ -596,8 +593,7 @@ public class BattleShipApp extends Application {
   private void prepareShipRectangles(Pane root) {
     ShipLength[] allLengths = this.initialShipSetup;
 
-    DoubleBinding cs =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+    DoubleBinding cs = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
     int offsetUnits = 0;
 
@@ -613,8 +609,8 @@ public class BattleShipApp extends Application {
       ship.getTransforms().add(rotFix);
 
       // NEW: Schiffgröße dynamisch
-      ship.widthProperty().bind(cs.multiply(length.getValue()).multiply(1)); // 0.94
-      ship.heightProperty().bind(cs.multiply(1)); // 0.8
+      ship.widthProperty().bind(cs.multiply(length.getValue()).multiply(0.94)); // 0.94
+      ship.heightProperty().bind(cs.multiply(0.8)); // 0.8
 
       ship.setUserData(
           new ShipGridElement(
@@ -626,26 +622,26 @@ public class BattleShipApp extends Application {
             scene1.getRoot().requestFocus();
             scene1.setOnKeyPressed(
                 e -> {
+                  System.out.println("Pressed key: " + e.getCode());
                   if (e.getCode() == KeyCode.R) { // Wenn R gedrückt
                     System.out.println("Pressed R");
                     ShipGridElement data = (ShipGridElement) ship.getUserData();
 
                     Direction newDir = // neue direction
-                        (data.getDirection() == Direction.RIGHT) ? Direction.UP : Direction.RIGHT;
+                        (data.getDirection() == Direction.RIGHT) ? Direction.DOWN : Direction.RIGHT;
 
                     data.setDirection(newDir);
                     ship.setUserData(data); // neue data für ship speichern
 
-                    if (newDir == Direction.UP) { // hier eig umdrehen
+                    if (newDir == Direction.DOWN) { // hier eig umdrehen
                       ship.setRotate(
-                          90); // dreht immer nur in der mitte deshalb ist danach ausgleich nötig
+                          270); // dreht immer nur in der mitte deshalb ist danach ausgleich nötig
 
                       // Ausgleich: top-left soll gleich bleiben
                       double W = ship.getWidth();
                       double H = ship.getHeight();
-                      double d =
-                          (W - H)
-                              / 2.0; // durch diese formel wird ein ausgleich der bei der rotation
+                      double d = (W - H)
+                          / 2.0; // durch diese formel wird ein ausgleich der bei der rotation
                       // entsteht berechent
 
                       rotFix.setX(-d); // ausgleich durtchgeführt
@@ -685,8 +681,7 @@ public class BattleShipApp extends Application {
   }
 
   private void initializePlacementBoard(GridPane grid) {
-    DoubleBinding cs =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+    DoubleBinding cs = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
     for (Field[] row : board.board) {
       for (Field field : row) {
@@ -713,8 +708,13 @@ public class BattleShipApp extends Application {
 
         cell.setOnDragDropped(
             ev -> {
-              if (!ev.getDragboard().hasString()) return;
+              if (!ev.getDragboard().hasString())
+                return;
               Coordinates coords = new Coordinates(X, Y);
+
+              // TODO: Rotation needs to be handled right
+              // add a new property to the ShipGridElement indicating if the rectangle was
+              // rotated recently or not
 
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
               ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();
