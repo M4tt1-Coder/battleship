@@ -17,6 +17,8 @@ import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
 import javafx.beans.property.DoubleProperty; // NEW
 import javafx.beans.property.SimpleDoubleProperty; // NEW
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -192,13 +194,20 @@ public class BattleShipApp extends Application {
     back_button_r3.setId("back_button");
 
     Buttons start_new_game_button_r3 = new Buttons("Create own Game");
-    start_new_game_button_r3.setId("start_new_game_button_r3");
+    start_new_game_button_r3.setId("start_new_game_button");
+
+    Buttons refresh_servers_button_r3 = new Buttons("Refresh Servers");
+    refresh_servers_button_r3.setId("refresh_servers");
 
     Labels label_available_servers_r3 = new Labels("Join other players");
     label_available_servers_r3.setId("label_background");
 
     StackPane root3 =
-        new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
+        new StackPane(
+            back_button_r3,
+            label_available_servers_r3,
+            start_new_game_button_r3,
+            refresh_servers_button_r3);
     root3.setId("stack_pane_root3");
 
     back_button_r3.position(root3, -0.45, -0.43);
@@ -209,6 +218,10 @@ public class BattleShipApp extends Application {
     start_new_game_button_r3.fontsize(root3, 0.015);
     start_new_game_button_r3.size(root3, 0.2, 0.07);
 
+    refresh_servers_button_r3.position(root3, 0.25, -0.3);
+    refresh_servers_button_r3.fontsize(root3, 0.015);
+    refresh_servers_button_r3.size(root3, 0.15, 0.05);
+
     label_available_servers_r3.position(root3, 0, 0.05);
     label_available_servers_r3.fontsize(root3, 0.03);
     label_available_servers_r3.size(root3, 0.7, 0.8);
@@ -217,7 +230,7 @@ public class BattleShipApp extends Application {
     // ---------------root 4
     // ---------------------------------------------------------------------
     // root4
-    Buttons end_game_button_r4 = new Buttons(); // ändern
+    Buttons end_game_button_r4 = new Buttons();
     end_game_button_r4.setId("end_game_button");
 
     Buttons start_game_button_r4 = new Buttons("Start");
@@ -291,11 +304,18 @@ public class BattleShipApp extends Application {
     select_field_size_r6.setId("text_field_field_size");
     select_field_size_r6.setPromptText("Type in field size");
 
+    TextFields select_server_name_r6 = new TextFields();
+    select_server_name_r6.setId("select_server_name");
+    select_server_name_r6.setPromptText("Type in server name");
+
     Labels label_settings_r6 = new Labels("Settings");
     label_settings_r6.setId("label_settings");
 
     Labels label_size_of_field_r6 = new Labels("Field Size:");
     label_size_of_field_r6.setId("label_size_of_field");
+
+    Labels label_select_server_name_r6 = new Labels("Server Name:");
+    label_select_server_name_r6.setId("label_select_server_name");
 
     StackPane root6 =
         new StackPane(
@@ -304,7 +324,9 @@ public class BattleShipApp extends Application {
             label_settings_r6,
             start_game_button_r6,
             select_field_size_r6,
-            label_size_of_field_r6);
+            select_server_name_r6,
+            label_size_of_field_r6,
+            label_select_server_name_r6);
     root6.setId("stack_pane_root6");
 
     imageview_player_vs_player.position(root6, 0.25, 0.00);
@@ -314,23 +336,32 @@ public class BattleShipApp extends Application {
     back_button_r6.fontsize(root6, 0.01);
     back_button_r6.size(root6, 0.07, 0.1);
 
-    start_game_button_r6.position(root6, -0.25, 0.05);
+    start_game_button_r6.position(root6, -0.25, 0.25);
     start_game_button_r6.fontsize(root6, 0.02);
     start_game_button_r6.size(root6, 0.13, 0.05);
 
-    select_field_size_r6.position(root6, -0.2, -0.07);
+    select_field_size_r6.position(root6, -0.2, -0.05);
     select_field_size_r6.fontsize(root6, 0.01);
     select_field_size_r6.size(root6, 0.15, 0.05);
 
-    label_settings_r6.position(root6, -0.255, -0.05);
+    select_server_name_r6.position(root6, -0.2, 0.1);
+    select_server_name_r6.fontsize(root6, 0.01);
+    select_server_name_r6.size(root6, 0.15, 0.05);
+
+    label_settings_r6.position(root6, -0.255, 0.05);
     label_settings_r6.fontsize(root6, 0.03);
-    label_settings_r6.size(root6, 0.3, 0.4);
+    label_settings_r6.size(root6, 0.3, 0.6);
     label_settings_r6.setAlignment(Pos.TOP_CENTER);
 
-    label_size_of_field_r6.position(root6, -0.355, -0.07);
+    label_size_of_field_r6.position(root6, -0.355, -0.05);
     label_size_of_field_r6.fontsize(root6, 0.02);
     label_size_of_field_r6.size(root6, 0.1, 0.07);
     label_size_of_field_r6.setAlignment(Pos.CENTER);
+
+    label_select_server_name_r6.position(root6, -0.345, 0.1);
+    label_select_server_name_r6.fontsize(root6, 0.02);
+    label_select_server_name_r6.size(root6, 0.12, 0.07);
+    label_select_server_name_r6.setAlignment(Pos.CENTER);
 
     // ---------------root 7
     // ---------------------------------------------------------------------
@@ -370,8 +401,9 @@ public class BattleShipApp extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
-    start_game_button_r2.setOnAction(
-        e -> {
+    final EventHandler<ActionEvent> startHandler =
+        (ActionEvent e) -> {
+          Buttons source = (Buttons) e.getSource();
           root4
               .getChildren()
               .addAll(
@@ -422,7 +454,9 @@ public class BattleShipApp extends Application {
           root4.getChildren().add(battleGrid);
           StackPane.setAlignment(battleGrid, Pos.CENTER);
           scene1.setRoot(root4);
-        });
+        };
+
+    start_game_button_r2.setOnAction(startHandler);
 
     // --------------------------------- root 3
     // ----------------------
@@ -533,7 +567,8 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3);
         });
-    // start_game_button_r6.setOnAction(e -> { scene1.setRoot(root7);});
+
+    start_game_button_r6.setOnAction(startHandler);
 
     // ---------------Stage
     // Setup--------------------------------------------------------------
@@ -754,6 +789,8 @@ public class BattleShipApp extends Application {
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
   }
+
+  private void discover_servers() {}
 
   // Entry Point -> main function
 
