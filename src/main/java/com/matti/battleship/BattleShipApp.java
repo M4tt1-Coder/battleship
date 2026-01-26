@@ -12,6 +12,7 @@ import com.matti.battleship.utils.GameUtils;
 import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
@@ -23,17 +24,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.Nullable;
+
+// TODO: Refactor code -> extract indenpendent snippets into external functions
+
+// TODO: Move all image loading to the 'ResourceProfiler' instance
 
 // option + shift + f -> formatieren
 public class BattleShipApp extends Application {
@@ -47,7 +55,9 @@ public class BattleShipApp extends Application {
   // OPTIONAL: falls du BOARD_SIZE weiter als "Default" behalten willst
   private double BOARD_SIZE = 400;
   private double cellSize = BOARD_SIZE / selected_field_size;
-  private int selected_amount_of_boats = 5;
+
+  private String singleplayer_start_button_id = "startSingleplayerButton";
+  private String multiplayer_start_button_id = "startMultiplayerButton";
 
   // ----- Temporary Game -----
   private Game game;
@@ -61,7 +71,6 @@ public class BattleShipApp extends Application {
   private Board board;
 
   // ----- Game Logic -----
-  private int[] coordinatesOfLastDraggedShip = new int[2];
 
   @Override
   public void start(Stage primaryStage) {
@@ -379,6 +388,8 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root2);
           this.playingMode = PlayingMode.VS_AI;
+          // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
+          // turn, initialShipSetup)
         });
     Multiplayer_button_r1.setOnAction(
         e -> {
@@ -401,9 +412,15 @@ public class BattleShipApp extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
+    // TODO: When pressing 'EndGame' in root4 the GridPane is not removed and shown
+    // again when
+    // starting a new game
+
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
+          System.out.println(source);
+
           root4
               .getChildren()
               .addAll(
@@ -412,19 +429,32 @@ public class BattleShipApp extends Application {
                   background_label_ships_r4,
                   start_game_button_r4);
 
-          if (!select_field_size_r2.getText().isEmpty()) {
-            try {
-              this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
-              this.cellSize = BOARD_SIZE / selected_field_size;
-            } catch (NumberFormatException ex) {
-              System.out.println("Ungültige Feldgröße, Standardwert 10");
-              this.selected_field_size = 10;
+          if (source == start_game_button_r2) {
+            if (!select_field_size_r2.getText().isEmpty()) {
+              try {
+                this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
+                this.cellSize = BOARD_SIZE / selected_field_size;
+              } catch (NumberFormatException ex) {
+                System.out.println("Ungültige Feldgröße, Standardwert 10");
+                this.selected_field_size = 10;
+              }
+            }
+          } else if (source == start_game_button_r6) {
+            if (!select_field_size_r6.getText().isEmpty()) {
+              try {
+                this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
+                this.cellSize = BOARD_SIZE / selected_field_size;
+              } catch (NumberFormatException ex) {
+                System.out.println("Ungültige Feldgröße, Standardwert 10");
+                this.selected_field_size = 10;
+              }
             }
           }
 
           // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+          System.out.println(Arrays.toString(this.initialShipSetup));
 
           // save current AIDifficulty
           String selectedDifficultyString =
@@ -473,13 +503,23 @@ public class BattleShipApp extends Application {
 
     start_game_button_r4.setOnAction(
         e -> {
+          // prevent starting a game when not all ships have been placed
+          if (this.board.getNumberOfOccupiedFields()
+              != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
+                  this.board.getSize())) {
+            System.out.println(
+                "You can't start a game if you don't have placed all ships on the board!");
+            e.consume();
+            return;
+          }
 
           // TODO: Add the case for playing against another player -> no board needs to be
           // added
+
           System.out.println("Starting game with board:");
           BoardUtils.logBoardToConsole(this.board);
           Board opponentBoard = new Board(this.selected_field_size);
-          PlacementAlgorithm.placeShips(opponentBoard, this.initialShipSetup);
+          PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
           this.game =
               new Game(
                   this.playingMode,
@@ -490,9 +530,6 @@ public class BattleShipApp extends Application {
           this.game.opponent.board = opponentBoard;
           this.game.player.board = this.board;
           BoardUtils.logBoardToConsole(opponentBoard);
-          // NEW: dynamische Buttongröße (statt BOARD_SIZE)
-          DoubleBinding BUTTON_SIZE =
-              Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
           GridPane grid = new GridPane();
           grid.setHgap(0);
@@ -503,50 +540,7 @@ public class BattleShipApp extends Application {
           grid.prefWidthProperty().bind(boardSize);
           grid.prefHeightProperty().bind(boardSize);
 
-          Image imgMiss =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                      .toExternalForm());
-          Image imgHit =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/game/tile_hit.png")
-                      .toExternalForm());
-
-          for (int r = 0; r < selected_field_size; r++) {
-            for (int c = 0; c < selected_field_size; c++) {
-              Buttons btn = new Buttons();
-              btn.setStyle(
-                  "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
-
-              // NEW: Button skaliert mit boardSize
-              btn.prefWidthProperty().bind(BUTTON_SIZE);
-              btn.prefHeightProperty().bind(BUTTON_SIZE);
-              btn.minWidthProperty().bind(BUTTON_SIZE);
-              btn.minHeightProperty().bind(BUTTON_SIZE);
-
-              final int rr = r;
-              final int cc = c;
-
-              btn.setOnAction(
-                  ev -> {
-                    System.out.println("Clicked: row=" + rr + " col=" + cc);
-                    // hier prüfuzng ob treffer oder nicht
-
-                    ImageViews iv = new ImageViews(imgMiss);
-
-                    // NEW: Icon skaliert mit Buttongröße
-                    iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
-                    iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
-                    iv.setPreserveRatio(false);
-
-                    btn.setGraphic(iv);
-                  });
-
-              grid.add(btn, c, r);
-            }
-          }
+          initializePlayingBoardButtonGrid(grid);
 
           root5.getChildren().addAll(grid);
           grid.setAlignment(Pos.CENTER);
@@ -569,6 +563,7 @@ public class BattleShipApp extends Application {
         });
 
     start_game_button_r6.setOnAction(startHandler);
+    // --------------------------------- Create_board_where_ships_are_placed
 
     // ---------------Stage
     // Setup--------------------------------------------------------------
@@ -591,6 +586,169 @@ public class BattleShipApp extends Application {
   // ----- Helpers -----
   // _________________________________________________________________
 
+  /**
+   * Initializes the game board grid with buttons for user interaction.
+   *
+   * <p>This method dynamically creates a grid of buttons corresponding to the selected field size
+   * and binds their size properties to a calculated BUTTON_SIZE, ensuring that buttons resize
+   * responsively when the board size or field size changes. Each button is styled consistently and
+   * configured with an event handler that updates its graphic upon being clicked, indicating a hit
+   * or miss with an appropriate image.
+   *
+   * <p>Images for "miss" and "hit" states are loaded from resources and scaled according to button
+   * size to maintain visual consistency. The grid is added to the provided GridPane layout.
+   *
+   * @param pane the GridPane to which the buttons will be added, representing the game board grid.
+   */
+  private void initializePlayingBoardButtonGrid(GridPane pane) {
+    // NEW: dynamische Buttongröße (statt BOARD_SIZE)
+    DoubleBinding BUTTON_SIZE =
+        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+
+    Image imgMiss =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                .toExternalForm());
+    Image imgHit =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/game/tile_hit.png")
+                .toExternalForm());
+
+    for (int r = 0; r < selected_field_size; r++) {
+      for (int c = 0; c < selected_field_size; c++) {
+        Buttons btn = new Buttons();
+        btn.setStyle(
+            "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
+
+        // NEW: Button skaliert mit boardSize
+        btn.prefWidthProperty().bind(BUTTON_SIZE);
+        btn.prefHeightProperty().bind(BUTTON_SIZE);
+        btn.minWidthProperty().bind(BUTTON_SIZE);
+        btn.minHeightProperty().bind(BUTTON_SIZE);
+
+        final int rr = r;
+        final int cc = c;
+
+        btn.setOnAction(
+            ev -> {
+              System.out.println("Clicked: row=" + rr + " col=" + cc);
+
+              ImageViews iv = new ImageViews(imgMiss);
+
+              iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+              iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+              iv.setPreserveRatio(false);
+
+              btn.setGraphic(iv);
+            });
+
+        pane.add(btn, c, r);
+      }
+    }
+  }
+
+  /**
+   * Rotates and positions a Rectangle representing a ship within a GridPane layout based on the
+   * specified direction.
+   *
+   * <p>This method adjusts the rectangle's row and column indices, span, and size bindings to
+   * visually rotate the ship within the grid. It ensures the ship remains within grid boundaries
+   * before applying changes. If rotation is not possible due to boundary constraints, an
+   * informative message is printed and the operation is aborted.
+   *
+   * <p>The size of the rectangle is dynamically bound to the current board size, ensuring
+   * responsive resizing. The rectangle is centered within its grid cell after positioning.
+   *
+   * @param shipRect the Rectangle object representing the ship to be rotated and positioned.
+   * @param row the current row index of the ship's starting position.
+   * @param col the current column index of the ship's starting position.
+   * @param shipLength the length of the ship in grid units.
+   * @param boardSize the total size (number of cells) of the game board.
+   * @param newDirection the direction to rotate the ship to (UP, DOWN, LEFT, RIGHT).
+   */
+  private void rotateRectangleOnGridPane(
+      Rectangle shipRect, int row, int col, int shipLength, int boardSize, Direction newDirection) {
+    DoubleBinding cs =
+        Bindings.createDoubleBinding(
+            () -> this.boardSize.get() / selected_field_size, this.boardSize);
+
+    switch (newDirection) {
+      case DOWN:
+        if (row + (shipLength - 1) > boardSize - 1) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row);
+        GridPane.setColumnIndex(shipRect, col);
+        GridPane.setRowSpan(shipRect, shipLength);
+        GridPane.setColumnSpan(shipRect, 1);
+        shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.widthProperty().bind(cs.multiply(0.8));
+
+        break;
+      case UP:
+        if (row - (shipLength - 1) < 0) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row - (shipLength - 1));
+        GridPane.setColumnIndex(shipRect, col);
+        GridPane.setRowSpan(shipRect, shipLength);
+        GridPane.setColumnSpan(shipRect, 1);
+        shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.widthProperty().bind(cs.multiply(0.8));
+
+        break;
+      case RIGHT:
+        if (col + (shipLength - 1) > boardSize) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row);
+        GridPane.setColumnIndex(shipRect, col);
+        GridPane.setRowSpan(shipRect, 1);
+        GridPane.setColumnSpan(shipRect, shipLength);
+        shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.heightProperty().bind(cs.multiply(0.8));
+
+        break;
+      case LEFT:
+        if (col - (shipLength - 1) < 0) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row);
+        GridPane.setColumnIndex(shipRect, col - (shipLength - 1));
+        GridPane.setRowSpan(shipRect, 1);
+        GridPane.setColumnSpan(shipRect, shipLength);
+        shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.heightProperty().bind(cs.multiply(0.8));
+        break;
+    }
+    GridPane.setHalignment(shipRect, javafx.geometry.HPos.CENTER);
+    GridPane.setValignment(shipRect, javafx.geometry.VPos.CENTER);
+  }
+
+  /**
+   * Prepares and initializes the ship rectangles within the provided root pane.
+   *
+   * <p>This method creates a visual representation of ships based on predefined ship lengths,
+   * binding their size dynamically to the current board size for responsiveness. Each ship is
+   * represented by a Rectangle with styling and transformation capabilities, including
+   * drag-and-drop and rotation via keyboard input (pressing 'R').
+   *
+   * <p>During drag detection, the method sets up event handlers to handle ship rotation, which
+   * involves removing the ship from the board, updating its direction, and attempting to re-place
+   * it. If placement fails, the ship's direction is reverted, and it is re-added to the original
+   * position.
+   *
+   * <p>The rectangles are added to the root pane, positioned with margins and translation bindings
+   * to display multiple ships in a row. They also support dragging with a visual snapshot.
+   *
+   * @param root the Pane to which the ship rectangles will be added and displayed.
+   */
   private void prepareShipRectangles(Pane root) {
     ShipLength[] allLengths = this.initialShipSetup;
 
@@ -607,9 +765,12 @@ public class BattleShipApp extends Application {
       ship.setArcWidth(10);
       ship.setArcHeight(10);
 
+      Translate rotFix = new Translate(0, 0);
+      ship.getTransforms().add(rotFix);
+
       // NEW: Schiffgröße dynamisch
-      ship.widthProperty().bind(cs.multiply(length.getValue()).multiply(0.95));
-      ship.heightProperty().bind(cs.multiply(0.8));
+      ship.widthProperty().bind(cs.multiply(length.getValue()).multiply(0.94)); // 0.94
+      ship.heightProperty().bind(cs.multiply(0.8)); // 0.8
 
       ship.setUserData(
           new ShipGridElement(
@@ -617,8 +778,53 @@ public class BattleShipApp extends Application {
 
       ship.setOnDragDetected(
           ev -> {
-            // TODO: Add logic to rotate ship by pressing a key while dragging
+            // ---------- rotate logic
+            scene1.getRoot().requestFocus();
+            scene1.setOnKeyPressed(
+                // ship.setOnKeyPressed(
+                e -> {
+                  if (e.getCode() == KeyCode.R) { // Wenn R gedrückt
+                    ShipGridElement data = (ShipGridElement) ship.getUserData();
+                    Direction oldDirection = data.getDirection();
+                    Direction newDir = // neue direction
+                        (oldDirection == Direction.RIGHT) ? Direction.DOWN : Direction.RIGHT;
+
+                    data.setDirection(newDir);
+                    ship.setUserData(data); // neue data für ship speichern
+
+                    // first remove ship
+                    Ship removedShip = this.board.removeShip(data.getCoordinates());
+                    if (removedShip == null) {
+                      throw new IllegalStateException(
+                          "While trying to rotate a ship in the process the aimed ship could not be temporarilly removed from the board!");
+                    }
+                    // update the ship and try to place it if not valid revert the changes
+                    removedShip.setDirection(newDir);
+                    if (!this.board.addShip(removedShip)) {
+                      removedShip.setDirection(oldDirection);
+                      data.setDirection(oldDirection);
+                      ship.setUserData(data);
+
+                      if (!this.board.addShip(removedShip)) {
+                        throw new IllegalStateException(
+                            "Failed to place a ship back on its old position after rotation attempt!");
+                      }
+                    } else {
+                      rotateRectangleOnGridPane(
+                          ship,
+                          data.getCoordinates().y,
+                          data.getCoordinates().x,
+                          data.getLength().getValue(),
+                          this.board.getSize(),
+                          newDir);
+                    }
+                  }
+                });
+
+            // -----------
             Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
+            WritableImage snapshot = ship.snapshot(null, null);
+            db.setDragView(snapshot);
             ClipboardContent content = new ClipboardContent();
             content.putString(String.format("SHIP_WIDTH_%d", PlayingUtils.getRandomInt()));
             db.setContent(content);
@@ -641,6 +847,23 @@ public class BattleShipApp extends Application {
     }
   }
 
+  /**
+   * Initializes the placement board by creating and configuring grid cells within the provided
+   * GridPane.
+   *
+   * <p>This method dynamically binds each cell's size to the current board size, ensuring
+   * responsiveness. Each cell is styled with borders and background color, and set up to handle
+   * drag-and-drop operations for placing ships. When a ship is dropped onto a cell, the method
+   * validates the placement, updates the internal board data structure, and visually positions the
+   * ship rectangle within the grid.
+   *
+   * <p>If the placement is invalid, the method reverts changes to maintain consistency.
+   * Successfully placed ships are repositioned within the grid, and their user data is updated
+   * accordingly.
+   *
+   * @param grid the GridPane representing the placement board where cells and ships are
+   *     initialized.
+   */
   private void initializePlacementBoard(GridPane grid) {
     DoubleBinding cs =
         Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
@@ -673,8 +896,13 @@ public class BattleShipApp extends Application {
               if (!ev.getDragboard().hasString()) return;
               Coordinates coords = new Coordinates(X, Y);
 
+              // TODO: Rotation needs to be handled right
+              // add a new property to the ShipGridElement indicating if the rectangle was
+              // rotated recently or not
+
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
               ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();
+
               // first operate on the board data structure -> check if placement is valid
               Ship ship;
               Coordinates previousShipCoords = shipData.getCoordinates();
@@ -706,9 +934,15 @@ public class BattleShipApp extends Application {
                 } else {
                   shipData.setPlaced(false);
                 }
+
                 System.out.println(
                     "Could not place the ship back on its old field due to unknown reasons! Invalid placement at "
                         + coords);
+
+                shipNode.translateXProperty().unbind();
+                shipNode.setTranslateX(0);
+                shipNode.setTranslateY(0);
+
                 ev.setDropCompleted(false);
                 ev.consume();
                 return;
@@ -750,6 +984,24 @@ public class BattleShipApp extends Application {
     }
   }
 
+  /**
+   * Applies a grid layout to the given rectangle within the specified GridPane, positioning and
+   * spanning it based on the ship's direction, length, and the board size.
+   *
+   * <p>This method adds the rectangle to the grid and sets its row and column indices along with
+   * row and column spans to visually represent the ship's placement. It ensures that ships do not
+   * extend beyond the grid boundaries by adjusting starting positions accordingly.
+   *
+   * <p>The rectangle is centered within its grid cell both horizontally and vertically.
+   *
+   * @param rect the Rectangle representing the ship to be placed on the grid.
+   * @param grid the GridPane in which the rectangle will be positioned.
+   * @param row the starting row index for the ship placement.
+   * @param col the starting column index for the ship placement.
+   * @param direction the direction in which the ship extends (UP, DOWN, LEFT, RIGHT).
+   * @param length the length of the ship.
+   * @param boardSize the size of the board (number of rows/columns).
+   */
   private void applyGridLayoutToRectangle(
       Rectangle rect,
       GridPane grid,
@@ -764,24 +1016,44 @@ public class BattleShipApp extends Application {
       case DOWN:
         int finalColD = col;
         int finalRowD = row;
-        if (row + (length - 1) > boardSize) {
+        if (row + (length - 1) > boardSize - 1) {
           finalRowD = boardSize - length;
         }
-
         GridPane.setRowIndex(rect, finalRowD);
         GridPane.setColumnIndex(rect, finalColD);
         GridPane.setRowSpan(rect, length);
         GridPane.setColumnSpan(rect, 1);
-
+        break;
+      case UP:
+        int finalColU = col;
+        int finalRowU = row;
+        if (row - (length - 1) < 0) {
+          finalRowU = length;
+        }
+        GridPane.setRowIndex(rect, finalRowU);
+        GridPane.setColumnIndex(rect, finalColU);
+        GridPane.setRowSpan(rect, length);
+        GridPane.setColumnSpan(rect, 1);
         break;
       case RIGHT:
         int finalColR = col;
-        if (col + (length - 1) > boardSize) {
+        if (col + (length - 1) > boardSize - 1) {
           finalColR = boardSize - length;
         }
         int finalRowR = row;
         GridPane.setRowIndex(rect, finalRowR);
         GridPane.setColumnIndex(rect, finalColR);
+        GridPane.setRowSpan(rect, 1);
+        GridPane.setColumnSpan(rect, length);
+        break;
+      case LEFT:
+        int finalColL = col;
+        if (col - (length - 1) < 0) {
+          finalColL = length;
+        }
+        int finalRowL = row;
+        GridPane.setRowIndex(rect, finalRowL);
+        GridPane.setColumnIndex(rect, finalColL);
         GridPane.setRowSpan(rect, 1);
         GridPane.setColumnSpan(rect, length);
         break;
