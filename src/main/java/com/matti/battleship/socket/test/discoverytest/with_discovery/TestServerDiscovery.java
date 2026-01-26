@@ -1,10 +1,9 @@
-package com.matti.battleship.socket.test.discoverytest.with_discovery;
+/**package com.matti.battleship.socket.test.discoverytest.with_discovery;
 
 import com.matti.battleship.socket.network.MessageListener;
 import com.matti.battleship.socket.network.ServerConnection;
 import java.util.Scanner;
 
-/**
  * GUI-ORIENTATION (Server Hosting + Discovery)
  *
  * <p>What to copy into GUI (only if the GUI has a "Host server" button): - Starting the server:
@@ -19,7 +18,7 @@ import java.util.Scanner;
  * <p>What NOT to copy (CLI-only): - Console typing loop, "exit" input handling
  *
  * @author WoFabian
- */
+
 public class TestServerDiscovery {
 
   public static void main(String[] args) throws Exception {
@@ -81,3 +80,4 @@ public class TestServerDiscovery {
     }
   }
 }
+*/

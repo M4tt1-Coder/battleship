@@ -1,4 +1,4 @@
-package com.matti.battleship.socket.test.discoverytest.standard;
+/**package com.matti.battleship.socket.test.discoverytest.standard;
 
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.logging.TurnLog;
@@ -25,3 +25,4 @@ public class StandardClientConnection {
     connector.sendMessage(msg);
   }
 }
+*/

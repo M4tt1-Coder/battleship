@@ -1,4 +1,4 @@
-package com.matti.battleship.socket.test.discoverytest.with_discovery;
+/**package com.matti.battleship.socket.test.discoverytest.with_discovery;
 
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
@@ -8,7 +8,6 @@ import com.matti.battleship.socket.network.MessageListener;
 import java.util.List;
 import java.util.Scanner;
 
-/**
  * GUI-ORIENTATION (Discovery Manual Variant)
  *
  * <p>What to copy into GUI: - Discovery scan: ClientDiscoveryScanner scanner = new
@@ -26,10 +25,10 @@ import java.util.Scanner;
  * + connect button.
  *
  * @author WoFabian
- */
+
 public class TestClientDiscoveryManuel {
 
-  /** How long to wait for discovery responses. GUI: choose a short value (e.g., 300-800ms). */
+     How long to wait for discovery responses. GUI: choose a short value (e.g., 300-800ms).
   private static final int DISCOVER_TIMEOUT_MS = 600;
 
   public static void main(String[] args) throws Exception {
@@ -98,7 +97,6 @@ public class TestClientDiscoveryManuel {
     }
   }
 
-  /**
    * Runs discovery and prints the list to console.
    *
    * <p>GUI: Replace the printing with updating the ListView/TableView.
@@ -107,7 +105,7 @@ public class TestClientDiscoveryManuel {
    * @return list of found servers
    * @throws Exception if discovery fails
    * @author WoFabian
-   */
+
   private static List<DiscoveredServer> scanAndPrint(ClientDiscoveryScanner scanner)
       throws Exception {
     System.out.println();
@@ -128,7 +126,6 @@ public class TestClientDiscoveryManuel {
     return servers;
   }
 
-  /**
    * Connects via TCP and performs a small "ready" handshake to prove the connection works.
    *
    * <p>GUI: After connecting you would usually switch screens and pass the connection to your
@@ -138,7 +135,7 @@ public class TestClientDiscoveryManuel {
    * @param port target port (usually EnvConfig.getPort())
    * @throws Exception if connection fails
    * @author WoFabian
-   */
+
   private static void connectReadyAndChat(String host, int port) throws Exception {
     System.out.println("[CLIENT] Verbinde zu " + host + ":" + port + " ...");
 
@@ -195,3 +192,4 @@ public class TestClientDiscoveryManuel {
     }
   }
 }
+*/

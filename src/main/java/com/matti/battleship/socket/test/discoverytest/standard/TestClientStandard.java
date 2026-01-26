@@ -1,4 +1,4 @@
-package com.matti.battleship.socket.test.discoverytest.standard;
+/**package com.matti.battleship.socket.test.discoverytest.standard;
 
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.network.MessageListener;
@@ -57,3 +57,4 @@ public class TestClientStandard {
     }
   }
 }
+*/

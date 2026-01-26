@@ -1,4 +1,4 @@
-package com.matti.battleship.socket.test.discoverytest.standard;
+/**package com.matti.battleship.socket.test.discoverytest.standard;
 
 import com.matti.battleship.socket.network.MessageListener;
 import java.util.Scanner;
@@ -65,3 +65,4 @@ public class TestServerStandard {
     }
   }
 }
+*/

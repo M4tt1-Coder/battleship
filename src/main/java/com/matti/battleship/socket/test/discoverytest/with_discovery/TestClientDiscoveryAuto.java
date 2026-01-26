@@ -1,4 +1,4 @@
-package com.matti.battleship.socket.test.discoverytest.with_discovery;
+/**package com.matti.battleship.socket.test.discoverytest.with_discovery;
 
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
@@ -8,7 +8,6 @@ import com.matti.battleship.socket.network.MessageListener;
 import java.util.List;
 import java.util.Scanner;
 
-/**
  * GUI-ORIENTATION (Discovery Auto-Fallback Variant)
  *
  * <p>What to copy into GUI: - Discovery scan (same as manual variant): List<DiscoveredServer>
@@ -23,7 +22,7 @@ import java.util.Scanner;
  * when no server is found.
  *
  * @author WoFabian
- */
+
 public class TestClientDiscoveryAuto {
 
   private static final int DISCOVER_TIMEOUT_MS = 600;
@@ -159,3 +158,4 @@ public class TestClientDiscoveryAuto {
     }
   }
 }
+*/
