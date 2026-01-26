@@ -6,13 +6,18 @@ import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
+import com.matti.battleship.socket.config.EnvConfig;
+import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
+import com.matti.battleship.socket.discovery.DiscoveredServer;
 import com.matti.battleship.types.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
 import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
@@ -1062,7 +1067,31 @@ public class BattleShipApp extends Application {
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
   }
 
-  private void discover_servers() {}
+  private void discover_servers(Pane root) {
+    EnvConfig config = new EnvConfig();
+    int port = config.getPort();
+    ClientDiscoveryScanner scanner = new ClientDiscoveryScanner(port);
+    List<DiscoveredServer> list_of_discovered_servers = new ArrayList<>();
+    try {
+      list_of_discovered_servers = scanner.discover(500);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    int amount_of_discovered_servers = list_of_discovered_servers.size();
+    for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
+      String server_name = list_of_discovered_servers.get(i).name();
+      String host_name = list_of_discovered_servers.get(i).host();
+      Buttons join_server_button = new Buttons(server_name);
+      int row = i / 3;
+      int col = i % 3;
+      double[] pos = {-0.2, 0.0, 0.2};
+      double x_pos = pos[col];
+      double y_pos = pos[row];
+      join_server_button.position(root, x_pos, y_pos);
+      join_server_button.fontsize(root, 0.02);
+      join_server_button.size(root, 0.13, 0.05);
+    }
+  }
 
   // Entry Point -> main function
 
