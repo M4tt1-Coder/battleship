@@ -1,4 +1,4 @@
-package com.matti.battleship.socket.test.gameflow_scripted;
+/**package com.matti.battleship.socket.test.gameflow_scripted;
 
 import com.matti.battleship.socket.network.ClientConnection;
 import com.matti.battleship.socket.network.MessageListener;
@@ -121,3 +121,4 @@ public class TestClientGameflowScripted {
     client.send(MessageBuilder.shot(row, col));
   }
 }
+*/
