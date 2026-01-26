@@ -295,7 +295,7 @@ public class BattleShipApp extends Application {
 
     background_label_r5.position(root5, 0, -0.01);
     background_label_r5.fontsize(root5, 0.03);
-    background_label_r5.size(root5, 0.6, 0.8);
+    background_label_r5.size(root5, 0.98, 0.7);
     background_label_r5.setAlignment(Pos.TOP_CENTER);
 
     // ---------------root 6
@@ -454,6 +454,8 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = 10;
               }
             }
+            // TODO: Implementation of setting the server_name
+            if (!select_server_name_r6.getText().isEmpty()) {}
           }
 
           // prepare ship setup for ship placement
@@ -536,19 +538,32 @@ public class BattleShipApp extends Application {
           this.game.player.board = this.board;
           BoardUtils.logBoardToConsole(opponentBoard);
 
-          GridPane grid = new GridPane();
-          grid.setHgap(0);
-          grid.setVgap(0);
-          grid.setPadding(new Insets(12));
+          GridPane button_grid = new GridPane();
+          button_grid.setHgap(0);
+          button_grid.setVgap(0);
+          button_grid.setPadding(new Insets(12));
+          button_grid.prefWidthProperty().bind(boardSize);
+          button_grid.prefHeightProperty().bind(boardSize);
 
-          // OPTIONAL: Grid auch dynamisch groß machen
-          grid.prefWidthProperty().bind(boardSize);
-          grid.prefHeightProperty().bind(boardSize);
+          GridPane cell_grid = new GridPane();
+          cell_grid.setHgap(0);
+          cell_grid.setVgap(0);
+          cell_grid.setPadding(new Insets(12));
+          cell_grid.prefWidthProperty().bind(boardSize);
+          cell_grid.prefHeightProperty().bind(boardSize);
 
-          initializePlayingBoardButtonGrid(grid);
+          initializePlayingBoardButtonGrid(button_grid);
+          initializePlayingBoardNormalGrid(cell_grid);
 
-          root5.getChildren().addAll(grid);
-          grid.setAlignment(Pos.CENTER);
+          StackPane.setAlignment(button_grid, Pos.CENTER);
+          button_grid.translateXProperty().bind(scene1.widthProperty().multiply(-0.24));
+
+          StackPane.setAlignment(cell_grid, Pos.CENTER);
+          cell_grid.translateXProperty().bind(scene1.widthProperty().multiply(0.24));
+
+          root5.getChildren().addAll(cell_grid, button_grid);
+          button_grid.setAlignment(Pos.CENTER);
+          cell_grid.setAlignment(Pos.CENTER);
           end_game_button_r5.toFront();
           scene1.setRoot(root5);
         });
@@ -605,10 +620,35 @@ public class BattleShipApp extends Application {
    *
    * @param pane the GridPane to which the buttons will be added, representing the game board grid.
    */
+  private void initializePlayingBoardNormalGrid(GridPane pane) {
+    DoubleBinding cs =
+        Bindings.createDoubleBinding(
+            () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
+    for (Field[] row : board.board) {
+      for (Field field : row) {
+        int X = field.getCoordinates().x;
+        int Y = field.getCoordinates().y;
+
+        StackPane cell = new StackPane();
+
+        // NEW: Zellgröße dynamisch
+        cell.prefWidthProperty().bind(cs);
+        cell.prefHeightProperty().bind(cs);
+        cell.minWidthProperty().bind(cs);
+        cell.minHeightProperty().bind(cs);
+
+        cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
+
+        pane.add(cell, X, Y);
+      }
+    }
+  }
+
   private void initializePlayingBoardButtonGrid(GridPane pane) {
     // NEW: dynamische Buttongröße (statt BOARD_SIZE)
     DoubleBinding BUTTON_SIZE =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+        Bindings.createDoubleBinding(
+            () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
 
     Image imgMiss =
         new Image(
@@ -839,7 +879,21 @@ public class BattleShipApp extends Application {
       root.getChildren().add(ship);
 
       StackPane.setAlignment(ship, Pos.BOTTOM_LEFT);
-      StackPane.setMargin(ship, new Insets(0, 0, 50, 25)); // top, right, bottom, left
+      // StackPane.setMargin(ship, new Insets(0, 0, 50, 25)); // top, right, bottom, left
+
+      javafx.beans.binding.ObjectBinding<Insets> marginBinding =
+          Bindings.createObjectBinding(
+              () ->
+                  new Insets(
+                      0, // top
+                      0, // right
+                      root.getHeight() * 0.08, // bottom
+                      root.getWidth() * 0.03 // left
+                      ),
+              root.widthProperty(),
+              root.heightProperty());
+      StackPane.setMargin(ship, marginBinding.get());
+      marginBinding.addListener((obs, oldVal, newVal) -> StackPane.setMargin(ship, newVal));
 
       int finalOffsetUnits = offsetUnits;
       ship.translateXProperty().bind(cs.multiply(finalOffsetUnits).multiply(0.6));
