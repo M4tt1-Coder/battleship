@@ -20,6 +20,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -212,7 +213,7 @@ public class BattleShipApp extends Application {
     Buttons start_game_button_r4 = new Buttons("Start");
     start_game_button_r4.setId("start_game_button");
 
-    Labels background_label_select_position_r4 = new Labels("Select the position of you boats");
+    Labels background_label_select_position_r4 = new Labels("Select the position of your boats");
     background_label_select_position_r4.setId("label_background");
 
     StackPane root4 =
@@ -391,29 +392,11 @@ public class BattleShipApp extends Application {
           // werden
           battleGrid.setPrefSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setMaxSize(BOARD_SIZE, BOARD_SIZE);
+          battleGrid.setMinSize(BOARD_SIZE, BOARD_SIZE);
           battleGrid.setStyle("-fx-background-color: transparent;");
 
           // initialize the grid with cells
           initializePlacementBoard(battleGrid);
-
-          Image ship_length3 =
-              new Image(
-                  getClass()
-                      .getResource("/com/matti/battleship/images/ships/destroyer_length2.png")
-                      .toExternalForm());
-          ImageViews imageview_ship_length3 = new ImageViews(ship_length3);
-          imageview_ship_length3.setFitWidth(cellSize * 0.8);
-          imageview_ship_length3.setFitHeight(cellSize * 0.8);
-
-          Image ship_length5 =
-              new Image(
-                  getClass()
-                      .getResource(
-                          "/com/matti/battleship/images/ships/aircraft_carrier_length4.png")
-                      .toExternalForm());
-          ImageViews imageview_ship_length5 = new ImageViews(ship_length5);
-          imageview_ship_length5.setFitWidth(cellSize * 0.8);
-          imageview_ship_length5.setFitHeight(cellSize * 0.8);
 
           prepareShipRectangles(root4);
 
@@ -515,11 +498,14 @@ public class BattleShipApp extends Application {
     primaryStage.show();
   }
 
+  // _________________________________________________________________
   // ----- Helpers -----
+  // _________________________________________________________________
 
-  private void prepareShipRectangles(StackPane root) {
+  private void prepareShipRectangles(Pane root) {
     for (ShipLength length : this.initialShipSetup) {
-      Rectangle ship = new Rectangle(cellSize * 0.8, cellSize * length.getValue(), Color.DARKGRAY);
+      Rectangle ship =
+          new Rectangle(cellSize * 0.8, cellSize * length.getValue() * 0.95, Color.DARKGRAY);
       ship.setArcWidth(10);
       ship.setArcHeight(10);
       ship.setUserData(
@@ -553,7 +539,7 @@ public class BattleShipApp extends Application {
         cell.setPrefSize(cellSize, cellSize);
         cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
 
-        // TODO: Apply the logic add, remove or rotate ships from the board data
+        // TODO: Apply the logic add, remove ships from the board data
         // structure
 
         cell.setOnDragOver(
@@ -576,27 +562,16 @@ public class BattleShipApp extends Application {
                 ((javafx.scene.layout.Pane) shipNode.getParent()).getChildren().remove(shipNode);
               }
 
-              int columnIndex = Math.max(0, X - shipData.getLength().getValue() + 1);
-              int rowIndex = Y;
-
               // apply grid layout to rectangle
-              applyGrisLayoutToRectangle(
-                  shipNode,
-                  grid,
-                  rowIndex,
-                  columnIndex,
-                  shipData.getDirection(),
-                  shipData.getLength().getValue());
+              applyGridLayoutToRectangle(
+                  shipNode, grid, Y, X, shipData.getDirection(), shipData.getLength().getValue());
 
               // update "userData" of the rectangle
-              shipData.setCoordinates(new Coordinates(columnIndex, rowIndex));
+              shipData.setCoordinates(new Coordinates(X, Y));
               shipNode.setUserData(shipData);
 
               ev.setDropCompleted(true);
               ev.consume();
-
-              System.out.println(
-                  "Ship spanning: (" + rowIndex + "," + columnIndex + ") + (" + Y + "," + X + ")");
             });
 
         grid.add(cell, X, Y);
@@ -604,41 +579,47 @@ public class BattleShipApp extends Application {
     }
   }
 
-  private void applyGrisLayoutToRectangle(
+  private void applyGridLayoutToRectangle(
       Rectangle rect, GridPane grid, int row, int col, Direction direction, int length) {
     // Schiff direkt ins Grid legen und spannen
     grid.getChildren().add(rect);
     switch (direction) {
       case DOWN:
-        GridPane.setRowIndex(rect, row);
-        GridPane.setColumnIndex(rect, col);
+        int finalColD = col;
+        int finalRowD = Math.max(0, row - length + 1);
+
+        GridPane.setRowIndex(rect, finalRowD);
+        GridPane.setColumnIndex(rect, finalColD);
         GridPane.setRowSpan(rect, length);
         GridPane.setColumnSpan(rect, 1);
 
         break;
       case RIGHT:
-        GridPane.setRowIndex(rect, row);
-        GridPane.setColumnIndex(rect, col);
+        int finalColR = Math.max(0, col - length + 1);
+        int finalRowR = row;
+        GridPane.setRowIndex(rect, finalRowR);
+        GridPane.setColumnIndex(rect, finalColR);
         GridPane.setRowSpan(rect, 1);
         GridPane.setColumnSpan(rect, length);
-        break;
-      case UP:
-        GridPane.setRowIndex(rect, row);
-        GridPane.setColumnIndex(rect, col);
-        GridPane.setRowSpan(rect, -length);
-        GridPane.setColumnSpan(rect, 1);
-        break;
-      case LEFT:
-        GridPane.setRowIndex(rect, row);
-        GridPane.setColumnIndex(rect, col);
-        GridPane.setRowSpan(rect, 1);
-        GridPane.setColumnSpan(rect, -length);
         break;
     }
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
   }
 
+  /**
+   * Image ship_length3 = new Image( getClass()
+   * .getResource("/com/matti/battleship/images/ships/destroyer_length2.png") .toExternalForm());
+   * ImageViews imageview_ship_length3 = new ImageViews(ship_length3);
+   * imageview_ship_length3.setFitWidth(cellSize * 0.8);
+   * imageview_ship_length3.setFitHeight(cellSize * 0.8);
+   *
+   * <p>Image ship_length5 = new Image( getClass() .getResource(
+   * "/com/matti/battleship/images/ships/aircraft_carrier_length4.png") .toExternalForm());
+   * ImageViews imageview_ship_length5 = new ImageViews(ship_length5);
+   * imageview_ship_length5.setFitWidth(cellSize * 0.8);
+   * imageview_ship_length5.setFitHeight(cellSize * 0.8)
+   */
   // Entry Point -> main function
 
   public static void main(String[] args) {
