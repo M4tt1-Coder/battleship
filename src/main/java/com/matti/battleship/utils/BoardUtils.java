@@ -32,6 +32,10 @@ public class BoardUtils {
     // get supposed occupied fields by the ship
     var intendedFields = ShipUtils.getFieldsOfShip(board, ship);
 
+    if (intendedFields.length == 0) {
+      return false; // Invalid ship placement
+    }
+
     // validate if the ship can be placed in that field
     for (Coordinates intendedField : intendedFields) {
       if (occupiedFields.contains(intendedField)) {
@@ -144,6 +148,7 @@ public class BoardUtils {
    */
   public static Coordinates randomCoordinatesOnField(int boardSize, Random rand) {
     // Generate random X and Y within the board boundaries
+    // -> must be bigger then 0
     int X = rand.nextInt(boardSize);
     int Y = rand.nextInt(boardSize);
     // Create a Coordinates object for the generated point
@@ -191,5 +196,38 @@ public class BoardUtils {
     return (int) Math.ceil(requiredShips);
   }
 
+  /**
+   * Logs the current state of the game board to the console. It visualizes different states of each
+   * cell: - 'X' for a cell that was shot and contains a ship (hit) - 'O' for a cell that was shot
+   * and is empty (miss) - 'S' for a cell containing a ship that was not shot - '~' for an unshot,
+   * empty cell
+   *
+   * @param board the game board to log
+   */
+  public static void logBoardToConsole(Board board) {
+    StringBuilder sb = new StringBuilder();
+    for (int y = 0; y < board.getSize(); y++) {
+      for (int x = 0; x < board.getSize(); x++) {
+        var field = board.getFieldOnBoardByCoordinates(new Coordinates(x, y));
+        if (field.wasShotAt()) {
+          if (field.isOccupied()) {
+            sb.append(" X ");
+          } else {
+            sb.append(" O ");
+          }
+        } else {
+          if (field.isOccupied()) {
+            sb.append(" S ");
+          } else {
+            sb.append(" ~ ");
+          }
+        }
+      }
+      sb.append("\n");
+    }
+    logger.info("\n" + sb.toString());
+  }
+
   // ----- private methods ------
+
 }

@@ -5,6 +5,7 @@ import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Ship;
+import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,22 +59,23 @@ public class ShipUtils {
       Coordinates shipCoordinates, Direction direction, int length) {
     Coordinates[] output = new Coordinates[length];
     output[0] = shipCoordinates;
-    for (int i = 0; i < length - 1; i++) {
+    for (int i = 1; i < length; i++) {
       switch (direction) {
         case UP:
-          output[i] = new Coordinates(shipCoordinates.x, shipCoordinates.y - 1);
+          output[i] = new Coordinates(shipCoordinates.x, shipCoordinates.y - i);
           break;
         case DOWN:
-          output[i] = new Coordinates(shipCoordinates.x, shipCoordinates.y + 1);
+          output[i] = new Coordinates(shipCoordinates.x, shipCoordinates.y + i);
           break;
         case LEFT:
-          output[i] = new Coordinates(shipCoordinates.x - 1, shipCoordinates.y);
+          output[i] = new Coordinates(shipCoordinates.x - i, shipCoordinates.y);
           break;
         case RIGHT:
-          output[i] = new Coordinates(shipCoordinates.x + 1, shipCoordinates.y);
+          output[i] = new Coordinates(shipCoordinates.x + i, shipCoordinates.y);
           break;
       }
     }
+    logger.debug("Calculated fields of ship: {}", Arrays.toString(output));
     return output;
   }
 
