@@ -9,31 +9,48 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * GUI-OPTIONAL (Host-Button): Used if the GUI allows starting a server locally. Important methods:
- * - startServer(listener): starts UDP discovery responder + TCP accept (blocks internally) -
- * send(msg): sends messages to connected client Note: - startServer(...) should be called from a
- * background thread in the GUI, because accept() blocks until a client connects.
+ * - startServer(listener): starts UDP discovery responder + TCP accept (blocks internally)
+ *
+ * <p>This class starts: - a UDP discovery responder (so clients can find this server in the LAN) -
+ * a TCP server socket that blocks on accept() until a client connects
+ *
+ * <p>After a client connects, the server is marked as "busy" so it will stop responding to
+ * discovery requests. This prevents other clients from seeing or selecting a server that is already
+ * in use.
+ *
+ * <p>Important methods for GUI integration: - startServer(listener): starts discovery responder and
+ * waits for a TCP client connection - send(msg): sends protocol messages to the connected client
+ *
+ * <p>Note for GUI: startServer(...) blocks internally at accept(). If you call it from JavaFX/Swing
+ * UI thread, your UI will freeze. Always run startServer(...) in a background thread/task.
  *
  * @author WoFabian
  */
 public class ServerConnection {
 
+  /** Handles the actual TCP send/receive logic and turn logging. */
   private SocketConnector connector;
 
+  private ServerSocket serverSocket;
+
+  /**
+   * Busy flag for discovery: true means a client is connected, so we should not respond to
+   * discovery. AtomicBoolean is used because discovery runs in a separate thread.
+   */
   private final AtomicBoolean busy = new AtomicBoolean(false);
 
-  // Discovery nebenher laufen lassen
-  private ServerDiscoveryResponder discovery;
+  public AtomicBoolean getBusyFlag() {
+    return busy;
+  }
 
-  public void startServer(MessageListener listener) throws Exception {
+  public void openServerSocket() throws Exception {
     int port = EnvConfig.getPort();
+    serverSocket = new ServerSocket(port);
+    System.out.println("[SERVER] waiting for connection... (TCP " + port + ")");
+  }
 
-    discovery = new ServerDiscoveryResponder(port, busy, "Battleship-Server");
-    Thread discoveryThread = new Thread(discovery, "Discovery-Responder");
-    discoveryThread.setDaemon(true);
-    discoveryThread.start();
-
-    ServerSocket serverSocket = new ServerSocket(port);
-    System.out.println("[SERVER] wartet auf Verbindung... (TCP " + port + ")");
+  public void acceptClient(MessageListener listener) throws Exception {
+    if (serverSocket == null) throw new IllegalStateException("ServerSocket not opened.");
 
     Socket client = serverSocket.accept();
     busy.set(true);
@@ -56,10 +73,29 @@ public class ServerConnection {
 
     connector = new SocketConnector(client, new TurnLog(TurnLog.Side.SERVER));
     connector.setMessageListener(wrapped);
-    connector.startListening();
+  }
+
+  public void listenLoop() {
+    if (connector != null) connector.listenLoop();
   }
 
   public void send(String msg) throws Exception {
-    connector.sendMessage(msg);
+    if (connector != null) connector.sendMessage(msg);
+  }
+
+  public void close() {
+    try {
+      if (connector != null) connector.close();
+    } catch (Exception ignored) {
+    }
+
+    try {
+      if (serverSocket != null) serverSocket.close();
+    } catch (Exception ignored) {
+    }
+  }
+
+  public ServerDiscoveryResponder createDiscoveryResponder(String serverName) {
+    return new ServerDiscoveryResponder(EnvConfig.getPort(), busy, serverName);
   }
 }
