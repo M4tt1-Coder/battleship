@@ -13,14 +13,12 @@ import com.matti.battleship.types.Game;
 /**
  * Bridges socket transport <-> protocol state machine <-> game logic.
  *
- * Hybrid Auto-Acks:
- * - auto: DONE after SIZE/SHIPS, OK after LOAD
- * - NOT auto: READY (GUI decides when player is actually ready)
+ * <p>Hybrid Auto-Acks: - auto: DONE after SIZE/SHIPS, OK after LOAD - NOT auto: READY (GUI decides
+ * when player is actually ready)
  *
- * Gameplay:
- * - On SHOT: evaluate and send ANSWER (0/1/2) state-aware
- * - On ANSWER: apply to opponent board; if MISS (0) send PASS state-aware + switch local turn
- * - On PASS: opponent gives us turn -> switch local turn
+ * <p>Gameplay: - On SHOT: evaluate and send ANSWER (0/1/2) state-aware - On ANSWER: apply to
+ * opponent board; if MISS (0) send PASS state-aware + switch local turn - On PASS: opponent gives
+ * us turn -> switch local turn
  */
 public class NetworkGameController implements MessageListener {
 
@@ -103,9 +101,7 @@ public class NetworkGameController implements MessageListener {
     sendTyped(MessageType.LOAD, MessageBuilder.load(id));
   }
 
-  /**
-   * Sends a shot using INTERNAL (0-based) coordinates. Protocol is 1-based, so we convert +1.
-   */
+  /** Sends a shot using INTERNAL (0-based) coordinates. Protocol is 1-based, so we convert +1. */
   public void sendShot0Based(int x, int y) throws Exception {
     Coordinates internal = new Coordinates(x, y);
     this.lastShotInternal = internal;
@@ -124,19 +120,17 @@ public class NetworkGameController implements MessageListener {
   private void sendTyped(MessageType type, String raw) throws Exception {
     if (!sm.canSend(type)) {
       throw new IllegalStateException(
-              "Cannot send " + type + " in state " + sm.getState() + " (isServer=" + isServer + ")");
+          "Cannot send " + type + " in state " + sm.getState() + " (isServer=" + isServer + ")");
     }
     sender.send(raw);
     sm.onMessageSent(type);
   }
 
   /**
-   * HYBRID Auto-ack (client side only):
-   * - after SIZE -> DONE
-   * - after SHIPS -> DONE
-   * - after LOAD -> OK
+   * HYBRID Auto-ack (client side only): - after SIZE -> DONE - after SHIPS -> DONE - after LOAD ->
+   * OK
    *
-   * READY is NOT auto-sent; GUI triggers sendReady().
+   * <p>READY is NOT auto-sent; GUI triggers sendReady().
    */
   private void tryAutoAck() {
     if (isServer) return;
@@ -156,9 +150,8 @@ public class NetworkGameController implements MessageListener {
   }
 
   /**
-   * Handles an incoming SHOT from the opponent.
-   * Protocol uses 1-based coordinates -> convert to 0-based and evaluate on local board.
-   * Then send ANSWER (0/1/2) via state-aware sendTyped.
+   * Handles an incoming SHOT from the opponent. Protocol uses 1-based coordinates -> convert to
+   * 0-based and evaluate on local board. Then send ANSWER (0/1/2) via state-aware sendTyped.
    */
   private void handleIncomingShot(Message msg) {
     if (game == null) {
@@ -191,8 +184,8 @@ public class NetworkGameController implements MessageListener {
   }
 
   /**
-   * Handles an incoming ANSWER to our previously sent SHOT.
-   * Applies result to opponent board. If MISS (0), shooter MUST send PASS.
+   * Handles an incoming ANSWER to our previously sent SHOT. Applies result to opponent board. If
+   * MISS (0), shooter MUST send PASS.
    */
   private void handleIncomingAnswer(Message msg) {
     if (game == null) {
@@ -237,9 +230,7 @@ public class NetworkGameController implements MessageListener {
     // HIT/SUNK: no pass, shooter continues (state machine keeps MY_TURN)
   }
 
-  /**
-   * Handles an incoming PASS from opponent -> opponent missed and gives us the turn.
-   */
+  /** Handles an incoming PASS from opponent -> opponent missed and gives us the turn. */
   private void handleIncomingPass() {
     if (game != null) {
       game.switchTurn();

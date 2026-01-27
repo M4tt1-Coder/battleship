@@ -6,11 +6,9 @@ import com.matti.battleship.socket.protocol.MessageType;
 /**
  * Protocol state machine matching the Battleship communication protocol.
  *
- * <p>Key gameplay rules:
- * - Shooter sends SHOT
- * - Defender must send ANSWER
- * - If ANSWER == 0 (MISS), shooter must send PASS, then opponent gets MY_TURN
- * - If ANSWER == 1/2 (HIT/SUNK), shooter keeps MY_TURN (may shoot again)
+ * <p>Key gameplay rules: - Shooter sends SHOT - Defender must send ANSWER - If ANSWER == 0 (MISS),
+ * shooter must send PASS, then opponent gets MY_TURN - If ANSWER == 1/2 (HIT/SUNK), shooter keeps
+ * MY_TURN (may shoot again)
  */
 public class NetworkStateMachine {
 
