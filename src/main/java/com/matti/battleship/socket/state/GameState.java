@@ -33,9 +33,6 @@ public enum GameState {
   /** Client must answer with "ready" after receiving server "ready". */
   C_NEED_READY,
 
-  /** Client has sent READY and now waits for server to start (server turn). */
-  C_OPPONENT_TURN,
-
   // Load path
   /** Client must send "ok" after receiving "load <id>". */
   C_NEED_OK_AFTER_LOAD,
@@ -71,6 +68,12 @@ public enum GameState {
 
   /** We sent "shot" and must wait for "answer". */
   WAIT_FOR_ANSWER,
+
+  /** Opponent shot at us; we must send "answer*/
+  NEED_SEND_ANSWER,
+
+  /** we received answer 0 (miss) for our shot; we must send "pass" */
+  NEED_SEND_PASS,
 
   /** Opponent's turn, we wait for "shot". */
   OPPONENT_TURN,
