@@ -15,11 +15,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * protocol lines to a {@link MessageListener}.
  *
  * <p>LOGIC-IMPORTANT: The {@code busy} flag is shared with UDP discovery. Once a client is
- * connected, {@code busy == true} so the server will stop responding to discovery requests.
- * When the connection closes, {@code busy} is reset so the server becomes discoverable again.
+ * connected, {@code busy == true} so the server will stop responding to discovery requests. When
+ * the connection closes, {@code busy} is reset so the server becomes discoverable again.
  *
- * <p>GUI-IMPORTANT: {@link #acceptClient(MessageListener)} blocks on {@code accept()}.
- * Do not call it on the JavaFX/Swing UI thread. Run it in a background thread/task.
+ * <p>GUI-IMPORTANT: {@link #acceptClient(MessageListener)} blocks on {@code accept()}. Do not call
+ * it on the JavaFX/Swing UI thread. Run it in a background thread/task.
  *
  * @author WoFabian
  */
@@ -43,8 +43,8 @@ public class ServerConnection {
   /**
    * Exposes the busy flag so discovery can share the same connection state.
    *
-   * <p>LOGIC-IMPORTANT: This flag is read by the discovery responder thread to decide whether
-   * the server should be visible in LAN discovery results.
+   * <p>LOGIC-IMPORTANT: This flag is read by the discovery responder thread to decide whether the
+   * server should be visible in LAN discovery results.
    *
    * @return busy flag (true = a client is connected)
    * @author WoFabian
@@ -56,14 +56,14 @@ public class ServerConnection {
   /**
    * Sets the server name used for discovery.
    *
-   * <p>LOGIC-IMPORTANT: Empty/blank names are ignored so clients always receive a usable
-   * server list entry.
+   * <p>LOGIC-IMPORTANT: Empty/blank names are ignored so clients always receive a usable server
+   * list entry.
    *
    * @param serverName new server name (must not be blank)
    * @author WoFabian
    */
-  public void setServerName(String serverName){
-    if(serverName == null || serverName.isBlank()) return;
+  public void setServerName(String serverName) {
+    if (serverName == null || serverName.isBlank()) return;
     this.serverName = serverName.trim();
   }
 
@@ -127,8 +127,8 @@ public class ServerConnection {
   /**
    * Starts the TCP receive loop on the connected client socket.
    *
-   * <p>LOGIC-IMPORTANT: This only works after {@link #acceptClient(MessageListener)} created
-   * the {@link SocketConnector}.
+   * <p>LOGIC-IMPORTANT: This only works after {@link #acceptClient(MessageListener)} created the
+   * {@link SocketConnector}.
    *
    * @author WoFabian
    */
@@ -150,8 +150,8 @@ public class ServerConnection {
   /**
    * Closes the active client connection and the server socket.
    *
-   * <p>LOGIC-IMPORTANT: Exceptions are intentionally ignored to keep shutdown paths simple
-   * (e.g. UI "Stop Host" or emergency cleanup on errors).
+   * <p>LOGIC-IMPORTANT: Exceptions are intentionally ignored to keep shutdown paths simple (e.g. UI
+   * "Stop Host" or emergency cleanup on errors).
    *
    * @author WoFabian
    */
