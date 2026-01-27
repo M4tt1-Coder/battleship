@@ -140,7 +140,7 @@ public class BattleShipApp extends Application {
     select_field_size_r2.setPromptText("Type in field size");
 
     Labels label_settings_r2 = new Labels("Settings");
-    label_settings_r2.setId("label_settings");
+    label_settings_r2.setId("label_background_blue");
 
     Labels label_select_difficulty_r2 = new Labels("Difficulty:");
     label_select_difficulty_r2.setId("label_select_difficulty_r2");
@@ -208,13 +208,13 @@ public class BattleShipApp extends Application {
     back_button_r3.setId("back_button");
 
     Buttons start_new_game_button_r3 = new Buttons("Create own Game");
-    start_new_game_button_r3.setId("start_new_game_button");
+    start_new_game_button_r3.setId("normal_button");
 
     Buttons refresh_servers_button_r3 = new Buttons("Refresh Servers");
-    refresh_servers_button_r3.setId("refresh_servers");
+    refresh_servers_button_r3.setId("normal_button");
 
     Labels label_available_servers_r3 = new Labels("Join other players");
-    label_available_servers_r3.setId("label_background");
+    label_available_servers_r3.setId("label_background_blue");
 
     StackPane root3 =
         new StackPane(
@@ -251,10 +251,10 @@ public class BattleShipApp extends Application {
     start_game_button_r4.setId("start_game_button");
 
     Labels background_label_select_position_r4 = new Labels("Select the position of your boats");
-    background_label_select_position_r4.setId("label_background");
+    background_label_select_position_r4.setId("label_background_blue");
 
     Labels background_label_ships_r4 = new Labels("");
-    background_label_ships_r4.setId("label_background");
+    background_label_ships_r4.setId("label_background_blue");
 
     StackPane root4 = new StackPane();
     root4.setId("pane4");
@@ -274,7 +274,7 @@ public class BattleShipApp extends Application {
 
     background_label_ships_r4.position(root4, 0, 0.4);
     background_label_ships_r4.fontsize(root4, 0.03);
-    background_label_ships_r4.size(root4, 0.95, 0.1);
+    background_label_ships_r4.size(root4, 1, 0.2);
 
     // ---------------root 5
     // ---------------------------------------------------------------------
@@ -284,7 +284,7 @@ public class BattleShipApp extends Application {
     end_game_button_r5.setId("end_game_button");
 
     Labels background_label_r5 = new Labels("");
-    background_label_r5.setId("label_background");
+    background_label_r5.setId("label_background_blue");
 
     StackPane root5 = new StackPane(end_game_button_r5, background_label_r5);
     root5.setId("pane5");
@@ -323,7 +323,7 @@ public class BattleShipApp extends Application {
     select_server_name_r6.setPromptText("Type in server name");
 
     Labels label_settings_r6 = new Labels("Settings");
-    label_settings_r6.setId("label_settings");
+    label_settings_r6.setId("label_background_blue");
 
     Labels label_size_of_field_r6 = new Labels("Field Size:");
     label_size_of_field_r6.setId("label_size_of_field");
@@ -434,13 +434,14 @@ public class BattleShipApp extends Application {
                   background_label_ships_r4,
                   start_game_button_r4);
 
+          // TODO: error in logic when singleplayer value was once initialised -> stays in state
           if (source == start_game_button_r2) {
             if (!select_field_size_r2.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
                 this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
-                System.out.println("Ungültige Feldgröße, Standardwert 10");
+                System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
               }
             }
@@ -450,7 +451,7 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
                 this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
-                System.out.println("Ungültige Feldgröße, Standardwert 10");
+                System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
               }
             }
@@ -470,10 +471,8 @@ public class BattleShipApp extends Application {
 
           this.board = new Board(selected_field_size);
 
-          // ev das global dann kann battle grid auch in anderen angezeigt
           GridPane battleGrid = new GridPane();
 
-          // NEW: Grid skaliert mit boardSize
           battleGrid.prefWidthProperty().bind(boardSize);
           battleGrid.prefHeightProperty().bind(boardSize);
           battleGrid.minWidthProperty().bind(boardSize);
@@ -879,9 +878,10 @@ public class BattleShipApp extends Application {
       root.getChildren().add(ship);
 
       StackPane.setAlignment(ship, Pos.BOTTOM_LEFT);
-      // StackPane.setMargin(ship, new Insets(0, 0, 50, 25)); // top, right, bottom, left
+      StackPane.setMargin(
+          ship, new Insets(0, 0, BOARD_SIZE * 0.02, BOARD_SIZE * 0.06)); // top, right, bottom, left
 
-      javafx.beans.binding.ObjectBinding<Insets> marginBinding =
+      /*javafx.beans.binding.ObjectBinding<Insets> marginBinding =
           Bindings.createObjectBinding(
               () ->
                   new Insets(
@@ -893,7 +893,7 @@ public class BattleShipApp extends Application {
               root.widthProperty(),
               root.heightProperty());
       StackPane.setMargin(ship, marginBinding.get());
-      marginBinding.addListener((obs, oldVal, newVal) -> StackPane.setMargin(ship, newVal));
+      marginBinding.addListener((obs, oldVal, newVal) -> StackPane.setMargin(ship, newVal)); */
 
       int finalOffsetUnits = offsetUnits;
       ship.translateXProperty().bind(cs.multiply(finalOffsetUnits).multiply(0.6));
@@ -1134,7 +1134,7 @@ public class BattleShipApp extends Application {
     int amount_of_discovered_servers = list_of_discovered_servers.size();
     for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
       String server_name = list_of_discovered_servers.get(i).name();
-      String host_name = list_of_discovered_servers.get(i).host();
+      String host_name = list_of_discovered_servers.get(i).host(); // optional, if needed
       Buttons join_server_button = new Buttons(server_name);
       int row = i / 3;
       int col = i % 3;
