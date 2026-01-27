@@ -106,7 +106,7 @@ public class TurnLog {
    * @author WoFabian
    */
   public void received(String msg) {
-    logger.info("  [EMPFANGEN] " + msg);
+    logger.info("  [RECEIVED ] " + msg);
   }
 
   /**

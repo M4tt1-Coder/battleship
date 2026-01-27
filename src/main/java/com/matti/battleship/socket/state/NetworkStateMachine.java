@@ -81,7 +81,7 @@ public class NetworkStateMachine {
         }
 
         case WAIT_FOR_ANSWER -> {
-          if (t == MessageType.ANSWER) state = GameState.OPPONENT_TURN;
+          if (t == MessageType.ANSWER) state = GameState.MY_TURN;
         }
 
         case MY_TURN,

@@ -234,7 +234,7 @@ public class NetworkGameController implements MessageListener {
     int answerCode = toAnswerCode(result);
 
     try {
-      // ANSWER is a reaction to SHOT -> we send it directly
+      // ANSWER is a reaction to SHOT -> still send via state-machine-aware path
       sender.send(MessageBuilder.answer(answerCode));
 
       // We do NOT send PASS here.

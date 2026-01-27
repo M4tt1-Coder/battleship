@@ -79,7 +79,7 @@ public class ServerConnection {
   public void openServerSocket() throws Exception {
     int port = EnvConfig.getPort();
     serverSocket = new ServerSocket(port);
-    System.out.println("[SERVER] wartet auf Verbindung... (TCP " + port + ")");
+    System.out.println("[SERVER] waiting for connection... (TCP " + port + ")");
   }
 
   /**
@@ -99,7 +99,7 @@ public class ServerConnection {
    * @author WoFabian
    */
   public void acceptClient(MessageListener listener) throws Exception {
-    if (serverSocket == null) throw new IllegalStateException("ServerSocket nicht geöffnet.");
+    if (serverSocket == null) throw new IllegalStateException("ServerSocket not opened.");
 
     Socket client = serverSocket.accept();
     busy.set(true);
