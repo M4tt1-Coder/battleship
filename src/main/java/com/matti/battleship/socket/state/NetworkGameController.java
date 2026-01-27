@@ -235,7 +235,7 @@ public class NetworkGameController implements MessageListener {
 
     try {
       // ANSWER is a reaction to SHOT -> still send via state-machine-aware path
-      sendTyped(MessageBuilder.answer(answerCode));
+      sender.send(MessageBuilder.answer(answerCode));
 
       // We do NOT send PASS here.
       // PASS is sent by the shooter after receiving answer 0 (miss), per protocol example.
