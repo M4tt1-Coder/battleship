@@ -1,15 +1,19 @@
 package com.matti.battleship;
 
+import com.matti.battleship.computer.Algorithm;
 import com.matti.battleship.computer.PlacementAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.ShipLength;
+import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.types.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
+import com.matti.battleship.utils.GridPaneUtils;
 import com.matti.battleship.utils.PlayingUtils;
+import com.matti.battleship.utils.ShipUtils;
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
 import java.util.Arrays;
@@ -63,6 +67,7 @@ public class BattleShipApp extends Application {
   private Game game;
   private PlayingMode playingMode;
   @Nullable private AIDifficulty difficulty;
+  @Nullable private Algorithm aIAlgorithm;
 
   // percentage rule ... 30% of the field must be occupied by ships
   private ShipLength[] initialShipSetup;
@@ -372,6 +377,8 @@ public class BattleShipApp extends Application {
     // ----------------------
     back_button_r2.setOnAction(e -> scene1.setRoot(root1));
 
+    // TODO: Add feature of loading a game state from a file
+
     load_game_button_r2.setOnAction(
         e -> {
           FileChooser fileChooser_r2 = new FileChooser();
@@ -382,10 +389,6 @@ public class BattleShipApp extends Application {
               .add(new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg"));
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
-
-    // TODO: When pressing 'EndGame' in root4 the GridPane is not removed and shown
-    // again when
-    // starting a new game
 
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
@@ -487,8 +490,7 @@ public class BattleShipApp extends Application {
           // TODO: Add the case for playing against another player -> no board needs to be
           // added
 
-          System.out.println("Starting game with board:");
-          BoardUtils.logBoardToConsole(this.board);
+          // initialising the playing boards
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
           this.game =
@@ -500,7 +502,12 @@ public class BattleShipApp extends Application {
                   this.initialShipSetup);
           this.game.opponent.board = opponentBoard;
           this.game.player.board = this.board;
-          BoardUtils.logBoardToConsole(opponentBoard);
+
+          // determine AI algorithm for the 'VS_AI' playing mode
+          if (this.game.getPlayingMode() == PlayingMode.VS_AI) {
+            this.aIAlgorithm =
+                GameUtils.determineAlgorithmForTheGame(this.difficulty, selected_field_size);
+          }
 
           GridPane grid = new GridPane();
           grid.setHgap(0);
@@ -589,6 +596,7 @@ public class BattleShipApp extends Application {
 
     for (int r = 0; r < selected_field_size; r++) {
       for (int c = 0; c < selected_field_size; c++) {
+        Coordinates coordinates = new Coordinates(c, r);
         Buttons btn = new Buttons();
         btn.setStyle(
             "-fx-background-color: lightgray; -fx-border-color: black; -fx-background-radius: 0; -fx-border-radius: 0;");
@@ -599,24 +607,101 @@ public class BattleShipApp extends Application {
         btn.minWidthProperty().bind(BUTTON_SIZE);
         btn.minHeightProperty().bind(BUTTON_SIZE);
 
-        final int rr = r;
-        final int cc = c;
-
         btn.setOnAction(
             ev -> {
-              System.out.println("Clicked: row=" + rr + " col=" + cc);
+              ImageViews iv;
 
-              ImageViews iv = new ImageViews(imgMiss);
+              // logic for playing against the AI
+              // shot add the field of the opponent
+              ShotAttemptResult res = this.game.shotShot(coordinates);
+              // process the shot response
+              switch (res) {
+                case MISS:
+                  iv = new ImageViews(imgMiss);
 
-              iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
-              iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
-              iv.setPreserveRatio(false);
+                  iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.setPreserveRatio(false);
 
-              btn.setGraphic(iv);
+                  btn.setGraphic(iv);
+
+                  break;
+                case HIT:
+                  iv = new ImageViews(imgHit);
+
+                  iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.setPreserveRatio(false);
+
+                  btn.setGraphic(iv);
+                  break;
+                case SUNK:
+                  applyChangesToButtonsAfterShipSunk(pane, coordinates);
+                  break;
+                case INVALID:
+                  System.out.println("Invalid shot! Please try again!");
+                  break;
+              }
+
+              if (this.game.getWhoseTurn() == PlayerTurn.OPPONENT) {
+                // wait for the opponents move
+                this.aIAlgorithm.takeAShot(this.game);
+                // TODO: Show result on opponent board
+              }
+
+              // TODO: Check if somebody won the game -> terminate app
             });
 
         pane.add(btn, c, r);
       }
+    }
+  }
+
+  /**
+   * Updates the visual representation of the game board after a ship has been sunk.
+   *
+   * <p>This method changes the style of the buttons corresponding to the sunk ship's fields to
+   * indicate they are sunk, and overlays surrounding fields with an image (e.g., a "miss" marker)
+   * to show the area around the sunk ship.
+   *
+   * @param gridPane the {@link GridPane} containing the buttons representing the game board.
+   * @param coordinates the {@link Coordinates} of the sunk ship's position.
+   * @throws NullPointerException if the ship at the specified coordinates cannot be found.
+   */
+  private void applyChangesToButtonsAfterShipSunk(GridPane gridPane, Coordinates coordinates) {
+    Board targettedBoard = game.opponent.board;
+    // get coordinates of surrounding fields and fields of ship
+    Ship ship = targettedBoard.getShipByCoordinates(coordinates);
+    if (ship == null) {
+      throw new NullPointerException("The ship at " + coordinates.toString() + " can't be null!");
+    }
+    Coordinates[] fieldsOfShip = ShipUtils.getFieldsOfShip(targettedBoard, ship);
+    Coordinates[] fieldsAroundShip = ShipUtils.getFieldsAroundShip(targettedBoard, ship);
+    // apply changes to fields of ship
+    DoubleBinding BUTTON_SIZE =
+        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+
+    for (Coordinates coor : fieldsOfShip) {
+      // TODO: Add image for a sunken ship here
+      Buttons btn = (Buttons) GridPaneUtils.getNodeByRowColumn(gridPane, coor.y, coor.x);
+      btn.setGraphic(null);
+      btn.setStyle("-fx-background-color: red;");
+    }
+    Image imgMiss =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                .toExternalForm());
+
+    for (Coordinates coor : fieldsAroundShip) {
+      ImageViews iv = new ImageViews(imgMiss);
+
+      iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+      iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+      iv.setPreserveRatio(false);
+      Buttons btn = (Buttons) GridPaneUtils.getNodeByRowColumn(gridPane, coor.y, coor.x);
+      btn.setGraphic(iv);
+      // btn.setStyle("-fx-border-color: green;");
     }
   }
 
@@ -866,10 +951,6 @@ public class BattleShipApp extends Application {
             ev -> {
               if (!ev.getDragboard().hasString()) return;
               Coordinates coords = new Coordinates(X, Y);
-
-              // TODO: Rotation needs to be handled right
-              // add a new property to the ShipGridElement indicating if the rectangle was
-              // rotated recently or not
 
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
               ShipGridElement shipData = (ShipGridElement) shipNode.getUserData();

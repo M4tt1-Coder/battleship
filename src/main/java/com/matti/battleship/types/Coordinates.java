@@ -5,7 +5,7 @@ package com.matti.battleship.types;
  *
  * @author m4tt1
  */
-public class Coordinates {
+public class Coordinates implements Comparable<Coordinates> {
   /** X ordinate */
   public int x;
 
@@ -64,5 +64,14 @@ public class Coordinates {
   @Override
   public String toString() {
     return x + "|" + y;
+  }
+
+  @Override
+  public int compareTo(Coordinates otherCoordinates) {
+    if (otherCoordinates == null) {
+      throw new NullPointerException("Cannot compare to 'Coordinates' object that is null!");
+    }
+    return Integer.compare(this.x, otherCoordinates.x)
+        + Integer.compare(this.y, otherCoordinates.y);
   }
 }

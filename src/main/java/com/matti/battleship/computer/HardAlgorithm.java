@@ -57,7 +57,7 @@ public class HardAlgorithm implements Algorithm {
     SUNK
   }
 
-  HardAlgorithm(int boardSize) {
+  public HardAlgorithm(int boardSize) {
     this.heatMap = new HashMap<>();
     this.shotResultMap = new DocumentaryShotResult[boardSize][boardSize];
     this.boardSize = boardSize;
@@ -70,7 +70,7 @@ public class HardAlgorithm implements Algorithm {
   }
 
   @Override
-  public Coordinates takeAShot(Game game) {
+  public void takeAShot(Game game) {
     Coordinates guessedCoordinates;
     do {
       if (this.heatMap.isEmpty()) {
@@ -103,7 +103,11 @@ public class HardAlgorithm implements Algorithm {
 
     calculateHeatMap();
 
-    return guessedCoordinates;
+    // if we hit a ship -> keep firing
+    if (attemptResult != ShotAttemptResult.MISS) {
+      takeAShot(game);
+    }
+    logger.info("Finished firing!");
   }
 
   // ----- private methods -----

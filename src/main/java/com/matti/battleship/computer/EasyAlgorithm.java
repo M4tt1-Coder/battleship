@@ -1,18 +1,21 @@
 package com.matti.battleship.computer;
 
+import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Game;
 import com.matti.battleship.utils.BoardUtils;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import javax.swing.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * EasyAlgorithm implements a simple random shooting strategy for a Battleship-like game. It
  * randomly selects coordinates on the board that haven't been shot at before.
  */
 public class EasyAlgorithm implements Algorithm {
+  private static final Logger logger = LogManager.getLogger(EasyAlgorithm.class);
 
   /**
    * A set to keep track of the coordinates already shot at. Using a HashSet allows for efficient
@@ -35,7 +38,7 @@ public class EasyAlgorithm implements Algorithm {
     this.rand = new Random();
   }
 
-  public Coordinates takeAShot(Game game) {
+  public void takeAShot(Game game) {
     Coordinates coordinates;
 
     do {
@@ -45,6 +48,13 @@ public class EasyAlgorithm implements Algorithm {
 
     // Record the shot to prevent future duplicates
     alreadyShotAt.add(coordinates);
-    return coordinates;
+
+    ShotAttemptResult res = game.shotShot(coordinates);
+
+    // if we hit a ship -> keep firing
+    if (res != ShotAttemptResult.MISS) {
+      takeAShot(game);
+    }
+    logger.info("Finished firing!");
   }
 }

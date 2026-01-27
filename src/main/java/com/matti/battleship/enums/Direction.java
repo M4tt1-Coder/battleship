@@ -1,7 +1,5 @@
 package com.matti.battleship.enums;
 
-// TODO: Remove UP and Left directions and use only RIGHT and DOWN for ship placement
-
 /**
  * Represents a direction ship can point to in 2-dimensional field.
  *
