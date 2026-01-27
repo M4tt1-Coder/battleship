@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Application;
+import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
 import javafx.beans.property.DoubleProperty; // NEW
@@ -272,9 +273,9 @@ public class BattleShipApp extends Application {
     background_label_select_position_r4.size(root4, 0.6, 0.8);
     background_label_select_position_r4.setAlignment(Pos.TOP_CENTER);
 
-    background_label_ships_r4.position(root4, 0, 0.4);
+    background_label_ships_r4.position(root4, 0, 0.47);
     background_label_ships_r4.fontsize(root4, 0.03);
-    background_label_ships_r4.size(root4, 1, 0.2);
+    background_label_ships_r4.size(root4, 1, 0.08);
 
     // ---------------root 5
     // ---------------------------------------------------------------------
@@ -878,27 +879,22 @@ public class BattleShipApp extends Application {
       root.getChildren().add(ship);
 
       StackPane.setAlignment(ship, Pos.BOTTOM_LEFT);
-      StackPane.setMargin(
-          ship, new Insets(0, 0, BOARD_SIZE * 0.02, BOARD_SIZE * 0.06)); // top, right, bottom, left
-
-      /*javafx.beans.binding.ObjectBinding<Insets> marginBinding =
+      Binding<Insets> marginBinding =
           Bindings.createObjectBinding(
               () ->
                   new Insets(
                       0, // top
                       0, // right
-                      root.getHeight() * 0.08, // bottom
-                      root.getWidth() * 0.03 // left
+                      boardSize.get() * 0.04, // bottom
+                      boardSize.get() * 0.06 // left
                       ),
-              root.widthProperty(),
-              root.heightProperty());
-      StackPane.setMargin(ship, marginBinding.get());
-      marginBinding.addListener((obs, oldVal, newVal) -> StackPane.setMargin(ship, newVal)); */
+              boardSize);
 
       int finalOffsetUnits = offsetUnits;
       ship.translateXProperty().bind(cs.multiply(finalOffsetUnits).multiply(0.6));
       ship.setTranslateY(0);
 
+      //TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
