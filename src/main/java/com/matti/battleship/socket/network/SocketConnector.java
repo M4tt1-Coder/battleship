@@ -9,7 +9,9 @@ import java.net.Socket;
  * messages over the socket (line-based protocol) - Receive messages in a background thread -
  * Forward received messages to a {@link MessageListener} - Maintain turn information
  * (SERVER/CLIENT) for logging and debugging - Print separators after complete send/receive pairs
- * (pair/duo tracking)
+ * (pair/duo tracking) * Note: * This class only transports messages and provides debug logging. *
+ * The real protocol/game flow should be handled by higher layers (NetworkGameController +
+ * NetworkStateMachine).
  *
  * @author WoFabian
  */
@@ -92,6 +94,7 @@ public class SocketConnector {
    * @author WoFabian
    */
   public void setMessageListener(MessageListener listener) {
+
     this.listener = listener;
   }
 
@@ -123,40 +126,23 @@ public class SocketConnector {
 
   /* ===================== RECEIVE ===================== */
 
-  /**
-   * Starts a background thread which continuously listens for incoming messages. For every received
-   * line: - turn logic is updated (for readable logging) - the message is logged - pair tracking is
-   * updated - the message is forwarded to the {@link MessageListener}
-   *
-   * @author WoFabian
-   */
-  public void startListening() {
-    Thread t =
-        new Thread(
-            () -> {
-              try {
-                String line;
-                while ((line = reader.readLine()) != null) {
+  public void listenLoop() {
+    try {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        handleTurnOnReceive(line);
 
-                  // Update turn state based on incoming command.
-                  handleTurnOnReceive(line);
+        log.received(line);
+        onReceivedForPair();
 
-                  // Log incoming message and update pairing.
-                  log.received(line);
-                  onReceivedForPair();
+        if (listener != null) listener.onMessageReceived(line);
+      }
 
-                  // Forward to game logic / higher layers.
-                  if (listener != null) {
-                    listener.onMessageReceived(line);
-                  }
-                }
-              } catch (Exception e) {
-                if (listener != null) listener.onConnectionClosed(e);
-              }
-            });
-    // Daemon thread: does not block JVM shutdown.
-    t.setDaemon(true);
-    t.start();
+      if (listener != null) listener.onConnectionClosed(null);
+
+    } catch (Exception e) {
+      if (listener != null) listener.onConnectionClosed(e);
+    }
   }
 
   /**
@@ -222,6 +208,12 @@ public class SocketConnector {
     }
   }
 
+  /**
+   * IMPORTANT: Turn handling inside SocketConnector is only used for readable console output
+   * (TurnLog). It does not replace the protocol/game state machine.
+   *
+   * @author WoFabian
+   */
   /* ===================== TURN LOGIC ===================== */
 
   /**

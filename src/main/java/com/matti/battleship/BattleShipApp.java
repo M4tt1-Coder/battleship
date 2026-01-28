@@ -9,6 +9,9 @@ import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.Role;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.socket.config.EnvConfig;
+import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
+import com.matti.battleship.socket.discovery.DiscoveredServer;
 import com.matti.battleship.types.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
@@ -17,7 +20,9 @@ import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.ShipUtils;
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -142,7 +147,7 @@ public class BattleShipApp extends Application {
     select_field_size_r2.setPromptText("Type in field size");
 
     Labels label_settings_r2 = new Labels("Settings");
-    label_settings_r2.setId("label_settings");
+    label_settings_r2.setId("label_background_blue");
 
     Labels label_select_difficulty_r2 = new Labels("Difficulty:");
     label_select_difficulty_r2.setId("label_select_difficulty_r2");
@@ -210,13 +215,20 @@ public class BattleShipApp extends Application {
     back_button_r3.setId("back_button");
 
     Buttons start_new_game_button_r3 = new Buttons("Create own Game");
-    start_new_game_button_r3.setId("start_new_game_button_r3");
+    start_new_game_button_r3.setId("normal_button");
+
+    Buttons refresh_servers_button_r3 = new Buttons("Refresh Servers");
+    refresh_servers_button_r3.setId("normal_button");
 
     Labels label_available_servers_r3 = new Labels("Join other players");
-    label_available_servers_r3.setId("label_background");
+    label_available_servers_r3.setId("label_background_blue");
 
     StackPane root3 =
-        new StackPane(back_button_r3, label_available_servers_r3, start_new_game_button_r3);
+        new StackPane(
+            back_button_r3,
+            label_available_servers_r3,
+            start_new_game_button_r3,
+            refresh_servers_button_r3);
     root3.setId("stack_pane_root3");
 
     back_button_r3.position(root3, -0.45, -0.43);
@@ -227,6 +239,10 @@ public class BattleShipApp extends Application {
     start_new_game_button_r3.fontsize(root3, 0.015);
     start_new_game_button_r3.size(root3, 0.2, 0.07);
 
+    refresh_servers_button_r3.position(root3, 0.25, -0.3);
+    refresh_servers_button_r3.fontsize(root3, 0.015);
+    refresh_servers_button_r3.size(root3, 0.15, 0.05);
+
     label_available_servers_r3.position(root3, 0, 0.05);
     label_available_servers_r3.fontsize(root3, 0.03);
     label_available_servers_r3.size(root3, 0.7, 0.8);
@@ -235,17 +251,17 @@ public class BattleShipApp extends Application {
     // ---------------root 4
     // ---------------------------------------------------------------------
     // root4
-    Buttons end_game_button_r4 = new Buttons(); // ändern
+    Buttons end_game_button_r4 = new Buttons();
     end_game_button_r4.setId("end_game_button");
 
     Buttons start_game_button_r4 = new Buttons("Start");
     start_game_button_r4.setId("start_game_button");
 
     Labels background_label_select_position_r4 = new Labels("Select the position of your boats");
-    background_label_select_position_r4.setId("label_background");
+    background_label_select_position_r4.setId("label_background_blue");
 
     Labels background_label_ships_r4 = new Labels("");
-    background_label_ships_r4.setId("label_background");
+    background_label_ships_r4.setId("label_background_blue");
 
     StackPane root4 = new StackPane();
     root4.setId("pane4");
@@ -263,9 +279,9 @@ public class BattleShipApp extends Application {
     background_label_select_position_r4.size(root4, 0.6, 0.8);
     background_label_select_position_r4.setAlignment(Pos.TOP_CENTER);
 
-    background_label_ships_r4.position(root4, 0, 0.4);
+    background_label_ships_r4.position(root4, 0, 0.47);
     background_label_ships_r4.fontsize(root4, 0.03);
-    background_label_ships_r4.size(root4, 0.95, 0.1);
+    background_label_ships_r4.size(root4, 1, 0.08);
 
     // ---------------root 5
     // ---------------------------------------------------------------------
@@ -275,7 +291,7 @@ public class BattleShipApp extends Application {
     end_game_button_r5.setId("end_game_button");
 
     Labels background_label_r5 = new Labels("");
-    background_label_r5.setId("label_background");
+    background_label_r5.setId("label_background_blue");
 
     StackPane root5 = new StackPane(end_game_button_r5, background_label_r5);
     root5.setId("pane5");
@@ -286,7 +302,7 @@ public class BattleShipApp extends Application {
 
     background_label_r5.position(root5, 0, -0.01);
     background_label_r5.fontsize(root5, 0.03);
-    background_label_r5.size(root5, 0.6, 0.8);
+    background_label_r5.size(root5, 0.98, 0.7);
     background_label_r5.setAlignment(Pos.TOP_CENTER);
 
     // ---------------root 6
@@ -309,11 +325,18 @@ public class BattleShipApp extends Application {
     select_field_size_r6.setId("text_field_field_size");
     select_field_size_r6.setPromptText("Type in field size");
 
+    TextFields select_server_name_r6 = new TextFields();
+    select_server_name_r6.setId("select_server_name");
+    select_server_name_r6.setPromptText("Type in server name");
+
     Labels label_settings_r6 = new Labels("Settings");
-    label_settings_r6.setId("label_settings");
+    label_settings_r6.setId("label_background_blue");
 
     Labels label_size_of_field_r6 = new Labels("Field Size:");
     label_size_of_field_r6.setId("label_size_of_field");
+
+    Labels label_select_server_name_r6 = new Labels("Server Name:");
+    label_select_server_name_r6.setId("label_select_server_name");
 
     StackPane root6 =
         new StackPane(
@@ -322,7 +345,9 @@ public class BattleShipApp extends Application {
             label_settings_r6,
             start_game_button_r6,
             select_field_size_r6,
-            label_size_of_field_r6);
+            select_server_name_r6,
+            label_size_of_field_r6,
+            label_select_server_name_r6);
     root6.setId("stack_pane_root6");
 
     imageview_player_vs_player.position(root6, 0.25, 0.00);
@@ -332,23 +357,32 @@ public class BattleShipApp extends Application {
     back_button_r6.fontsize(root6, 0.01);
     back_button_r6.size(root6, 0.07, 0.1);
 
-    start_game_button_r6.position(root6, -0.25, 0.05);
+    start_game_button_r6.position(root6, -0.25, 0.25);
     start_game_button_r6.fontsize(root6, 0.02);
     start_game_button_r6.size(root6, 0.13, 0.05);
 
-    select_field_size_r6.position(root6, -0.2, -0.07);
+    select_field_size_r6.position(root6, -0.2, -0.05);
     select_field_size_r6.fontsize(root6, 0.01);
     select_field_size_r6.size(root6, 0.15, 0.05);
 
-    label_settings_r6.position(root6, -0.255, -0.05);
+    select_server_name_r6.position(root6, -0.2, 0.1);
+    select_server_name_r6.fontsize(root6, 0.01);
+    select_server_name_r6.size(root6, 0.15, 0.05);
+
+    label_settings_r6.position(root6, -0.255, 0.05);
     label_settings_r6.fontsize(root6, 0.03);
-    label_settings_r6.size(root6, 0.3, 0.4);
+    label_settings_r6.size(root6, 0.3, 0.6);
     label_settings_r6.setAlignment(Pos.TOP_CENTER);
 
-    label_size_of_field_r6.position(root6, -0.355, -0.07);
+    label_size_of_field_r6.position(root6, -0.355, -0.05);
     label_size_of_field_r6.fontsize(root6, 0.02);
     label_size_of_field_r6.size(root6, 0.1, 0.07);
     label_size_of_field_r6.setAlignment(Pos.CENTER);
+
+    label_select_server_name_r6.position(root6, -0.345, 0.1);
+    label_select_server_name_r6.fontsize(root6, 0.02);
+    label_select_server_name_r6.size(root6, 0.12, 0.07);
+    label_select_server_name_r6.setAlignment(Pos.CENTER);
 
     // ---------------root 7
     // ---------------------------------------------------------------------
@@ -373,7 +407,6 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3);
           this.playingMode = PlayingMode.VS_PLAYER;
-          // size load
         });
 
     // --------------------------------- root 2
@@ -406,13 +439,15 @@ public class BattleShipApp extends Application {
                   background_label_ships_r4,
                   start_game_button_r4);
 
+          // TODO: error in logic when singleplayer value was once initialised -> stays in
+          // state
           if (source == start_game_button_r2) {
             if (!select_field_size_r2.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
                 this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
-                System.out.println("Ungültige Feldgröße, Standardwert 10");
+                System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
               }
             }
@@ -422,10 +457,12 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
                 this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
-                System.out.println("Ungültige Feldgröße, Standardwert 10");
+                System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
               }
             }
+            // TODO: Implementation of setting the server_name
+            if (!select_server_name_r6.getText().isEmpty()) {}
           }
 
           // prepare ship setup for ship placement
@@ -440,10 +477,7 @@ public class BattleShipApp extends Application {
 
           this.board = new Board(selected_field_size);
 
-          // ev das global dann kann battle grid auch in anderen angezeigt
           GridPane battleGrid = new GridPane();
-
-          // NEW: Grid skaliert mit boardSize
           battleGrid.prefWidthProperty().bind(boardSize);
           battleGrid.prefHeightProperty().bind(boardSize);
           battleGrid.minWidthProperty().bind(boardSize);
@@ -521,10 +555,32 @@ public class BattleShipApp extends Application {
           grid.prefWidthProperty().bind(boardSize);
           grid.prefHeightProperty().bind(boardSize);
 
-          initializePlayingBoardButtonGrid(grid);
+          GridPane button_grid = new GridPane();
+          button_grid.setHgap(0);
+          button_grid.setVgap(0);
+          button_grid.setPadding(new Insets(12));
+          button_grid.prefWidthProperty().bind(boardSize);
+          button_grid.prefHeightProperty().bind(boardSize);
 
-          root5.getChildren().addAll(grid);
-          grid.setAlignment(Pos.CENTER);
+          GridPane cell_grid = new GridPane();
+          cell_grid.setHgap(0);
+          cell_grid.setVgap(0);
+          cell_grid.setPadding(new Insets(12));
+          cell_grid.prefWidthProperty().bind(boardSize);
+          cell_grid.prefHeightProperty().bind(boardSize);
+
+          initializePlayingBoardButtonGrid(button_grid);
+          initializePlayingBoardNormalGrid(cell_grid);
+
+          StackPane.setAlignment(button_grid, Pos.CENTER);
+          button_grid.translateXProperty().bind(scene1.widthProperty().multiply(-0.24));
+
+          StackPane.setAlignment(cell_grid, Pos.CENTER);
+          cell_grid.translateXProperty().bind(scene1.widthProperty().multiply(0.24));
+
+          root5.getChildren().addAll(cell_grid, button_grid);
+          button_grid.setAlignment(Pos.CENTER);
+          cell_grid.setAlignment(Pos.CENTER);
           end_game_button_r5.toFront();
           scene1.setRoot(root5);
         });
@@ -561,6 +617,48 @@ public class BattleShipApp extends Application {
     primaryStage.getIcons().add(icon);
     primaryStage.setScene(scene1);
     primaryStage.show();
+  }
+
+  // _________________________________________________________________
+  // ----- Helpers -----
+  // _________________________________________________________________
+
+  /**
+   * Initializes the game board grid with buttons for user interaction.
+   *
+   * <p>This method dynamically creates a grid of buttons corresponding to the selected field size
+   * and binds their size properties to a calculated BUTTON_SIZE, ensuring that buttons resize
+   * responsively when the board size or field size changes. Each button is styled consistently and
+   * configured with an event handler that updates its graphic upon being clicked, indicating a hit
+   * or miss with an appropriate image.
+   *
+   * <p>Images for "miss" and "hit" states are loaded from resources and scaled according to button
+   * size to maintain visual consistency. The grid is added to the provided GridPane layout.
+   *
+   * @param pane the GridPane to which the buttons will be added, representing the game board grid.
+   */
+  private void initializePlayingBoardNormalGrid(GridPane pane) {
+    DoubleBinding cs =
+        Bindings.createDoubleBinding(
+            () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
+    for (Field[] row : board.board) {
+      for (Field field : row) {
+        int X = field.getCoordinates().x;
+        int Y = field.getCoordinates().y;
+
+        StackPane cell = new StackPane();
+
+        // NEW: Zellgröße dynamisch
+        cell.prefWidthProperty().bind(cs);
+        cell.prefHeightProperty().bind(cs);
+        cell.minWidthProperty().bind(cs);
+        cell.minHeightProperty().bind(cs);
+
+        cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
+
+        pane.add(cell, X, Y);
+      }
+    }
   }
 
   // _________________________________________________________________
@@ -704,7 +802,6 @@ public class BattleShipApp extends Application {
       iv.setPreserveRatio(false);
       Buttons btn = (Buttons) GridPaneUtils.getNodeByRowColumn(gridPane, coor.y, coor.x);
       btn.setGraphic(iv);
-      // btn.setStyle("-fx-border-color: green;");
     }
   }
 
@@ -837,10 +934,8 @@ public class BattleShipApp extends Application {
 
       ship.setOnDragDetected(
           ev -> {
-            // ---------- rotate logic
             scene1.getRoot().requestFocus();
             scene1.setOnKeyPressed(
-                // ship.setOnKeyPressed(
                 e -> {
                   if (e.getCode() == KeyCode.R) { // Wenn R gedrückt
                     ShipGridElement data = (ShipGridElement) ship.getUserData();
@@ -893,12 +988,12 @@ public class BattleShipApp extends Application {
       root.getChildren().add(ship);
 
       StackPane.setAlignment(ship, Pos.BOTTOM_LEFT);
-      StackPane.setMargin(ship, new Insets(0, 0, 50, 25)); // top, right, bottom, left
 
       int finalOffsetUnits = offsetUnits;
       ship.translateXProperty().bind(cs.multiply(finalOffsetUnits).multiply(0.6));
       ship.setTranslateY(0);
 
+      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
@@ -1002,7 +1097,6 @@ public class BattleShipApp extends Application {
                 ev.consume();
                 return;
               }
-              BoardUtils.logBoardToConsole(this.board);
 
               // NEW: translate reset, damit es im Grid nicht daneben sitzt
               shipNode.translateXProperty().unbind();
@@ -1073,6 +1167,7 @@ public class BattleShipApp extends Application {
         if (row + (length - 1) > boardSize - 1) {
           finalRowD = boardSize - length;
         }
+
         GridPane.setRowIndex(rect, finalRowD);
         GridPane.setColumnIndex(rect, finalColD);
         GridPane.setRowSpan(rect, length);
@@ -1114,6 +1209,32 @@ public class BattleShipApp extends Application {
     }
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
+  }
+
+  private void discover_servers(Pane root) {
+    EnvConfig config = new EnvConfig();
+    int port = config.getPort();
+    ClientDiscoveryScanner scanner = new ClientDiscoveryScanner(port);
+    List<DiscoveredServer> list_of_discovered_servers = new ArrayList<>();
+    try {
+      list_of_discovered_servers = scanner.discover(500);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    int amount_of_discovered_servers = list_of_discovered_servers.size();
+    for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
+      String server_name = list_of_discovered_servers.get(i).name();
+      String host_name = list_of_discovered_servers.get(i).host(); // optional, if needed
+      Buttons join_server_button = new Buttons(server_name);
+      int row = i / 3;
+      int col = i % 3;
+      double[] pos = {-0.2, 0.0, 0.2};
+      double x_pos = pos[col];
+      double y_pos = pos[row];
+      join_server_button.position(root, x_pos, y_pos);
+      join_server_button.fontsize(root, 0.02);
+      join_server_button.size(root, 0.13, 0.05);
+    }
   }
 
   // Entry Point -> main function
