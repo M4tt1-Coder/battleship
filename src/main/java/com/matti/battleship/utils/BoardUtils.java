@@ -77,7 +77,7 @@ public class BoardUtils {
     }
 
     // check that the coordinates are on the board
-    return coordinates.x <= boardSize && coordinates.y <= boardSize;
+    return coordinates.x <= boardSize - 1 && coordinates.y <= boardSize - 1;
   }
 
   /**

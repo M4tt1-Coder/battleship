@@ -6,6 +6,7 @@ import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
+import com.matti.battleship.enums.Role;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.types.*;
@@ -68,6 +69,7 @@ public class BattleShipApp extends Application {
   private PlayingMode playingMode;
   @Nullable private AIDifficulty difficulty;
   @Nullable private Algorithm aIAlgorithm;
+  @Nullable private Role playerRole;
 
   // percentage rule ... 30% of the field must be occupied by ships
   private ShipLength[] initialShipSetup;
@@ -371,6 +373,7 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3);
           this.playingMode = PlayingMode.VS_PLAYER;
+          // size load
         });
 
     // --------------------------------- root 2
