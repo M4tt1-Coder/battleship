@@ -18,6 +18,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings; // NEW
@@ -43,6 +48,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.jetbrains.annotations.Nullable;
 
 // TODO: Refactor code -> extract indenpendent snippets into external functions
@@ -381,6 +387,63 @@ public class BattleShipApp extends Application {
     // ---------------root 7
     // ---------------------------------------------------------------------
     // root7
+    Image jet_gif =
+        new Image(getClass().getResource("/com/matti/battleship/images/jet.gif").toExternalForm());
+    ImageViews jet_gif_imageview = new ImageViews(jet_gif);
+
+    Buttons back_button_r7 = new Buttons();
+    back_button_r7.setId("back_button");
+
+    Labels label_waiting_for_other_player_to_join_r7 =
+        new Labels("Waiting for other player to join");
+    label_waiting_for_other_player_to_join_r7.setId("label_waiting_screen");
+
+    List<String> funnyTexts =
+        List.of(
+            "Get a quick coffee",
+            "Sharpening torpedoes",
+            "Waiting intensifies",
+            "Checking radar signals",
+            "Calibrating cannons");
+
+    String base = funnyTexts.get(new Random().nextInt(funnyTexts.size()));
+
+    Labels label_funny_infos = new Labels(base);
+    label_funny_infos.setId("label_waiting_screen2");
+
+    Timeline dots =
+        new Timeline(
+            new KeyFrame(Duration.millis(0), e -> label_funny_infos.setText(base)),
+            new KeyFrame(Duration.millis(400), e -> label_funny_infos.setText(base + ".")),
+            new KeyFrame(Duration.millis(800), e -> label_funny_infos.setText(base + "..")),
+            new KeyFrame(Duration.millis(1200), e -> label_funny_infos.setText(base + "...")));
+    dots.setCycleCount(Timeline.INDEFINITE);
+    dots.play();
+
+    StackPane root7 =
+        new StackPane(
+            back_button_r7,
+            label_waiting_for_other_player_to_join_r7,
+            label_funny_infos,
+            jet_gif_imageview);
+    root7.setId("stack_pane_root7");
+
+    jet_gif_imageview.position(root7, 0, 0.2);
+    jet_gif_imageview.size(root7, 0.5, 0.5);
+
+    back_button_r7.position(root7, -0.45, -0.43);
+    back_button_r7.fontsize(root7, 0.01);
+    back_button_r7.size(root7, 0.07, 0.1);
+
+    label_waiting_for_other_player_to_join_r7.position(root7, 0, -0.2);
+    label_waiting_for_other_player_to_join_r7.fontsize(root7, 0.05);
+    label_waiting_for_other_player_to_join_r7.size(root7, 0.7, 0.2);
+    label_waiting_for_other_player_to_join_r7.setAlignment(Pos.CENTER);
+
+    label_funny_infos.position(root7, 0, 0);
+    label_funny_infos.fontsize(root7, 0.03);
+    label_funny_infos.size(root7, 0.4, 0.2);
+    label_funny_infos.setAlignment(Pos.CENTER);
 
     // ---------------root 8
     // ---------------------------------------------------------------------
@@ -582,8 +645,19 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root3);
         });
 
-    start_game_button_r6.setOnAction(startHandler);
-    // --------------------------------- Create_board_where_ships_are_placed
+    start_game_button_r6.setOnAction(
+        e -> {
+          scene1.setRoot(root7);
+        });
+
+    // start_game_button_r6.setOnAction(startHandler);
+
+    // --------------------------------- root 7
+    // ----------------------
+    back_button_r7.setOnAction(
+        e -> {
+          scene1.setRoot(root3);
+        });
 
     // ---------------Stage
     // Setup--------------------------------------------------------------
@@ -1141,6 +1215,34 @@ public class BattleShipApp extends Application {
       join_server_button.fontsize(root, 0.02);
       join_server_button.size(root, 0.13, 0.05);
     }
+  }
+
+  void show_pop_up_information(Pane root, String text, int duration) {
+    Labels popup = new Labels(text);
+    popup.setId("label_pop_up_information");
+    popup.setVisible(false);
+
+    root.getChildren().add(popup);
+    StackPane.setAlignment(popup, Pos.CENTER);
+
+    popup.setOpacity(0);
+    popup.setVisible(true);
+
+    FadeTransition fadeIn = new FadeTransition(Duration.millis(200), popup);
+    fadeIn.setFromValue(0);
+    fadeIn.setToValue(1);
+    fadeIn.play();
+
+    PauseTransition wait = new PauseTransition(Duration.seconds(duration));
+    wait.setOnFinished(
+        e -> {
+          FadeTransition fadeOut = new FadeTransition(Duration.millis(200), popup);
+          fadeOut.setFromValue(1);
+          fadeOut.setToValue(0);
+          fadeOut.setOnFinished(ev -> popup.setVisible(false));
+          fadeOut.play();
+        });
+    wait.play();
   }
 
   // Entry Point -> main function

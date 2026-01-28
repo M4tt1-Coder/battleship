@@ -100,6 +100,57 @@
 }
 
 
+#stack_pane_root7 {
+    -fx-background-color: #3498db;
+}
+
+#label_waiting_screen {
+    #label_waiting_screen {
+        -fx-font-family: "Segoe UI", "Arial", sans-serif;
+        -fx-font-size: 60px;
+        -fx-font-weight: bold;
+
+        /* Text bleibt weiß, leicht veredelt */
+        -fx-text-fill: #E57373;
+        /*-fx-text-fill: #ffffff;*/
+
+        -fx-padding: 12 24 12 24;
+
+        /* kein Hintergrund */
+        -fx-background-color: transparent;
+
+        /* feiner, heller Rahmen für Struktur */
+        -fx-border-radius: 14;
+        -fx-border-width: 1.5;
+        -fx-border-color: rgba(255, 255, 255, 0.35);
+
+        /* subtiler Schatten für Tiefe */
+        -fx-effect:
+            dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
+            dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
+    }
+}
+
+#label_waiting_screen2 {
+    #label_waiting_screen {
+        -fx-font-family: "Segoe UI", "Arial", sans-serif;
+        -fx-font-size: 20px;
+
+        /* Text bleibt weiß, leicht veredelt */
+        -fx-text-fill: #ffffff;
+
+        -fx-padding: 12 24 12 24;
+
+        /* kein Hintergrund */
+        -fx-background-color: transparent;
+
+        /* subtiler Schatten für Tiefe */
+        -fx-effect:
+            dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
+            dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
+    }
+}
+
 
 
 /*----------------------------------------------------------------------------*/
@@ -163,4 +214,26 @@
     -fx-opacity: 0.6;
     -fx-scale-x: 1.03;
     -fx-scale-y: 1.03;
+}
+
+#label_pop_up_information {
+  -fx-font-family: "Segoe UI", "Arial", sans-serif;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+
+  -fx-text-fill: #000000;
+
+  -fx-padding: 14 26 14 26;
+
+  -fx-background-radius: 14;
+  -fx-background-color: #E57373;
+
+  -fx-effect: dropshadow(
+      gaussian,
+      rgba(0, 0, 0, 0.35),
+      14,
+      0.4,
+      0,
+      4
+  );
 }
