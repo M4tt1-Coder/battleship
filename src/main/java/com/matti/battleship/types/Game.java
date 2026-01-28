@@ -269,6 +269,10 @@ public class Game {
       if (shotResult == ShotAttemptResult.HIT) {
         // update boards accordingly
         if (opponent.board.checkIfShipWasSunk()) {
+          if (opponent.board.areAllShipsSunk()) {
+            logger.info("--- PLAYER won ---");
+            System.exit(0);
+          }
           shotResult = ShotAttemptResult.SUNK;
         }
       }
@@ -288,6 +292,12 @@ public class Game {
         // update boards accordingly
         // process sunk ships
         if (player.board.checkIfShipWasSunk()) {
+          // check if opponent won
+          // TODO: close socket connection for multiplayer
+          if (player.board.areAllShipsSunk()) {
+            logger.info("--- OPPONENT won ---");
+            System.exit(0);
+          }
           shotResult = ShotAttemptResult.SUNK;
         }
       }

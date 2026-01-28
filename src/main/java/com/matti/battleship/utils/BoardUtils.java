@@ -213,11 +213,11 @@ public class BoardUtils {
           if (field.isOccupied()) {
             sb.append(" X ");
           } else {
-            sb.append(" O ");
+            sb.append(" 0 ");
           }
         } else {
           if (field.isOccupied()) {
-            sb.append(" S ");
+            sb.append(" □ ");
           } else {
             sb.append(" ~ ");
           }
