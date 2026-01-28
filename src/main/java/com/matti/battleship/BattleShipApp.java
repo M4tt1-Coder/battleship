@@ -894,7 +894,7 @@ public class BattleShipApp extends Application {
       ship.translateXProperty().bind(cs.multiply(finalOffsetUnits).multiply(0.6));
       ship.setTranslateY(0);
 
-      //TODO: Right size
+      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
