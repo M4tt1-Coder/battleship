@@ -8,6 +8,7 @@ import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Game;
 import com.matti.battleship.utils.BoardUtils;
 import java.util.*;
+import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,7 +73,7 @@ public class HardAlgorithm implements Algorithm {
   }
 
   @Override
-  public void takeAShot(Game game) {
+  public void takeAShot(Game game, Pane root) {
     Coordinates guessedCoordinates;
     do {
       if (this.heatMap.isEmpty()) {
@@ -83,7 +84,7 @@ public class HardAlgorithm implements Algorithm {
     } while (checkIfFieldsWasAlreadyShotAt(guessedCoordinates));
 
     // fire on the board
-    ShotAttemptResult attemptResult = game.shotShot(guessedCoordinates);
+    ShotAttemptResult attemptResult = game.shotShot(guessedCoordinates, root);
 
     // according to the result the field(s) need to be marked as such HIT, etc
     if (attemptResult == ShotAttemptResult.HIT) {
@@ -101,7 +102,7 @@ public class HardAlgorithm implements Algorithm {
 
     // if we hit a ship -> keep firing
     if (attemptResult != ShotAttemptResult.MISS) {
-      takeAShot(game);
+      takeAShot(game, root);
     }
     logger.info("Finished firing!");
   }

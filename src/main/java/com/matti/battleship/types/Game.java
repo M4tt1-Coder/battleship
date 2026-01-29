@@ -3,8 +3,10 @@ package com.matti.battleship.types;
 import com.matti.battleship.enums.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
+import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.ShipUtils;
 import java.util.Arrays;
+import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +16,8 @@ import org.jetbrains.annotations.Nullable;
 // -> also an extra method waiting for the action of the opponent (AI & other player)
 
 /**
- * Represents a Battleship game instance. Contains information about the playing mode, players, and
+ * Represents a Battleship game instance. Contains information about the playing
+ * mode, players, and
  * game status.
  *
  * @author m4tt1
@@ -29,19 +32,24 @@ public class Game {
   private final PlayingMode playingMode;
 
   /**
-   * Was set by the server and the client receives the information. (Player vs Player)
+   * Was set by the server and the client receives the information. (Player vs
+   * Player)
    *
-   * <p>Must align with the number required fields occupied by a ship!
+   * <p>
+   * Must align with the number required fields occupied by a ship!
    */
   private final ShipLength[] initialShipSetup;
 
   /** Player instance representing the local player. */
-  @NotNull public Player player;
+  @NotNull
+  public Player player;
 
   /**
-   * Opponent player instance. Either another human player or an AI, depending on the playing mode.
+   * Opponent player instance. Either another human player or an AI, depending on
+   * the playing mode.
    */
-  @NotNull public Player opponent;
+  @NotNull
+  public Player opponent;
 
   /** Indicates whose turn it is in the game. */
   private PlayerTurn whoseTurn;
@@ -50,7 +58,8 @@ public class Game {
   private Winner winner;
 
   /** The difficulty level of the AI. Can be null if not set. */
-  @Nullable private AIDifficulty difficulty;
+  @Nullable
+  private AIDifficulty difficulty;
 
   public Game(
       PlayingMode playingMode,
@@ -78,7 +87,8 @@ public class Game {
   /**
    * Sets the difficulty level of the AI.
    *
-   * @param difficulty the desired AIDifficulty level, can be null to indicate no difficulty set
+   * @param difficulty the desired AIDifficulty level, can be null to indicate no
+   *                   difficulty set
    */
   public void setDifficulty(@Nullable AIDifficulty difficulty) {
     this.difficulty = difficulty;
@@ -97,7 +107,8 @@ public class Game {
   /**
    * Returns the initial setup of ships for the game.
    *
-   * @return an array of {@link ShipLength} representing the initial ship configuration.
+   * @return an array of {@link ShipLength} representing the initial ship
+   *         configuration.
    */
   public ShipLength[] getInitialShipSetup() {
     return this.initialShipSetup;
@@ -167,26 +178,34 @@ public class Game {
   }
 
   /**
-   * Applies the opponent's response result to the player's shot, updating the game state
-   * accordingly. This method should only be called during the player's turn in a multiplayer (PvP)
+   * Applies the opponent's response result to the player's shot, updating the
+   * game state
+   * accordingly. This method should only be called during the player's turn in a
+   * multiplayer (PvP)
    * game mode.
    *
-   * <p>Depending on the {@link ShotAttemptResult}:
+   * <p>
+   * Depending on the {@link ShotAttemptResult}:
    *
    * <ul>
-   *   <li>{@code HIT}: Marks the targeted field as shot and occupied.
-   *   <li>{@code MISS}: Marks the targeted field as shot.
-   *   <li>{@code SUNK}: Marks the field as shot and occupied, determines the sunk ship's position,
-   *       creates the ship instance, updates the opponent's board, and validates the sinking.
+   * <li>{@code HIT}: Marks the targeted field as shot and occupied.
+   * <li>{@code MISS}: Marks the targeted field as shot.
+   * <li>{@code SUNK}: Marks the field as shot and occupied, determines the sunk
+   * ship's position,
+   * creates the ship instance, updates the opponent's board, and validates the
+   * sinking.
    * </ul>
    *
-   * @param result the result of the opponent's shot attempt (HIT, MISS, or SUNK)
+   * @param result  the result of the opponent's shot attempt (HIT, MISS, or SUNK)
    * @param guessed the coordinates of the opponent's shot
-   * @throws IllegalStateException if it's not the player's turn or if the game mode is not PvP
-   * @throws IllegalArgumentException if {@code result} or {@code guessed} are null, or if the
-   *     result is invalid
-   * @throws IllegalStateException if the sunken ship's fields do not match the expected occupied
-   *     fields, or if sinking validation fails
+   * @throws IllegalStateException    if it's not the player's turn or if the game
+   *                                  mode is not PvP
+   * @throws IllegalArgumentException if {@code result} or {@code guessed} are
+   *                                  null, or if the
+   *                                  result is invalid
+   * @throws IllegalStateException    if the sunken ship's fields do not match the
+   *                                  expected occupied
+   *                                  fields, or if sinking validation fails
    */
   public void applyOpponentsResponseToPlayersShot(ShotAttemptResult result, Coordinates guessed) {
     if (guessed == null || result == null) {
@@ -215,8 +234,7 @@ public class Game {
         field.setOccupied(true);
         // set one of the fields as 'starting point' to set the ship instance -> first
         // in the list
-        Coordinates[] occupiedFields =
-            BoardUtils.getAllCurrentOccupiedFieldsOfSunkenShip(this.opponent.board);
+        Coordinates[] occupiedFields = BoardUtils.getAllCurrentOccupiedFieldsOfSunkenShip(this.opponent.board);
         // make sure the field that was shot at is in the list
         if (Arrays.stream(occupiedFields).noneMatch(x -> x.equals(guessed))) {
           logger.error(
@@ -244,20 +262,27 @@ public class Game {
   // to be called to fire a shot
 
   /**
-   * Processes a shot attempt at the given coordinates. When a shot is made, it checks if it was a
-   * hit or miss and updates the boards accordingly. If a ship is sunk as a result of the shot, it
+   * Processes a shot attempt at the given coordinates. When a shot is made, it
+   * checks if it was a
+   * hit or miss and updates the boards accordingly. If a ship is sunk as a result
+   * of the shot, it
    * processes that as well.
    *
-   * <p>Note: This method assumes that the player making the shot is the local player, and the
-   * opponent's board is being targeted locally (the information about where the opponents ships are
-   * placed needs to be known -> included into opponents board). In case the opponent is another
-   * real player on a different device, the actual shot processing is handled differently via
+   * <p>
+   * Note: This method assumes that the player making the shot is the local
+   * player, and the
+   * opponent's board is being targeted locally (the information about where the
+   * opponents ships are
+   * placed needs to be known -> included into opponents board). In case the
+   * opponent is another
+   * real player on a different device, the actual shot processing is handled
+   * differently via
    * network communication.
    *
    * @param guessed Coordinates where the shot is attempted.
    * @return Result of the shot attempt.
    */
-  public ShotAttemptResult shotShot(Coordinates guessed) {
+  public ShotAttemptResult shotShot(Coordinates guessed, Pane root) {
     // check if a ship has been sunk after the shot
     // in case two players on different devices are playing, you don't know about
     // where the
@@ -271,7 +296,15 @@ public class Game {
         if (opponent.board.checkIfShipWasSunk()) {
           if (opponent.board.areAllShipsSunk()) {
             logger.info("--- PLAYER won ---");
-            System.exit(0);
+            PlayingUtils.show_pop_up_information(root, "PLAYER won", 3000);
+            // try {
+            // Thread.sleep(5000);
+            // System.exit(0);
+            //
+            // } catch (Exception e) {
+            // // catching the exception
+            // System.out.println(e);
+            // }
           }
           shotResult = ShotAttemptResult.SUNK;
         }
@@ -296,7 +329,8 @@ public class Game {
           // TODO: close socket connection for multiplayer
           if (player.board.areAllShipsSunk()) {
             logger.info("--- OPPONENT won ---");
-            System.exit(0);
+            PlayingUtils.show_pop_up_information(root, "OPPONENT won", 3000);
+            // System.exit(0);
           }
           shotResult = ShotAttemptResult.SUNK;
         }
@@ -317,7 +351,8 @@ public class Game {
   /**
    * Checks whether the game has ended.
    *
-   * <p>The game ends if either the player's or the opponent's ships are all sunk.
+   * <p>
+   * The game ends if either the player's or the opponent's ships are all sunk.
    *
    * @return true if the game has ended; false otherwise.
    */
@@ -326,8 +361,10 @@ public class Game {
     boolean playerLost = this.player.board.areAllShipsSunk();
     // Check if the opponent has lost (all ships sunk)
     boolean opponentLost = this.opponent.board.areAllShipsSunk();
-    if (playerLost) this.winner = Winner.OPPONENT;
-    if (opponentLost) this.winner = Winner.PLAYER;
+    if (playerLost)
+      this.winner = Winner.OPPONENT;
+    if (opponentLost)
+      this.winner = Winner.PLAYER;
     // The game has ended if either player or opponent has lost
     return playerLost || opponentLost;
   }

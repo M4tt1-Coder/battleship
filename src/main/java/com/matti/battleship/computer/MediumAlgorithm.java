@@ -5,6 +5,7 @@ import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Game;
 import com.matti.battleship.utils.BoardUtils;
 import java.util.*;
+import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +53,7 @@ public class MediumAlgorithm implements Algorithm {
    * @param game The current game instance containing the player's board.
    */
   @Override
-  public void takeAShot(Game game) {
+  public void takeAShot(Game game, Pane root) {
     Coordinates guessedCoordinates;
     do {
       if (potentialTargets.isEmpty()) {
@@ -63,7 +64,7 @@ public class MediumAlgorithm implements Algorithm {
     } while (alreadyShotAt.contains(guessedCoordinates));
 
     // fire on the board
-    ShotAttemptResult attemptResult = game.shotShot(guessedCoordinates);
+    ShotAttemptResult attemptResult = game.shotShot(guessedCoordinates, root);
     alreadyShotAt.add(guessedCoordinates);
 
     if (attemptResult == ShotAttemptResult.HIT) {
@@ -77,7 +78,7 @@ public class MediumAlgorithm implements Algorithm {
 
     // if we hit a ship -> keep firing
     if (attemptResult != ShotAttemptResult.MISS) {
-      takeAShot(game);
+      takeAShot(game, root);
     }
     logger.info("Finished firing!");
   }

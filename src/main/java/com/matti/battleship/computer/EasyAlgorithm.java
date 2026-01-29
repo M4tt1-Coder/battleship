@@ -7,6 +7,7 @@ import com.matti.battleship.utils.BoardUtils;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +39,7 @@ public class EasyAlgorithm implements Algorithm {
     this.rand = new Random();
   }
 
-  public void takeAShot(Game game) {
+  public void takeAShot(Game game, Pane root) {
     Coordinates coordinates;
 
     do {
@@ -49,11 +50,11 @@ public class EasyAlgorithm implements Algorithm {
     // Record the shot to prevent future duplicates
     alreadyShotAt.add(coordinates);
 
-    ShotAttemptResult res = game.shotShot(coordinates);
+    ShotAttemptResult res = game.shotShot(coordinates, root);
 
     // if we hit a ship -> keep firing
     if (res != ShotAttemptResult.MISS) {
-      takeAShot(game);
+      takeAShot(game, root);
     }
     logger.info("Finished firing!");
   }
