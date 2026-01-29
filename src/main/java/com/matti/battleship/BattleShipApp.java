@@ -24,7 +24,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings; // NEW
 import javafx.beans.binding.DoubleBinding; // NEW
 import javafx.beans.property.DoubleProperty; // NEW
@@ -954,19 +953,31 @@ public class BattleShipApp extends Application {
       root.getChildren().add(ship);
 
       StackPane.setAlignment(ship, Pos.BOTTOM_LEFT);
-      Binding<Insets> marginBinding =
-          Bindings.createObjectBinding(
-              () ->
-                  new Insets(
-                      0, // top
-                      0, // right
-                      boardSize.get() * 0.04, // bottom
-                      boardSize.get() * 0.06 // left
-                      ),
-              boardSize);
 
       int finalOffsetUnits = offsetUnits;
-      ship.translateXProperty().bind(cs.multiply(finalOffsetUnits).multiply(0.6));
+      DoubleBinding desiredX = cs.multiply(finalOffsetUnits).multiply(0.6);
+
+      // WICHTIG: boundsInLocal statt boundsInParent (verhindert Rekursion)
+      DoubleBinding shipW =
+          Bindings.createDoubleBinding(
+              () -> ship.getBoundsInLocal().getWidth(),
+              ship.boundsInLocalProperty(),
+              ship.scaleXProperty());
+
+      DoubleBinding maxX =
+          Bindings.createDoubleBinding(
+              () -> Math.max(0, root.getWidth() - shipW.get()), root.widthProperty(), shipW);
+
+      DoubleBinding clampedX =
+          Bindings.createDoubleBinding(
+              () -> {
+                double x = desiredX.get();
+                return Math.max(0, Math.min(x, maxX.get()));
+              },
+              desiredX,
+              maxX);
+
+      ship.translateXProperty().bind(clampedX);
       ship.setTranslateY(0);
 
       // TODO: Right size
