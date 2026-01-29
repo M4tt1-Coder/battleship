@@ -72,7 +72,7 @@ public enum GameState {
   /** Opponent shot at us; we must send "answer". */
   NEED_SEND_ANSWER,
 
-  /** we received answer 0 (miss) for our shot; we must send "pass" */
+  /** We received answer 0 (miss) for our shot; we must send "pass" */
   NEED_SEND_PASS,
 
   /** Opponent's turn, we wait for "shot". */
