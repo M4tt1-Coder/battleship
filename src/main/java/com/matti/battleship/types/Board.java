@@ -4,9 +4,12 @@ import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.ShipUtils;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents the game board for Battleship. Contains fields and methods to manage ships and their
@@ -37,9 +40,9 @@ public class Board {
   public Board(int size) {
     // size can only be set during initialization
     // - must be greater than one and less than 16
-    if (size < 2 || size > 15) {
-      logger.error("Board size must be between 2 and 15! Provided size: {}", size);
-      throw new IllegalArgumentException("Board size must be between 2 and 15!");
+    if (size < 5 || size > 30) {
+      logger.error("Board size must be between 5 and 30! Provided size: {}", size);
+      throw new IllegalArgumentException("Board size must be between 5 and 30!");
     }
     this.size = size;
     this.numberOfShips = 0;
@@ -353,6 +356,55 @@ public class Board {
       }
     }
     return true;
+  }
+
+  /**
+   * Retrieves the {@link Ship} located at the specified {@link Coordinates} on the game board.
+   *
+   * <p>This method first checks if the field at the given coordinates is occupied and contains a
+   * ship. If not directly found, it performs a breadth-first search (BFS) to locate connected
+   * fields occupied by the same ship. If a ship is found, it is returned; otherwise, {@code null}
+   * is returned, and an error is logged.
+   *
+   * @param coordinates the {@link Coordinates} to search for a ship.
+   * @return the {@link Ship} at the specified coordinates, or {@code null} if no ship is found.
+   * @throws NullPointerException if no field exists at the given coordinates.
+   * @throws IllegalStateException if the starting field at the coordinates is not occupied.
+   */
+  @Nullable
+  public Ship getShipByCoordinates(Coordinates coordinates) {
+    Field accordingfield = this.getFieldOnBoardByCoordinates(coordinates);
+    if (accordingfield == null) {
+      throw new NullPointerException(
+          "Didn't find a field at these coordinates: " + coordinates.toString());
+    }
+    if (!accordingfield.isOccupied()) {
+      throw new IllegalStateException("Starting field to retrieve ship is not occupied!");
+    }
+    if (accordingfield.getShip() != null) {
+      return accordingfield.getShip();
+    }
+    Queue<Coordinates> queue = new ArrayDeque<>();
+    queue.add(coordinates);
+    while (!queue.isEmpty()) {
+      Coordinates curCoordinates = queue.poll();
+      // find the field that is at the start coordinates of the ship
+      for (Field[] row : this.board) {
+        for (Field field : row) {
+          if (!field.isOccupied()) {
+            continue;
+          }
+          if (curCoordinates.isNeighbourStraight(field.getCoordinates())
+              && field.getShip() != null) {
+            return field.getShip();
+          } else if (curCoordinates.isNeighbourStraight(field.getCoordinates())) {
+            queue.add(field.getCoordinates());
+          }
+        }
+      }
+    }
+    logger.error("Couldn't find a ship at the required coordinates!");
+    return null;
   }
 
   // ----- Private Methods -----

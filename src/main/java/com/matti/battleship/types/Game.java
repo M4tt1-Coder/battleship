@@ -3,12 +3,17 @@ package com.matti.battleship.types;
 import com.matti.battleship.enums.*;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
+import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.ShipUtils;
 import java.util.Arrays;
+import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+// TODO: Add field for socket connection
+// -> also an extra method waiting for the action of the opponent (AI & other player)
 
 /**
  * Represents a Battleship game instance. Contains information about the playing mode, players, and
@@ -237,6 +242,9 @@ public class Game {
     }
   }
 
+  // TODO: Adjust logic so that in both playing modes 'shotShot' method only has
+  // to be called to fire a shot
+
   /**
    * Processes a shot attempt at the given coordinates. When a shot is made, it checks if it was a
    * hit or miss and updates the boards accordingly. If a ship is sunk as a result of the shot, it
@@ -251,22 +259,42 @@ public class Game {
    * @param guessed Coordinates where the shot is attempted.
    * @return Result of the shot attempt.
    */
-  public ShotAttemptResult shotShot(Coordinates guessed) {
+  public ShotAttemptResult shotShot(Coordinates guessed, Pane root) {
     // check if a ship has been sunk after the shot
     // in case two players on different devices are playing, you don't know about
     // where the
     // opponents ships are placed -> only when playing against AI
     if (whoseTurn == PlayerTurn.PLAYER && playingMode == PlayingMode.VS_AI) { // Player's turn
+      logger.info("Player is shooting!");
       ShotAttemptResult shotResult = opponent.board.shotAtField(guessed);
       // check if hit or miss
       if (shotResult == ShotAttemptResult.HIT) {
         // update boards accordingly
         if (opponent.board.checkIfShipWasSunk()) {
+          if (opponent.board.areAllShipsSunk()) {
+            logger.info("--- PLAYER won ---");
+            PlayingUtils.show_pop_up_information(root, "PLAYER won", 3000);
+            // try {
+            // Thread.sleep(5000);
+            // System.exit(0);
+            //
+            // } catch (Exception e) {
+            // // catching the exception
+            // System.out.println(e);
+            // }
+          }
           shotResult = ShotAttemptResult.SUNK;
         }
       }
+      if (shotResult == ShotAttemptResult.MISS) {
+        this.switchTurn();
+      }
+
+      logger.info("Board of Opponent after Player shot at it:");
+      BoardUtils.logBoardToConsole(this.opponent.board);
       return shotResult;
     } else if (whoseTurn == PlayerTurn.OPPONENT) { // Opponent's turn
+      logger.info("Opponent is shooting!");
       // try to shoot at opponent's board
       ShotAttemptResult shotResult = player.board.shotAtField(guessed);
       // check if hit or miss
@@ -274,9 +302,23 @@ public class Game {
         // update boards accordingly
         // process sunk ships
         if (player.board.checkIfShipWasSunk()) {
+          // check if opponent won
+          // TODO: close socket connection for multiplayer
+          if (player.board.areAllShipsSunk()) {
+            logger.info("--- OPPONENT won ---");
+            PlayingUtils.show_pop_up_information(root, "OPPONENT won", 3000);
+            // System.exit(0);
+          }
           shotResult = ShotAttemptResult.SUNK;
         }
       }
+      if (shotResult == ShotAttemptResult.MISS) {
+        this.switchTurn();
+      }
+
+      logger.info("Board of Player after Opponent shot at it:");
+      BoardUtils.logBoardToConsole(this.player.board);
+
       return shotResult;
     } else {
       throw new IllegalStateException("It's not the turn of the local player attempting to shoot.");

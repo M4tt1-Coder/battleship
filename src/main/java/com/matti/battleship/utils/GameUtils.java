@@ -1,5 +1,9 @@
 package com.matti.battleship.utils;
 
+import com.matti.battleship.computer.Algorithm;
+import com.matti.battleship.computer.EasyAlgorithm;
+import com.matti.battleship.computer.HardAlgorithm;
+import com.matti.battleship.computer.MediumAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Player;
@@ -50,6 +54,41 @@ public class GameUtils {
         throw new IllegalArgumentException("An invalid argument as AIDifficulty was passed!");
     }
   }
+
+  /**
+   * Determines and returns the appropriate AI algorithm based on the specified difficulty level.
+   *
+   * <p>This method selects and instantiates the AI algorithm corresponding to the given difficulty:
+   *
+   * <ul>
+   *   <li>{@code EASY} returns a new {@link EasyAlgorithm} instance.
+   *   <li>{@code MEDIUM} returns a new {@link MediumAlgorithm} instance.
+   *   <li>{@code HARD} returns a new {@link HardAlgorithm} instance, initialized with the provided
+   *       board size.
+   * </ul>
+   *
+   * @param difficulty the difficulty level for the AI, represented by the {@code AIDifficulty}
+   *     enum.
+   * @param boardSize the size of the game board, used for initializing algorithms that require it.
+   * @return an {@link Algorithm} instance corresponding to the specified difficulty.
+   * @throws IllegalArgumentException if an unknown or unsupported {@code AIDifficulty} value is
+   *     provided.
+   */
+  public static Algorithm determineAlgorithmForTheGame(AIDifficulty difficulty, int boardSize) {
+    switch (difficulty) {
+      case EASY:
+        return new EasyAlgorithm();
+      case MEDIUM:
+        return new MediumAlgorithm();
+      case HARD:
+        return new HardAlgorithm(boardSize);
+      default:
+        throw new IllegalArgumentException(
+            "Unknown enum value for 'AIDifficulty' passed to 'determineAlgorithmForTheGame' method!");
+    }
+  }
+
+  // ----- private methods -----
 
   /**
    * Validates whether the given ship setup matches the board's requirements for the specified

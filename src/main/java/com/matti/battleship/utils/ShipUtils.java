@@ -4,7 +4,9 @@ import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
+import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Ship;
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +44,35 @@ public class ShipUtils {
       }
     }
     return fields;
+  }
+
+  /**
+   * Retrieves the coordinates of all fields surrounding the specified {@link Ship} on the given
+   * {@link Board}.
+   *
+   * <p>This method identifies all fields adjacent diagonally to any part of the ship, excluding the
+   * ship's own fields. The surrounding fields are returned as an array of {@link Coordinates}.
+   *
+   * @param board the {@link Board} containing the ship.
+   * @param ship the {@link Ship} whose surrounding fields are to be determined.
+   * @return an array of {@link Coordinates} representing the fields around the ship.
+   */
+  public static Coordinates[] getFieldsAroundShip(Board board, Ship ship) {
+    ArrayList<Coordinates> output = new ArrayList<>();
+    // get fields of ship
+    Coordinates[] fieldsOfShip = getFieldsOfShip(board, ship);
+    for (Field[] row : board.board) {
+      for (Field field : row) {
+        for (Coordinates shipFieldCoords : fieldsOfShip) {
+          if (shipFieldCoords.isNeighbourDiagonal(field.getCoordinates())
+              && !CoordinatesUtils.areCoordinatesInArray(field.getCoordinates(), fieldsOfShip)
+              && !output.contains(field.getCoordinates())) {
+            output.add(field.getCoordinates());
+          }
+        }
+      }
+    }
+    return output.toArray(new Coordinates[0]);
   }
 
   // ------------ private helper functions -------------------

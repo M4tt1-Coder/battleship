@@ -68,9 +68,6 @@ public class PlacementAlgorithm {
         }
       }
     }
-
-    logger.info("Ship placement algorithm completed.");
-    BoardUtils.logBoardToConsole(board);
   }
 
   /**
