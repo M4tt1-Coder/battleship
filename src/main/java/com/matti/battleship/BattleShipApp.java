@@ -14,10 +14,13 @@ import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
 import com.matti.battleship.socket.discovery.DiscoveredServer;
 import com.matti.battleship.types.*;
 import com.matti.battleship.utils.BoardUtils;
+import com.matti.battleship.utils.FieldUtils;
 import com.matti.battleship.utils.GameUtils;
 import com.matti.battleship.utils.GridPaneUtils;
 import com.matti.battleship.utils.PlayingUtils;
 import com.matti.battleship.utils.ShipUtils;
+import com.matti.battleship.utils.datatypes.PlayerBoardCellContext;
+import com.matti.battleship.utils.datatypes.PlayerBoardCellContext.FieldDisplayState;
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
 import java.util.ArrayList;
@@ -72,9 +75,12 @@ public class BattleShipApp extends Application {
   // ----- Temporary Game -----
   private Game game;
   private PlayingMode playingMode;
-  @Nullable private AIDifficulty difficulty;
-  @Nullable private Algorithm aIAlgorithm;
-  @Nullable private Role playerRole;
+  @Nullable
+  private AIDifficulty difficulty;
+  @Nullable
+  private Algorithm aIAlgorithm;
+  @Nullable
+  private Role playerRole;
 
   // percentage rule ... 30% of the field must be occupied by ships
   private ShipLength[] initialShipSetup;
@@ -100,8 +106,7 @@ public class BattleShipApp extends Application {
     Labels label_battleship_lobby_r1 = new Labels("Battleship");
     label_battleship_lobby_r1.setId("label_battleship_lobby_r1");
 
-    StackPane root1 =
-        new StackPane(Singleplayer_button_r1, Multiplayer_button_r1, label_battleship_lobby_r1);
+    StackPane root1 = new StackPane(Singleplayer_button_r1, Multiplayer_button_r1, label_battleship_lobby_r1);
     root1.setId("stack_pane_root1");
 
     // Layout root1:
@@ -123,11 +128,10 @@ public class BattleShipApp extends Application {
     // ---------------------------------------------------------------------
     // root2
 
-    Image image_player_vs_ai =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/player_vs_ai.jpg")
-                .toExternalForm());
+    Image image_player_vs_ai = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/player_vs_ai.jpg")
+            .toExternalForm());
     ImageViews imageview_player_vs_ai = new ImageViews(image_player_vs_ai);
 
     Buttons back_button_r2 = new Buttons();
@@ -155,17 +159,16 @@ public class BattleShipApp extends Application {
     Labels label_size_of_field_r2 = new Labels("Field Size:");
     label_size_of_field_r2.setId("label_size_of_field_r2");
 
-    StackPane root2 =
-        new StackPane(
-            imageview_player_vs_ai,
-            back_button_r2,
-            label_settings_r2,
-            start_game_button_r2,
-            load_game_button_r2,
-            select_field_size_r2,
-            difficulty_selection_r2,
-            label_select_difficulty_r2,
-            label_size_of_field_r2);
+    StackPane root2 = new StackPane(
+        imageview_player_vs_ai,
+        back_button_r2,
+        label_settings_r2,
+        start_game_button_r2,
+        load_game_button_r2,
+        select_field_size_r2,
+        difficulty_selection_r2,
+        label_select_difficulty_r2,
+        label_size_of_field_r2);
     root2.setId("stack_pane_root2");
 
     imageview_player_vs_ai.position(root2, 0.25, 0.00);
@@ -223,12 +226,11 @@ public class BattleShipApp extends Application {
     Labels label_available_servers_r3 = new Labels("Join other players");
     label_available_servers_r3.setId("label_background_blue");
 
-    StackPane root3 =
-        new StackPane(
-            back_button_r3,
-            label_available_servers_r3,
-            start_new_game_button_r3,
-            refresh_servers_button_r3);
+    StackPane root3 = new StackPane(
+        back_button_r3,
+        label_available_servers_r3,
+        start_new_game_button_r3,
+        refresh_servers_button_r3);
     root3.setId("stack_pane_root3");
 
     back_button_r3.position(root3, -0.45, -0.43);
@@ -308,11 +310,10 @@ public class BattleShipApp extends Application {
     // ---------------root 6
     // ---------------------------------------------------------------------
     // root6
-    Image image_player_vs_player =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/player_vs_player.jpg")
-                .toExternalForm());
+    Image image_player_vs_player = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/player_vs_player.jpg")
+            .toExternalForm());
     ImageViews imageview_player_vs_player = new ImageViews(image_player_vs_player);
 
     Buttons back_button_r6 = new Buttons();
@@ -338,16 +339,15 @@ public class BattleShipApp extends Application {
     Labels label_select_server_name_r6 = new Labels("Server Name:");
     label_select_server_name_r6.setId("label_select_server_name");
 
-    StackPane root6 =
-        new StackPane(
-            imageview_player_vs_player,
-            back_button_r6,
-            label_settings_r6,
-            start_game_button_r6,
-            select_field_size_r6,
-            select_server_name_r6,
-            label_size_of_field_r6,
-            label_select_server_name_r6);
+    StackPane root6 = new StackPane(
+        imageview_player_vs_player,
+        back_button_r6,
+        label_settings_r6,
+        start_game_button_r6,
+        select_field_size_r6,
+        select_server_name_r6,
+        label_size_of_field_r6,
+        label_select_server_name_r6);
     root6.setId("stack_pane_root6");
 
     imageview_player_vs_player.position(root6, 0.25, 0.00);
@@ -426,76 +426,74 @@ public class BattleShipApp extends Application {
           File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
         });
 
-    final EventHandler<ActionEvent> startHandler =
-        (ActionEvent e) -> {
-          Buttons source = (Buttons) e.getSource();
-          System.out.println(source);
+    final EventHandler<ActionEvent> startHandler = (ActionEvent e) -> {
+      Buttons source = (Buttons) e.getSource();
+      System.out.println(source);
 
-          root4
-              .getChildren()
-              .addAll(
-                  end_game_button_r4,
-                  background_label_select_position_r4,
-                  background_label_ships_r4,
-                  start_game_button_r4);
+      root4
+          .getChildren()
+          .addAll(
+              end_game_button_r4,
+              background_label_select_position_r4,
+              background_label_ships_r4,
+              start_game_button_r4);
 
-          // TODO: error in logic when singleplayer value was once initialised -> stays in
-          // state
-          if (source == start_game_button_r2) {
-            if (!select_field_size_r2.getText().isEmpty()) {
-              try {
-                this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
-              } catch (NumberFormatException ex) {
-                System.out.println("Invalid field size, default value 10");
-                this.selected_field_size = 10;
-              }
-            }
-          } else if (source == start_game_button_r6) {
-            if (!select_field_size_r6.getText().isEmpty()) {
-              try {
-                this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
-              } catch (NumberFormatException ex) {
-                System.out.println("Invalid field size, default value 10");
-                this.selected_field_size = 10;
-              }
-            }
-            // TODO: Implementation of setting the server_name
-            if (!select_server_name_r6.getText().isEmpty()) {}
+      // TODO: error in logic when singleplayer value was once initialised -> stays in
+      // state
+      if (source == start_game_button_r2) {
+        if (!select_field_size_r2.getText().isEmpty()) {
+          try {
+            this.selected_field_size = Integer.parseInt(select_field_size_r2.getText());
+            this.cellSize = BOARD_SIZE / selected_field_size;
+          } catch (NumberFormatException ex) {
+            System.out.println("Invalid field size, default value 10");
+            this.selected_field_size = 10;
           }
+        }
+      } else if (source == start_game_button_r6) {
+        if (!select_field_size_r6.getText().isEmpty()) {
+          try {
+            this.selected_field_size = Integer.parseInt(select_field_size_r6.getText());
+            this.cellSize = BOARD_SIZE / selected_field_size;
+          } catch (NumberFormatException ex) {
+            System.out.println("Invalid field size, default value 10");
+            this.selected_field_size = 10;
+          }
+        }
+        // TODO: Implementation of setting the server_name
+        if (!select_server_name_r6.getText().isEmpty()) {
+        }
+      }
 
-          // prepare ship setup for ship placement
-          this.initialShipSetup =
-              BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
-          System.out.println(Arrays.toString(this.initialShipSetup));
+      // prepare ship setup for ship placement
+      this.initialShipSetup = BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+      System.out.println(Arrays.toString(this.initialShipSetup));
 
-          // save current AIDifficulty
-          String selectedDifficultyString =
-              difficulty_selection_r2.getSelectionModel().getSelectedItem();
-          this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
+      // save current AIDifficulty
+      String selectedDifficultyString = difficulty_selection_r2.getSelectionModel().getSelectedItem();
+      this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
-          this.board = new Board(selected_field_size);
+      this.board = new Board(selected_field_size);
 
-          GridPane battleGrid = new GridPane();
-          battleGrid.prefWidthProperty().bind(boardSize);
-          battleGrid.prefHeightProperty().bind(boardSize);
-          battleGrid.minWidthProperty().bind(boardSize);
-          battleGrid.minHeightProperty().bind(boardSize);
-          battleGrid.maxWidthProperty().bind(boardSize);
-          battleGrid.maxHeightProperty().bind(boardSize);
+      GridPane battleGrid = new GridPane();
+      battleGrid.prefWidthProperty().bind(boardSize);
+      battleGrid.prefHeightProperty().bind(boardSize);
+      battleGrid.minWidthProperty().bind(boardSize);
+      battleGrid.minHeightProperty().bind(boardSize);
+      battleGrid.maxWidthProperty().bind(boardSize);
+      battleGrid.maxHeightProperty().bind(boardSize);
 
-          battleGrid.setStyle("-fx-background-color: transparent;");
+      battleGrid.setStyle("-fx-background-color: transparent;");
 
-          // initialize the grid with cells
-          initializePlacementBoard(battleGrid);
+      // initialize the grid with cells
+      initializePlacementBoard(battleGrid);
 
-          prepareShipRectangles(root4);
+      prepareShipRectangles(root4);
 
-          root4.getChildren().add(battleGrid);
-          StackPane.setAlignment(battleGrid, Pos.CENTER);
-          scene1.setRoot(root4);
-        };
+      root4.getChildren().add(battleGrid);
+      StackPane.setAlignment(battleGrid, Pos.CENTER);
+      scene1.setRoot(root4);
+    };
 
     start_game_button_r2.setOnAction(startHandler);
 
@@ -515,9 +513,8 @@ public class BattleShipApp extends Application {
     start_game_button_r4.setOnAction(
         e -> {
           // prevent starting a game when not all ships have been placed
-          if (this.board.getNumberOfOccupiedFields()
-              != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
-                  this.board.getSize())) {
+          if (this.board.getNumberOfOccupiedFields() != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
+              this.board.getSize())) {
             System.out.println(
                 "You can't start a game if you don't have placed all ships on the board!");
             e.consume();
@@ -530,20 +527,18 @@ public class BattleShipApp extends Application {
           // initialising the playing boards
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
-          this.game =
-              new Game(
-                  this.playingMode,
-                  new Player("Player", this.selected_field_size),
-                  new Player("Opponent", this.selected_field_size),
-                  PlayerTurn.PLAYER,
-                  this.initialShipSetup);
+          this.game = new Game(
+              this.playingMode,
+              new Player("Player", this.selected_field_size),
+              new Player("Opponent", this.selected_field_size),
+              PlayerTurn.PLAYER,
+              this.initialShipSetup);
           this.game.opponent.board = opponentBoard;
           this.game.player.board = this.board;
 
           // determine AI algorithm for the 'VS_AI' playing mode
           if (this.game.getPlayingMode() == PlayingMode.VS_AI) {
-            this.aIAlgorithm =
-                GameUtils.determineAlgorithmForTheGame(this.difficulty, selected_field_size);
+            this.aIAlgorithm = GameUtils.determineAlgorithmForTheGame(this.difficulty, selected_field_size);
           }
 
           GridPane grid = new GridPane();
@@ -569,8 +564,8 @@ public class BattleShipApp extends Application {
           cell_grid.prefWidthProperty().bind(boardSize);
           cell_grid.prefHeightProperty().bind(boardSize);
 
-          initializePlayingBoardButtonGrid(button_grid);
-          initializePlayingBoardNormalGrid(cell_grid);
+          initializePlayingBoardOpponentGrid(cell_grid);
+          initializePlayingBoardButtonGrid(button_grid, cell_grid);
 
           StackPane.setAlignment(button_grid, Pos.CENTER);
           button_grid.translateXProperty().bind(scene1.widthProperty().multiply(-0.24));
@@ -611,9 +606,8 @@ public class BattleShipApp extends Application {
     boardSize.bind(Bindings.min(scene1.widthProperty(), scene1.heightProperty()).multiply(0.65));
 
     primaryStage.setTitle("Battleship");
-    Image icon =
-        new Image(
-            getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
+    Image icon = new Image(
+        getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
     primaryStage.getIcons().add(icon);
     primaryStage.setScene(scene1);
     primaryStage.show();
@@ -624,23 +618,144 @@ public class BattleShipApp extends Application {
   // _________________________________________________________________
 
   /**
-   * Initializes the game board grid with buttons for user interaction.
+   * Updates the visual representation of the player's UI board to reflect the
+   * current state of the
+   * game board.
    *
-   * <p>This method dynamically creates a grid of buttons corresponding to the selected field size
-   * and binds their size properties to a calculated BUTTON_SIZE, ensuring that buttons resize
-   * responsively when the board size or field size changes. Each button is styled consistently and
-   * configured with an event handler that updates its graphic upon being clicked, indicating a hit
-   * or miss with an appropriate image.
+   * <p>
+   * This method iterates through each field in the provided {@link Board} and
+   * updates the
+   * corresponding UI cell in the {@link GridPane} if the field's state has
+   * changed. It retrieves
+   * the cell's user data, which is a {@link PlayerBoardCellContext}, and compares
+   * its current state
+   * with the theoretical state of the field. If there's a difference, it updates
+   * the UI style
+   * accordingly:
    *
-   * <p>Images for "miss" and "hit" states are loaded from resources and scaled according to button
-   * size to maintain visual consistency. The grid is added to the provided GridPane layout.
+   * <ul>
+   * <li>Yellow for MISS
+   * <li>Red for HIT
+   * <li>Black for SUNK
+   * </ul>
    *
-   * @param pane the GridPane to which the buttons will be added, representing the game board grid.
+   * If the state unexpectedly reverts to {@code NOT_SET}, an {@link UnknownError}
+   * is thrown.
+   *
+   * @param playerPane  the {@link GridPane} representing the player's UI board.
+   * @param playerBoard the {@link Board} object representing the current game
+   *                    state of the player's
+   *                    board.
    */
-  private void initializePlayingBoardNormalGrid(GridPane pane) {
-    DoubleBinding cs =
-        Bindings.createDoubleBinding(
-            () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
+  private void applyBoardUpdatesToPlayersUIBoard(GridPane playerPane, Board playerBoard) {
+    DoubleBinding BUTTON_SIZE = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+
+    Image imgMiss = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/game/tile_miss.png")
+            .toExternalForm());
+    Image imgHit = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/game/tile_hit.png")
+            .toExternalForm());
+
+    for (Field[] row : playerBoard.board) {
+      for (Field field : row) {
+        Coordinates coor = field.getCoordinates();
+        StackPane cell = (StackPane) GridPaneUtils.getNodeByRowColumn(playerPane, coor.y, coor.x);
+        PlayerBoardCellContext context = (PlayerBoardCellContext) cell.getUserData();
+        FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field);
+        if (context.state != fieldState) {
+          context.state = fieldState;
+          cell.setUserData(context);
+          // update ui according to changes
+          ImageViews iv;
+          switch (fieldState) {
+            case MISS -> {
+              iv = new ImageViews(imgMiss);
+
+              iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+              iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+              iv.setPreserveRatio(false);
+
+              cell.getChildren().clear();
+              cell.getChildren().add(iv);
+            }
+            case HIT -> {
+              iv = new ImageViews(imgHit);
+
+              iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+              iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+              iv.setPreserveRatio(false);
+
+              cell.getChildren().clear();
+              cell.getChildren().add(iv);
+            }
+            case SUNK -> {
+              Ship ship = playerBoard.getShipByCoordinates(coor);
+              if (ship == null) {
+                throw new NullPointerException(
+                    "The ship at " + coor.toString() + " can't be null!");
+              }
+
+              Coordinates[] fieldsOfShip = ShipUtils.getFieldsOfShip(playerBoard, ship);
+              System.out.print(Arrays.toString(fieldsOfShip));
+              for (Coordinates shipCoordinates : fieldsOfShip) {
+                StackPane shipCell = (StackPane) GridPaneUtils.getNodeByRowColumn(
+                    playerPane, shipCoordinates.y, shipCoordinates.x);
+                PlayerBoardCellContext shipCellContext = (PlayerBoardCellContext) cell.getUserData();
+                shipCellContext.state = FieldDisplayState.SUNK;
+                shipCell.setUserData(shipCellContext);
+                shipCell.getChildren().clear();
+                shipCell.setStyle("-fx-background-color: red;");
+              }
+            }
+            case NOT_SET -> {
+              throw new UnknownError(
+                  "State of a field changed back to NOT_SET! Field at: " + coor.toString());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Initializes the opponent's game board grid within the provided GridPane.
+   *
+   * <p>
+   * This method dynamically creates and adds cell representations for each field
+   * on the
+   * opponent's grid. Each cell is a StackPane with size bindings that adapt to
+   * the current board
+   * size and selected field size, ensuring the grid is responsive and scales
+   * appropriately.
+   *
+   * <p>
+   * The process involves:
+   *
+   * <ul>
+   * <li>Creating a DoubleBinding that calculates cell size based on the current
+   * board size and
+   * field size, scaled by 0.9 for padding.
+   * <li>Iterating over the game board's fields, retrieving their coordinates.
+   * <li>For each field, creating a StackPane that represents a cell, binding its
+   * width and height
+   * to the dynamic size binding.
+   * <li>Styling each cell with a border and background color (light blue).
+   * <li>Adding each cell to the GridPane at the appropriate X (column) and Y
+   * (row) positions.
+   * </ul>
+   *
+   * This setup ensures the opponent's grid is visually consistent and responsive
+   * to changes in
+   * board or field sizes.
+   *
+   * @param pane the GridPane into which opponent grid cells will be added.
+   */
+  private void initializePlayingBoardOpponentGrid(GridPane pane) {
+    DoubleBinding cs = Bindings.createDoubleBinding(
+        () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
     for (Field[] row : board.board) {
       for (Field field : row) {
         int X = field.getCoordinates().x;
@@ -656,6 +771,8 @@ public class BattleShipApp extends Application {
 
         cell.setStyle("-fx-border-color: black;-fx-background-color: lightblue;");
 
+        cell.setUserData(new PlayerBoardCellContext());
+
         pane.add(cell, X, Y);
       }
     }
@@ -668,32 +785,39 @@ public class BattleShipApp extends Application {
   /**
    * Initializes the game board grid with buttons for user interaction.
    *
-   * <p>This method dynamically creates a grid of buttons corresponding to the selected field size
-   * and binds their size properties to a calculated BUTTON_SIZE, ensuring that buttons resize
-   * responsively when the board size or field size changes. Each button is styled consistently and
-   * configured with an event handler that updates its graphic upon being clicked, indicating a hit
+   * <p>
+   * This method dynamically creates a grid of buttons corresponding to the
+   * selected field size
+   * and binds their size properties to a calculated BUTTON_SIZE, ensuring that
+   * buttons resize
+   * responsively when the board size or field size changes. Each button is styled
+   * consistently and
+   * configured with an event handler that updates its graphic upon being clicked,
+   * indicating a hit
    * or miss with an appropriate image.
    *
-   * <p>Images for "miss" and "hit" states are loaded from resources and scaled according to button
-   * size to maintain visual consistency. The grid is added to the provided GridPane layout.
+   * <p>
+   * Images for "miss" and "hit" states are loaded from resources and scaled
+   * according to button
+   * size to maintain visual consistency. The grid is added to the provided
+   * GridPane layout.
    *
-   * @param pane the GridPane to which the buttons will be added, representing the game board grid.
+   * @param pane the GridPane to which the buttons will be added, representing the
+   *             game board grid.
    */
-  private void initializePlayingBoardButtonGrid(GridPane pane) {
+  private void initializePlayingBoardButtonGrid(GridPane pane, GridPane playerPane) {
     // NEW: dynamische Buttongröße (statt BOARD_SIZE)
-    DoubleBinding BUTTON_SIZE =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+    DoubleBinding BUTTON_SIZE = Bindings.createDoubleBinding(
+        () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
 
-    Image imgMiss =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                .toExternalForm());
-    Image imgHit =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/game/tile_hit.png")
-                .toExternalForm());
+    Image imgMiss = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/game/tile_miss.png")
+            .toExternalForm());
+    Image imgHit = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/game/tile_hit.png")
+            .toExternalForm());
 
     for (int r = 0; r < selected_field_size; r++) {
       for (int c = 0; c < selected_field_size; c++) {
@@ -748,9 +872,8 @@ public class BattleShipApp extends Application {
                 // wait for the opponents move
                 this.aIAlgorithm.takeAShot(this.game);
                 // TODO: Show result on opponent board
+                applyBoardUpdatesToPlayersUIBoard(playerPane, this.game.player.board);
               }
-
-              // TODO: Check if somebody won the game -> terminate app
             });
 
         pane.add(btn, c, r);
@@ -759,15 +882,21 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Updates the visual representation of the game board after a ship has been sunk.
+   * Updates the visual representation of the game board after a ship has been
+   * sunk.
    *
-   * <p>This method changes the style of the buttons corresponding to the sunk ship's fields to
-   * indicate they are sunk, and overlays surrounding fields with an image (e.g., a "miss" marker)
+   * <p>
+   * This method changes the style of the buttons corresponding to the sunk ship's
+   * fields to
+   * indicate they are sunk, and overlays surrounding fields with an image (e.g.,
+   * a "miss" marker)
    * to show the area around the sunk ship.
    *
-   * @param gridPane the {@link GridPane} containing the buttons representing the game board.
+   * @param gridPane    the {@link GridPane} containing the buttons representing
+   *                    the game board.
    * @param coordinates the {@link Coordinates} of the sunk ship's position.
-   * @throws NullPointerException if the ship at the specified coordinates cannot be found.
+   * @throws NullPointerException if the ship at the specified coordinates cannot
+   *                              be found.
    */
   private void applyChangesToButtonsAfterShipSunk(GridPane gridPane, Coordinates coordinates) {
     Board targettedBoard = game.opponent.board;
@@ -779,8 +908,7 @@ public class BattleShipApp extends Application {
     Coordinates[] fieldsOfShip = ShipUtils.getFieldsOfShip(targettedBoard, ship);
     Coordinates[] fieldsAroundShip = ShipUtils.getFieldsAroundShip(targettedBoard, ship);
     // apply changes to fields of ship
-    DoubleBinding BUTTON_SIZE =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+    DoubleBinding BUTTON_SIZE = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
     for (Coordinates coor : fieldsOfShip) {
       // TODO: Add image for a sunken ship here
@@ -788,11 +916,10 @@ public class BattleShipApp extends Application {
       btn.setGraphic(null);
       btn.setStyle("-fx-background-color: red;");
     }
-    Image imgMiss =
-        new Image(
-            getClass()
-                .getResource("/com/matti/battleship/images/game/tile_miss.png")
-                .toExternalForm());
+    Image imgMiss = new Image(
+        getClass()
+            .getResource("/com/matti/battleship/images/game/tile_miss.png")
+            .toExternalForm());
 
     for (Coordinates coor : fieldsAroundShip) {
       ImageViews iv = new ImageViews(imgMiss);
@@ -806,29 +933,38 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Rotates and positions a Rectangle representing a ship within a GridPane layout based on the
+   * Rotates and positions a Rectangle representing a ship within a GridPane
+   * layout based on the
    * specified direction.
    *
-   * <p>This method adjusts the rectangle's row and column indices, span, and size bindings to
-   * visually rotate the ship within the grid. It ensures the ship remains within grid boundaries
-   * before applying changes. If rotation is not possible due to boundary constraints, an
+   * <p>
+   * This method adjusts the rectangle's row and column indices, span, and size
+   * bindings to
+   * visually rotate the ship within the grid. It ensures the ship remains within
+   * grid boundaries
+   * before applying changes. If rotation is not possible due to boundary
+   * constraints, an
    * informative message is printed and the operation is aborted.
    *
-   * <p>The size of the rectangle is dynamically bound to the current board size, ensuring
-   * responsive resizing. The rectangle is centered within its grid cell after positioning.
+   * <p>
+   * The size of the rectangle is dynamically bound to the current board size,
+   * ensuring
+   * responsive resizing. The rectangle is centered within its grid cell after
+   * positioning.
    *
-   * @param shipRect the Rectangle object representing the ship to be rotated and positioned.
-   * @param row the current row index of the ship's starting position.
-   * @param col the current column index of the ship's starting position.
-   * @param shipLength the length of the ship in grid units.
-   * @param boardSize the total size (number of cells) of the game board.
-   * @param newDirection the direction to rotate the ship to (UP, DOWN, LEFT, RIGHT).
+   * @param shipRect     the Rectangle object representing the ship to be rotated
+   *                     and positioned.
+   * @param row          the current row index of the ship's starting position.
+   * @param col          the current column index of the ship's starting position.
+   * @param shipLength   the length of the ship in grid units.
+   * @param boardSize    the total size (number of cells) of the game board.
+   * @param newDirection the direction to rotate the ship to (UP, DOWN, LEFT,
+   *                     RIGHT).
    */
   private void rotateRectangleOnGridPane(
       Rectangle shipRect, int row, int col, int shipLength, int boardSize, Direction newDirection) {
-    DoubleBinding cs =
-        Bindings.createDoubleBinding(
-            () -> this.boardSize.get() / selected_field_size, this.boardSize);
+    DoubleBinding cs = Bindings.createDoubleBinding(
+        () -> this.boardSize.get() / selected_field_size, this.boardSize);
 
     switch (newDirection) {
       case DOWN:
@@ -890,26 +1026,37 @@ public class BattleShipApp extends Application {
   /**
    * Prepares and initializes the ship rectangles within the provided root pane.
    *
-   * <p>This method creates a visual representation of ships based on predefined ship lengths,
-   * binding their size dynamically to the current board size for responsiveness. Each ship is
-   * represented by a Rectangle with styling and transformation capabilities, including
+   * <p>
+   * This method creates a visual representation of ships based on predefined ship
+   * lengths,
+   * binding their size dynamically to the current board size for responsiveness.
+   * Each ship is
+   * represented by a Rectangle with styling and transformation capabilities,
+   * including
    * drag-and-drop and rotation via keyboard input (pressing 'R').
    *
-   * <p>During drag detection, the method sets up event handlers to handle ship rotation, which
-   * involves removing the ship from the board, updating its direction, and attempting to re-place
-   * it. If placement fails, the ship's direction is reverted, and it is re-added to the original
+   * <p>
+   * During drag detection, the method sets up event handlers to handle ship
+   * rotation, which
+   * involves removing the ship from the board, updating its direction, and
+   * attempting to re-place
+   * it. If placement fails, the ship's direction is reverted, and it is re-added
+   * to the original
    * position.
    *
-   * <p>The rectangles are added to the root pane, positioned with margins and translation bindings
-   * to display multiple ships in a row. They also support dragging with a visual snapshot.
+   * <p>
+   * The rectangles are added to the root pane, positioned with margins and
+   * translation bindings
+   * to display multiple ships in a row. They also support dragging with a visual
+   * snapshot.
    *
-   * @param root the Pane to which the ship rectangles will be added and displayed.
+   * @param root the Pane to which the ship rectangles will be added and
+   *             displayed.
    */
   private void prepareShipRectangles(Pane root) {
     ShipLength[] allLengths = this.initialShipSetup;
 
-    DoubleBinding cs =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+    DoubleBinding cs = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
     int offsetUnits = 0;
 
@@ -1002,25 +1149,34 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Initializes the placement board by creating and configuring grid cells within the provided
+   * Initializes the placement board by creating and configuring grid cells within
+   * the provided
    * GridPane.
    *
-   * <p>This method dynamically binds each cell's size to the current board size, ensuring
-   * responsiveness. Each cell is styled with borders and background color, and set up to handle
-   * drag-and-drop operations for placing ships. When a ship is dropped onto a cell, the method
-   * validates the placement, updates the internal board data structure, and visually positions the
+   * <p>
+   * This method dynamically binds each cell's size to the current board size,
+   * ensuring
+   * responsiveness. Each cell is styled with borders and background color, and
+   * set up to handle
+   * drag-and-drop operations for placing ships. When a ship is dropped onto a
+   * cell, the method
+   * validates the placement, updates the internal board data structure, and
+   * visually positions the
    * ship rectangle within the grid.
    *
-   * <p>If the placement is invalid, the method reverts changes to maintain consistency.
-   * Successfully placed ships are repositioned within the grid, and their user data is updated
+   * <p>
+   * If the placement is invalid, the method reverts changes to maintain
+   * consistency.
+   * Successfully placed ships are repositioned within the grid, and their user
+   * data is updated
    * accordingly.
    *
-   * @param grid the GridPane representing the placement board where cells and ships are
-   *     initialized.
+   * @param grid the GridPane representing the placement board where cells and
+   *             ships are
+   *             initialized.
    */
   private void initializePlacementBoard(GridPane grid) {
-    DoubleBinding cs =
-        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+    DoubleBinding cs = Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
     for (Field[] row : board.board) {
       for (Field field : row) {
@@ -1047,7 +1203,8 @@ public class BattleShipApp extends Application {
 
         cell.setOnDragDropped(
             ev -> {
-              if (!ev.getDragboard().hasString()) return;
+              if (!ev.getDragboard().hasString())
+                return;
               Coordinates coords = new Coordinates(X, Y);
 
               Rectangle shipNode = (Rectangle) ev.getGestureSource();
@@ -1133,21 +1290,30 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Applies a grid layout to the given rectangle within the specified GridPane, positioning and
+   * Applies a grid layout to the given rectangle within the specified GridPane,
+   * positioning and
    * spanning it based on the ship's direction, length, and the board size.
    *
-   * <p>This method adds the rectangle to the grid and sets its row and column indices along with
-   * row and column spans to visually represent the ship's placement. It ensures that ships do not
-   * extend beyond the grid boundaries by adjusting starting positions accordingly.
+   * <p>
+   * This method adds the rectangle to the grid and sets its row and column
+   * indices along with
+   * row and column spans to visually represent the ship's placement. It ensures
+   * that ships do not
+   * extend beyond the grid boundaries by adjusting starting positions
+   * accordingly.
    *
-   * <p>The rectangle is centered within its grid cell both horizontally and vertically.
+   * <p>
+   * The rectangle is centered within its grid cell both horizontally and
+   * vertically.
    *
-   * @param rect the Rectangle representing the ship to be placed on the grid.
-   * @param grid the GridPane in which the rectangle will be positioned.
-   * @param row the starting row index for the ship placement.
-   * @param col the starting column index for the ship placement.
-   * @param direction the direction in which the ship extends (UP, DOWN, LEFT, RIGHT).
-   * @param length the length of the ship.
+   * @param rect      the Rectangle representing the ship to be placed on the
+   *                  grid.
+   * @param grid      the GridPane in which the rectangle will be positioned.
+   * @param row       the starting row index for the ship placement.
+   * @param col       the starting column index for the ship placement.
+   * @param direction the direction in which the ship extends (UP, DOWN, LEFT,
+   *                  RIGHT).
+   * @param length    the length of the ship.
    * @param boardSize the size of the board (number of rows/columns).
    */
   private void applyGridLayoutToRectangle(
@@ -1228,7 +1394,7 @@ public class BattleShipApp extends Application {
       Buttons join_server_button = new Buttons(server_name);
       int row = i / 3;
       int col = i % 3;
-      double[] pos = {-0.2, 0.0, 0.2};
+      double[] pos = { -0.2, 0.0, 0.2 };
       double x_pos = pos[col];
       double y_pos = pos[row];
       join_server_button.position(root, x_pos, y_pos);

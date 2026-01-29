@@ -40,9 +40,9 @@ public class Board {
   public Board(int size) {
     // size can only be set during initialization
     // - must be greater than one and less than 16
-    if (size < 2 || size > 15) {
-      logger.error("Board size must be between 2 and 15! Provided size: {}", size);
-      throw new IllegalArgumentException("Board size must be between 2 and 15!");
+    if (size < 5 || size > 30) {
+      logger.error("Board size must be between 5 and 30! Provided size: {}", size);
+      throw new IllegalArgumentException("Board size must be between 5 and 30!");
     }
     this.size = size;
     this.numberOfShips = 0;
