@@ -3,6 +3,7 @@ package com.matti.battleship.socket.network;
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.discovery.ServerDiscoveryResponder;
 import com.matti.battleship.socket.logging.TurnLog;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,8 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * connected, {@code busy == true} so the server will stop responding to discovery requests. When
  * the connection closes, {@code busy} is reset so the server becomes discoverable again.
  *
- * <p>GUI-IMPORTANT: {@link #acceptClient(MessageListener)} blocks on {@code accept()}. Do not call
- * it on the JavaFX/Swing UI thread. Run it in a background thread/task.
+ * <p>GUI-IMPORTANT: {@link #acceptClient(MessageListener)} and {@link #listenLoop()} block.
+ * Do not call them on the JavaFX/Swing UI thread. Run them in a background thread/task.
  *
  * @author WoFabian
  */
@@ -107,31 +108,42 @@ public class ServerConnection {
     System.out.println("[SERVER] Client verbunden: " + client.getInetAddress());
 
     MessageListener wrapped =
-        new MessageListener() {
-          @Override
-          public void onMessageReceived(String message) {
-            listener.onMessageReceived(message);
-          }
+            new MessageListener() {
+              @Override
+              public void onMessageReceived(String message) {
+                listener.onMessageReceived(message);
+              }
 
-          @Override
-          public void onConnectionClosed(Exception e) {
-            busy.set(false);
-            listener.onConnectionClosed(e);
-          }
-        };
+              @Override
+              public void onConnectionClosed(Exception e) {
+                busy.set(false);
+                listener.onConnectionClosed(e);
+              }
+            };
 
     connector = new SocketConnector(client, new TurnLog(TurnLog.Side.SERVER));
     connector.setMessageListener(wrapped);
   }
 
   /**
-   * Starts the TCP receive loop on the connected client socket.
+   * Enables the connector's listening flag (does not start a thread by itself).
    *
-   * <p>LOGIC-IMPORTANT: This only works after {@link #acceptClient(MessageListener)} created the
-   * {@link SocketConnector}.
-   *
-   * @author WoFabian
+   * <p>GUI-IMPORTANT: You still need to run {@link #listenLoop()} in a background thread.
    */
+  public void startListening() {
+    if (connector != null) connector.startListening();
+  }
+
+  /**
+   * Stops {@link #listenLoop()} without disconnecting (socket stays open).
+   *
+   * <p>LOGIC-IMPORTANT: This does not trigger onConnectionClosed because it's a manual stop.
+   */
+  public void stopListening() {
+    if (connector != null) connector.stopListening();
+  }
+
+  /** BLOCKING; start this in a thread from logic/GUI. */
   public void listenLoop() {
     if (connector != null) connector.listenLoop();
   }
@@ -180,3 +192,4 @@ public class ServerConnection {
     return new ServerDiscoveryResponder(EnvConfig.getPort(), busy, serverName);
   }
 }
+

@@ -1,17 +1,32 @@
 package com.matti.battleship.socket.network;
 
 import com.matti.battleship.socket.logging.TurnLog;
+
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 /**
- * Handles low-level TCP socket communication between client and server. Responsibilities: - Send
- * messages over the socket (line-based protocol) - Receive messages in a background thread -
- * Forward received messages to a {@link MessageListener} - Maintain turn information
- * (SERVER/CLIENT) for logging and debugging - Print separators after complete send/receive pairs
- * (pair/duo tracking) * Note: * This class only transports messages and provides debug logging. *
- * The real protocol/game flow should be handled by higher layers (NetworkGameController +
- * NetworkStateMachine).
+ * Handles low-level TCP socket communication between client and server.
+ *
+ * <p>Responsibilities:
+ * <ul>
+ *   <li>Send messages over the socket (line-based protocol)</li>
+ *   <li>Receive messages in a (potential) background thread / loop</li>
+ *   <li>Forward received messages to a {@link MessageListener}</li>
+ *   <li>Maintain turn information (SERVER/CLIENT) for logging and debugging</li>
+ *   <li>Print separators after complete send/receive pairs (pair/duo tracking)</li>
+ * </ul>
+ *
+ * <p>Note:
+ * <ul>
+ *   <li>This class only transports messages and provides debug logging.</li>
+ *   <li>The real protocol/game flow should be handled by higher layers
+ *       (NetworkGameController + NetworkStateMachine).</li>
+ * </ul>
+ *
+ * <p>NEW: Listening can be paused/resumed without closing the socket
+ * ({@link #stopListening()}/{@link #startListening()}) using a short read timeout.
  *
  * @author WoFabian
  */
@@ -40,6 +55,20 @@ public class SocketConnector {
 
   /** Callback listener for message receive and connection close events. */
   private MessageListener listener;
+
+  // ===== Listening Control =====
+
+  /**
+   * Controls whether the blocking listen loop should continue.
+   * Marked volatile so changes are visible across threads.
+   */
+  private volatile boolean listeningEnabled = true;
+
+  /**
+   * Poll timeout (ms) so we can stop listenLoop without closing socket.
+   * Without a timeout, readLine() could block forever and stopListening() would not take effect.
+   */
+  private final int listenPollTimeoutMs = 200;
 
   // ===== Duo-Tracking =====
 
@@ -78,6 +107,13 @@ public class SocketConnector {
     this.self = (log.getSide() == TurnLog.Side.SERVER) ? "SERVER" : "CLIENT";
     this.other = self.equals("SERVER") ? "CLIENT" : "SERVER";
 
+    // IMPORTANT: timeout so readLine won't block forever -> allows stopListening()
+    try {
+      this.socket.setSoTimeout(listenPollTimeoutMs);
+    } catch (Exception ignored) {
+      // if this fails, stopListening won't interrupt a blocking readLine
+    }
+
     // Create buffered stream wrappers for line-based communication.
     this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -94,8 +130,23 @@ public class SocketConnector {
    * @author WoFabian
    */
   public void setMessageListener(MessageListener listener) {
-
     this.listener = listener;
+  }
+
+  // ============ Manual control API ============
+
+  /** Enable listening (does NOT start a thread; just enables the loop condition). */
+  public void startListening() {
+    listeningEnabled = true;
+  }
+
+  /** Stop listening loop WITHOUT closing the socket. */
+  public void stopListening() {
+    listeningEnabled = false;
+  }
+
+  public boolean isListeningEnabled() {
+    return listeningEnabled;
   }
 
   /* ===================== SEND ===================== */
@@ -110,7 +161,6 @@ public class SocketConnector {
    * @author WoFabian
    */
   public synchronized void sendMessage(String msg) throws IOException {
-
     // Turn handling is based on the command keyword.
     handleTurnOnSend(msg);
 
@@ -126,22 +176,47 @@ public class SocketConnector {
 
   /* ===================== RECEIVE ===================== */
 
+  /**
+   * BLOCKING loop, but stoppable via timeout + {@link #stopListening()} (socket stays open).
+   *
+   * <p>If the remote closes the socket (EOF), {@link MessageListener#onConnectionClosed(Exception)}
+   * is called with null.
+   *
+   * <p>Manual stop -> NO onConnectionClosed callback (because the socket is still open).
+   */
   public void listenLoop() {
+    // ensure enabled when entering (optional)
+    if (!listeningEnabled) listeningEnabled = true;
+
     try {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        handleTurnOnReceive(line);
+      while (listeningEnabled) {
+        try {
+          String line = reader.readLine();
 
-        log.received(line);
-        onReceivedForPair();
+          // remote closed connection (EOF)
+          if (line == null) {
+            if (listener != null) listener.onConnectionClosed(null);
+            return;
+          }
 
-        if (listener != null) listener.onMessageReceived(line);
+          handleTurnOnReceive(line);
+
+          log.received(line);
+          onReceivedForPair();
+
+          if (listener != null) listener.onMessageReceived(line);
+
+        } catch (SocketTimeoutException timeout) {
+          // normal: just used to re-check listeningEnabled
+        }
       }
 
-      if (listener != null) listener.onConnectionClosed(null);
+      // Manual stop -> NO onConnectionClosed callback (socket still open)
+      return;
 
     } catch (Exception e) {
-      if (listener != null) listener.onConnectionClosed(e);
+      // Only notify close if we did not stop manually
+      if (listeningEnabled && listener != null) listener.onConnectionClosed(e);
     }
   }
 

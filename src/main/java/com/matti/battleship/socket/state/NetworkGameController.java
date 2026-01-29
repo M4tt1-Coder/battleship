@@ -10,19 +10,14 @@ import com.matti.battleship.socket.protocol.MessageType;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Game;
 
-/**
- * Bridges socket transport <-> protocol state machine <-> game logic.
- *
- * <p>Hybrid Auto-Acks: - auto: DONE after SIZE/SHIPS, OK after LOAD - NOT auto: READY (GUI decides
- * when player is actually ready)
- *
- * <p>Gameplay: - On SHOT: evaluate and send ANSWER (0/1/2) state-aware - On ANSWER: apply to
- * opponent board; if MISS (0) send PASS state-aware + switch local turn - On PASS: opponent gives
- * us turn -> switch local turn
- */
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 public class NetworkGameController implements MessageListener {
 
-  /** Minimal sender abstraction so controller does not care whether it's client or server. */
+  private static final Logger log = LogManager.getLogger(NetworkGameController.class);
+
   public interface NetworkSender {
     void send(String msg) throws Exception;
   }
@@ -31,9 +26,8 @@ public class NetworkGameController implements MessageListener {
   private final NetworkSender sender;
   private final NetworkStateMachine sm;
 
+  // Optional: game integration (not used)
   private Game game;
-
-  /** Remember last shot we sent (internal 0-based) so we can apply incoming ANSWER to that cell. */
   private Coordinates lastShotInternal = null;
 
   public NetworkGameController(boolean isServer, NetworkSender sender) {
@@ -58,30 +52,23 @@ public class NetworkGameController implements MessageListener {
   public void onMessageReceived(String raw) {
     Message msg = MessageParser.parse(raw);
 
-    // 1) Update protocol state machine first
     sm.onMessageReceived(msg);
 
-    // 2) Auto-ack only DONE/OK (HYBRID)
-    tryAutoAck();
-
-    // 3) Gameplay integration
-    switch (msg.getType()) {
-      case SHOT -> handleIncomingShot(msg);
-      case ANSWER -> handleIncomingAnswer(msg);
-      case PASS -> handleIncomingPass();
-      default -> {
-        // other setup messages are handled by your GUI/logic
-      }
-    }
+    // switch (msg.getType()) {
+    //   case SHOT -> handleIncomingShot(msg);
+    //   case ANSWER -> handleIncomingAnswer(msg);
+    //   case PASS -> handleIncomingPass();
+    //   default -> { }
+    // }
   }
 
   @Override
   public void onConnectionClosed(Exception e) {
-    System.out.println("[NET] connection closed: " + (e != null ? e.getMessage() : "null"));
+    log.warn("[NET] connection closed: {}", (e != null ? e.getMessage() : "null"));
   }
 
   // =========================================================
-  // Public sending API (for GUI/logic)
+  // Manual sending API (GUI/logic must call these)
   // =========================================================
 
   public void sendSize(int size) throws Exception {
@@ -92,21 +79,26 @@ public class NetworkGameController implements MessageListener {
     sendTyped(MessageType.SHIPS, MessageBuilder.ships(ships));
   }
 
-  /** READY is NOT auto-sent. GUI should call this when player really is ready. */
-  public void sendReady() throws Exception {
-    sendTyped(MessageType.READY, MessageBuilder.ready());
-  }
-
   public void sendLoad(long id) throws Exception {
     sendTyped(MessageType.LOAD, MessageBuilder.load(id));
   }
 
-  /** Sends a shot using INTERNAL (0-based) coordinates. Protocol is 1-based, so we convert +1. */
+  public void sendDone() throws Exception {
+    sendTyped(MessageType.DONE, MessageBuilder.done());
+  }
+
+  public void sendOk() throws Exception {
+    sendTyped(MessageType.OK, MessageBuilder.ok());
+  }
+
+  public void sendReady() throws Exception {
+    sendTyped(MessageType.READY, MessageBuilder.ready());
+  }
+
   public void sendShot0Based(int x, int y) throws Exception {
     Coordinates internal = new Coordinates(x, y);
     this.lastShotInternal = internal;
 
-    // convert to protocol 1-based
     int row = x + 1;
     int col = y + 1;
 
@@ -114,52 +106,35 @@ public class NetworkGameController implements MessageListener {
   }
 
   // =========================================================
-  // Internals
+  // Internal gated sending (state-machine controlled)
   // =========================================================
 
   private void sendTyped(MessageType type, String raw) throws Exception {
     if (!sm.canSend(type)) {
       throw new IllegalStateException(
-          "Cannot send " + type + " in state " + sm.getState() + " (isServer=" + isServer + ")");
+              "Cannot send "
+                      + type
+                      + " in state "
+                      + sm.getState()
+                      + " (isServer="
+                      + isServer
+                      + ")");
     }
     sender.send(raw);
     sm.onMessageSent(type);
   }
 
-  /**
-   * HYBRID Auto-ack (client side only): - after SIZE -> DONE - after SHIPS -> DONE - after LOAD ->
-   * OK
-   *
-   * <p>READY is NOT auto-sent; GUI triggers sendReady().
-   */
-  private void tryAutoAck() {
-    if (isServer) return;
+  // =========================================================
+  // Optional gameplay integration(wurde nicht eingebaut)
+  // =========================================================
 
-    try {
-      switch (sm.getState()) {
-        case C_NEED_DONE_AFTER_SIZE -> sendTyped(MessageType.DONE, MessageBuilder.done());
-        case C_NEED_DONE_AFTER_SHIPS -> sendTyped(MessageType.DONE, MessageBuilder.done());
-        case C_NEED_OK_AFTER_LOAD -> sendTyped(MessageType.OK, MessageBuilder.ok());
-        default -> {
-          // no auto-ack needed
-        }
-      }
-    } catch (Exception e) {
-      System.out.println("[NET] auto-ack failed: " + e.getMessage());
-    }
-  }
-
-  /**
-   * Handles an incoming SHOT from the opponent. Protocol uses 1-based coordinates -> convert to
-   * 0-based and evaluate on local board. Then send ANSWER (0/1/2) via state-aware sendTyped.
-   */
   private void handleIncomingShot(Message msg) {
     if (game == null) {
-      System.out.println("[NET] received SHOT but game is null -> cannot evaluate");
+      log.warn("[NET] received SHOT but game is null -> cannot evaluate");
       return;
     }
     if (game.getPlayingMode() != PlayingMode.VS_PLAYER) {
-      System.out.println("[NET] received SHOT but game is not VS_PLAYER");
+      log.warn("[NET] received SHOT but game is not VS_PLAYER");
       return;
     }
 
@@ -167,8 +142,8 @@ public class NetworkGameController implements MessageListener {
     int col1 = msg.getIntArg(1);
 
     Coordinates target = new Coordinates(row1 - 1, col1 - 1);
-
     ShotAttemptResult result = game.player.board.shotAtField(target);
+
     if (result == ShotAttemptResult.HIT && game.player.board.checkIfShipWasSunk()) {
       result = ShotAttemptResult.SUNK;
     }
@@ -176,24 +151,19 @@ public class NetworkGameController implements MessageListener {
     int answerCode = toAnswerCode(result);
 
     try {
-      // MUST be state-aware (NEED_SEND_ANSWER -> ANSWER)
-      sendTyped(MessageType.ANSWER, MessageBuilder.answer(answerCode));
+      sender.send(MessageBuilder.answer(answerCode));
     } catch (Exception e) {
-      System.out.println("[NET] failed to send ANSWER: " + e.getMessage());
+      log.warn("[NET] failed to send ANSWER: {}", e.getMessage());
     }
   }
 
-  /**
-   * Handles an incoming ANSWER to our previously sent SHOT. Applies result to opponent board. If
-   * MISS (0), shooter MUST send PASS.
-   */
   private void handleIncomingAnswer(Message msg) {
     if (game == null) {
-      System.out.println("[NET] received ANSWER but game is null");
+      log.warn("[NET] received ANSWER but game is null");
       return;
     }
     if (game.getPlayingMode() != PlayingMode.VS_PLAYER) {
-      System.out.println("[NET] received ANSWER but game is not VS_PLAYER");
+      log.warn("[NET] received ANSWER but game is not VS_PLAYER");
       return;
     }
 
@@ -201,12 +171,12 @@ public class NetworkGameController implements MessageListener {
     try {
       a = msg.getIntArg(0);
     } catch (Exception e) {
-      System.out.println("[NET] invalid ANSWER format");
+      log.warn("[NET] invalid ANSWER format");
       return;
     }
 
     if (lastShotInternal == null) {
-      System.out.println("[NET] received ANSWER but lastShotInternal is null");
+      log.warn("[NET] received ANSWER but lastShotInternal is null");
       return;
     }
 
@@ -215,22 +185,20 @@ public class NetworkGameController implements MessageListener {
     try {
       game.applyOpponentsResponseToPlayersShot(result, lastShotInternal);
     } catch (Exception e) {
-      System.out.println("[NET] applyOpponentsResponseToPlayersShot failed: " + e.getMessage());
+      log.warn("[NET] applyOpponentsResponseToPlayersShot failed: {}", e.getMessage());
     }
 
-    // MISS -> send PASS and switch local game turn
+    // If you want PASS manual later: remove this and let GUI/logic send pass.
     if (a == 0) {
       try {
-        sendTyped(MessageType.PASS, MessageBuilder.pass());
+        sender.send(MessageBuilder.pass());
         game.switchTurn();
       } catch (Exception e) {
-        System.out.println("[NET] failed to send PASS: " + e.getMessage());
+        log.warn("[NET] failed to send PASS: {}", e.getMessage());
       }
     }
-    // HIT/SUNK: no pass, shooter continues (state machine keeps MY_TURN)
   }
 
-  /** Handles an incoming PASS from opponent -> opponent missed and gives us the turn. */
   private void handleIncomingPass() {
     if (game != null) {
       game.switchTurn();
