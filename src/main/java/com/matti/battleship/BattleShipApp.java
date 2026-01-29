@@ -67,6 +67,7 @@ public class BattleShipApp extends Application {
   // OPTIONAL: falls du BOARD_SIZE weiter als "Default" behalten willst
   private double BOARD_SIZE = 400;
   private double cellSize = BOARD_SIZE / selected_field_size;
+  private String server_name = "battleship";
 
   private String singleplayer_start_button_id = "startSingleplayerButton";
   private String multiplayer_start_button_id = "startMultiplayerButton";
