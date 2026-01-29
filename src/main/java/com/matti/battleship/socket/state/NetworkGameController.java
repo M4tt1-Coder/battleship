@@ -9,10 +9,8 @@ import com.matti.battleship.socket.protocol.MessageParser;
 import com.matti.battleship.socket.protocol.MessageType;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Game;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 public class NetworkGameController implements MessageListener {
 
@@ -112,13 +110,7 @@ public class NetworkGameController implements MessageListener {
   private void sendTyped(MessageType type, String raw) throws Exception {
     if (!sm.canSend(type)) {
       throw new IllegalStateException(
-              "Cannot send "
-                      + type
-                      + " in state "
-                      + sm.getState()
-                      + " (isServer="
-                      + isServer
-                      + ")");
+          "Cannot send " + type + " in state " + sm.getState() + " (isServer=" + isServer + ")");
     }
     sender.send(raw);
     sm.onMessageSent(type);

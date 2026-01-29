@@ -2,7 +2,6 @@ package com.matti.battleship.socket.network;
 
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.logging.TurnLog;
-
 import java.net.Socket;
 
 /**
@@ -14,10 +13,13 @@ import java.net.Socket;
  * selects a server (from discovery list or manual host input) and presses a "Connect" button.
  *
  * <p>Typical GUI flow:
+ *
  * <ul>
- *   <li>User selects a server host (e.g. from discovery list) or uses a default host (e.g. localhost)</li>
- *   <li>GUI calls connect(selectedHost, listener)</li>
- *   <li>Then run listenLoop() in a background thread, and send initial protocol messages ("ready", ...)</li>
+ *   <li>User selects a server host (e.g. from discovery list) or uses a default host (e.g.
+ *       localhost)
+ *   <li>GUI calls connect(selectedHost, listener)
+ *   <li>Then run listenLoop() in a background thread, and send initial protocol messages ("ready",
+ *       ...)
  * </ul>
  *
  * @author WoFabian
@@ -77,10 +79,11 @@ public class ClientConnection {
    * Sends a raw protocol message to the server.
    *
    * <p>GUI typically calls this for actions like:
+   *
    * <ul>
-   *   <li>sending "shot r c" when user clicks a cell</li>
-   *   <li>sending "pass" when needed by gameflow</li>
-   *   <li>sending "ready" during setup handshake</li>
+   *   <li>sending "shot r c" when user clicks a cell
+   *   <li>sending "pass" when needed by gameflow
+   *   <li>sending "ready" during setup handshake
    * </ul>
    *
    * @param msg message line to send (one protocol command)
@@ -95,10 +98,11 @@ public class ClientConnection {
    * Closes the underlying TCP connection.
    *
    * <p>GUI typically calls this when:
+   *
    * <ul>
-   *   <li>leaving the online match screen</li>
-   *   <li>returning to main menu</li>
-   *   <li>the user presses a "Disconnect" button</li>
+   *   <li>leaving the online match screen
+   *   <li>returning to main menu
+   *   <li>the user presses a "Disconnect" button
    * </ul>
    *
    * @author WoFabian

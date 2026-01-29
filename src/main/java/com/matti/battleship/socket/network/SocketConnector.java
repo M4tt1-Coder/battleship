@@ -1,7 +1,6 @@
 package com.matti.battleship.socket.network;
 
 import com.matti.battleship.socket.logging.TurnLog;
-
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -10,23 +9,25 @@ import java.net.SocketTimeoutException;
  * Handles low-level TCP socket communication between client and server.
  *
  * <p>Responsibilities:
+ *
  * <ul>
- *   <li>Send messages over the socket (line-based protocol)</li>
- *   <li>Receive messages in a (potential) background thread / loop</li>
- *   <li>Forward received messages to a {@link MessageListener}</li>
- *   <li>Maintain turn information (SERVER/CLIENT) for logging and debugging</li>
- *   <li>Print separators after complete send/receive pairs (pair/duo tracking)</li>
+ *   <li>Send messages over the socket (line-based protocol)
+ *   <li>Receive messages in a (potential) background thread / loop
+ *   <li>Forward received messages to a {@link MessageListener}
+ *   <li>Maintain turn information (SERVER/CLIENT) for logging and debugging
+ *   <li>Print separators after complete send/receive pairs (pair/duo tracking)
  * </ul>
  *
  * <p>Note:
+ *
  * <ul>
- *   <li>This class only transports messages and provides debug logging.</li>
- *   <li>The real protocol/game flow should be handled by higher layers
- *       (NetworkGameController + NetworkStateMachine).</li>
+ *   <li>This class only transports messages and provides debug logging.
+ *   <li>The real protocol/game flow should be handled by higher layers (NetworkGameController +
+ *       NetworkStateMachine).
  * </ul>
  *
- * <p>NEW: Listening can be paused/resumed without closing the socket
- * ({@link #stopListening()}/{@link #startListening()}) using a short read timeout.
+ * <p>NEW: Listening can be paused/resumed without closing the socket ({@link
+ * #stopListening()}/{@link #startListening()}) using a short read timeout.
  *
  * @author WoFabian
  */
@@ -59,14 +60,14 @@ public class SocketConnector {
   // ===== Listening Control =====
 
   /**
-   * Controls whether the blocking listen loop should continue.
-   * Marked volatile so changes are visible across threads.
+   * Controls whether the blocking listen loop should continue. Marked volatile so changes are
+   * visible across threads.
    */
   private volatile boolean listeningEnabled = true;
 
   /**
-   * Poll timeout (ms) so we can stop listenLoop without closing socket.
-   * Without a timeout, readLine() could block forever and stopListening() would not take effect.
+   * Poll timeout (ms) so we can stop listenLoop without closing socket. Without a timeout,
+   * readLine() could block forever and stopListening() would not take effect.
    */
   private final int listenPollTimeoutMs = 200;
 
