@@ -2,10 +2,13 @@ package com.matti.battleship.computer;
 
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
+import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Game;
 import com.matti.battleship.utils.BoardUtils;
 import java.util.*;
+import javafx.scene.layout.Pane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,7 +60,7 @@ public class HardAlgorithm implements Algorithm {
     SUNK
   }
 
-  HardAlgorithm(int boardSize) {
+  public HardAlgorithm(int boardSize) {
     this.heatMap = new HashMap<>();
     this.shotResultMap = new DocumentaryShotResult[boardSize][boardSize];
     this.boardSize = boardSize;
@@ -70,7 +73,7 @@ public class HardAlgorithm implements Algorithm {
   }
 
   @Override
-  public Coordinates takeAShot(Game game) {
+  public void takeAShot(Game game, Pane root) {
     Coordinates guessedCoordinates;
     do {
       if (this.heatMap.isEmpty()) {
@@ -81,29 +84,27 @@ public class HardAlgorithm implements Algorithm {
     } while (checkIfFieldsWasAlreadyShotAt(guessedCoordinates));
 
     // fire on the board
-    ShotAttemptResult attemptResult = game.player.board.shotAtField(guessedCoordinates);
+    ShotAttemptResult attemptResult = game.shotShot(guessedCoordinates, root);
 
     // according to the result the field(s) need to be marked as such HIT, etc
     if (attemptResult == ShotAttemptResult.HIT) {
-      if (game.player.board.checkIfShipWasSunk()) { // when a ship was sunken
-        // mark all fields that were marked as DocumentaryShotResult.HIT to SUNK
-        markAllFieldsOfShipAsSunk(guessedCoordinates);
-        // mark the fields around the ship as MISS
-        markAllFieldsAroundSunkenShipAsMiss(guessedCoordinates);
-
-        logger.info("Sunk ship at {} by the opponent (computer)", guessedCoordinates);
-      } else { // when it was only hit
-        shotResultMap[guessedCoordinates.y][guessedCoordinates.x] = DocumentaryShotResult.HIT;
-      }
+      shotResultMap[guessedCoordinates.y][guessedCoordinates.x] = DocumentaryShotResult.HIT;
     } else if (attemptResult == ShotAttemptResult.MISS) {
       shotResultMap[guessedCoordinates.y][guessedCoordinates.x] = DocumentaryShotResult.MISS;
-    } else {
-      throw new RuntimeException("Unexpected behavior while trying to shot at the players board!");
+    } else if (attemptResult == ShotAttemptResult.SUNK) {
+      // mark all fields that were marked as DocumentaryShotResult.HIT to SUNK
+      markAllFieldsOfShipAsSunk(guessedCoordinates);
+      // mark the fields around the ship as MISS
+      markAllFieldsAroundSunkenShipAsMiss(guessedCoordinates);
     }
 
-    calculateHeatMap();
+    calculateHeatMap(game.player.board); // can be any board -> contents here irrelevant
 
-    return guessedCoordinates;
+    // if we hit a ship -> keep firing
+    if (attemptResult != ShotAttemptResult.MISS) {
+      takeAShot(game, root);
+    }
+    logger.info("Finished firing!");
   }
 
   // ----- private methods -----
@@ -153,7 +154,7 @@ public class HardAlgorithm implements Algorithm {
       alreadyVisited.add(coordinate);
       for (int i = 0; i < this.boardSize; i++) {
         for (int j = 0; j < this.boardSize; j++) {
-          Coordinates temp = new Coordinates(i, j);
+          Coordinates temp = new Coordinates(j, i);
           if (coordinate.isNeighbourStraight(temp)
               && shotResultMap[i][j] == DocumentaryShotResult.SUNK
               && !alreadyVisited.contains(temp)) { // avoid an infinite loop
@@ -186,13 +187,14 @@ public class HardAlgorithm implements Algorithm {
 
     while (!queue.isEmpty()) {
       Coordinates coordinate = queue.poll();
+      shotResultMap[coordinate.y][coordinate.x] = DocumentaryShotResult.SUNK;
       for (int i = 0; i < this.boardSize; i++) {
         for (int j = 0; j < this.boardSize; j++) {
-          Coordinates temp = new Coordinates(i, j);
+          Coordinates temp = new Coordinates(j, i);
           if (coordinate.isNeighbourStraight(temp)
               && shotResultMap[i][j] == DocumentaryShotResult.HIT) {
             queue.add(temp);
-            shotResultMap[i][j] = DocumentaryShotResult.SUNK;
+            // shotResultMap[i][j] = DocumentaryShotResult.SUNK;
           }
         }
       }
@@ -226,50 +228,47 @@ public class HardAlgorithm implements Algorithm {
   }
 
   /**
-   * Checks whether the specified coordinates have already been targeted in a shot.
+   * Checks whether the field at the given {@link Coordinates} has already been shot at.
    *
-   * <p>Returns {@code true} if the cell at the given coordinates has not been shot at yet,
-   * indicated by {@link DocumentaryShotResult#NOT_SET}. Returns {@code false} if the cell has
-   * already been shot, either resulting in a hit, miss, or sunk.
-   *
-   * @param coordinates The coordinates to check on the game board.
-   * @return {@code true} if the cell has not been shot at; {@code false} otherwise.
+   * @param coordinates the {@link Coordinates} of the field to check.
+   * @return {@code true} if the field has already been shot at; {@code false} otherwise.
    */
   private boolean checkIfFieldsWasAlreadyShotAt(Coordinates coordinates) {
-    return this.shotResultMap[coordinates.y][coordinates.x] == DocumentaryShotResult.NOT_SET;
+    return this.shotResultMap[coordinates.y][coordinates.x] != DocumentaryShotResult.NOT_SET;
   }
 
   /**
-   * Computes a heat map representing the probability distribution of where remaining ships might be
-   * located on the game board.
+   * Calculates the heat map for the current game state based on previous shot results and ship
+   * placements.
    *
-   * <p>The method analyzes all shot results recorded in {@link #shotResultMap} and evaluates
-   * potential ship placements based on current hits and misses. It updates the {@code heatMap} with
-   * scores indicating the likelihood of each coordinate containing a segment of a ship, which can
-   * be used to inform strategic targeting.
+   * <p>This method iterates through all possible ship lengths and analyzes the current board to
+   * identify potential locations where ships might be placed. It updates a heat map that indicates
+   * the likelihood of each cell containing a ship segment, aiding in strategic decision-making.
    *
    * <p>The process involves:
    *
    * <ul>
-   *   <li>Iterating over all ship lengths defined in {@link ShipLength}.
-   *   <li>Scanning each cell of the game board to examine shot results.
-   *   <li>For cells with no shot result ({@link DocumentaryShotResult#NOT_SET}), generating
-   *       potential placements for ships starting from that coordinate.
-   *   <li>For cells with a hit result ({@link DocumentaryShotResult#HIT}), applying artificial
-   *       weights to surrounding unshot cells, then generating potential placements based on the
-   *       hit coordinate.
-   *   <li>Validating each potential placement to ensure it fits within the board and aligns with
-   *       known hit/miss data.
-   *   <li>Updating the heat map scores for all valid placement coordinates to reflect increased
-   *       likelihood.
+   *   <li>Iterating over each cell of the board and examining the result of the previous shot in
+   *       that cell.
+   *   <li>For cells with no prior shot (NOT_SET), evaluating all possible placements of each ship
+   *       length that include this cell.
+   *   <li>For cells where a hit was registered (HIT), increasing the weight of surrounding cells to
+   *       prioritize areas near hits, as ships tend to be contiguous.
+   *   <li>For sunk ships or misses (SUNK, MISS), no further action is taken for that cell.
+   *   <li>Using helper methods like {@code getPlacementFields} to generate potential ship
+   *       placements, {@code considerPlacementsForHeatMap} to update heat scores based on these
+   *       placements, and {@code applyArtificialWeightToSurroundingFields} to emphasize cells
+   *       adjacent to hits.
    * </ul>
    *
-   * <p>After processing all cells and ship lengths, the resulting {@code heatMap} provides a
-   * probability distribution for the next optimal attack position.
+   * After processing all cells and ship lengths, the resulting heat map reflects the most probable
+   * locations for remaining ships, guiding the next move.
+   *
+   * @param board the current state of the game board, used as a basis for heat map calculation.
    */
-  private void calculateHeatMap() {
+  private void calculateHeatMap(Board board) {
     // store the returned result when shooting
-    HashMap<Coordinates, Integer> map = new HashMap<>();
+    HashMap<Coordinates, Integer> map = prepareNewMap(board);
 
     for (ShipLength length : ShipLength.values()) {
       int length_value = length.getValue();
@@ -277,7 +276,7 @@ public class HardAlgorithm implements Algorithm {
       for (int i = 0; i < this.boardSize; i++) {
         for (int j = 0; j < this.boardSize; j++) {
           DocumentaryShotResult result = this.shotResultMap[i][j];
-          Coordinates coordinates = new Coordinates(i, j);
+          Coordinates coordinates = new Coordinates(j, i);
           // after a ship was sunken mark all associated fields of the sunken ship as
           // sunken
           // (DocumentaryShotResult.SUNK) and the surrounded fields as
@@ -295,12 +294,36 @@ public class HardAlgorithm implements Algorithm {
               Coordinates[][] placements = getPlacementFields(length_value, coordinates);
               considerPlacementsForHeatMap(map, placements);
             }
+            case MISS, SUNK -> {}
           }
         }
       }
     }
 
     this.heatMap = map;
+  }
+
+  /**
+   * Initializes and returns a new heat map for the current board state.
+   *
+   * <p>This method creates a HashMap where each key is a set of coordinates corresponding to a cell
+   * on the game board, and each value is an integer representing the likelihood or weight of that
+   * cell containing a part of a ship. Initially, all cells are assigned a weight of zero.
+   *
+   * <p>The method iterates through all fields in the board's grid, retrieves their coordinates, and
+   * populates the map accordingly.
+   *
+   * @param board the current game board containing fields with their coordinates.
+   * @return a HashMap mapping each coordinate to an initial weight of zero.
+   */
+  private HashMap<Coordinates, Integer> prepareNewMap(Board board) {
+    HashMap<Coordinates, Integer> map = new HashMap<>();
+    for (Field[] row : board.board) {
+      for (Field field : row) {
+        map.put(field.getCoordinates(), 0);
+      }
+    }
+    return map;
   }
 
   /**
@@ -324,10 +347,14 @@ public class HardAlgorithm implements Algorithm {
     for (Coordinates[] placement : placements) {
       boolean isPlacementValid = true;
       for (Coordinates placementField : placement) {
-        if (!BoardUtils.isCoordinateOnBoard(placementField, this.boardSize)
-            || (shotResultMap[placementField.x][placementField.y] != DocumentaryShotResult.NOT_SET
-                && shotResultMap[placementField.x][placementField.y]
-                    != DocumentaryShotResult.HIT)) {
+        // needed to check if the coordinates are valid before trying to access the
+        // 'shotResultMap' array -> index out of bound
+        if (!BoardUtils.isCoordinateOnBoard(placementField, this.boardSize)) {
+          isPlacementValid = false;
+          break;
+        }
+        if (shotResultMap[placementField.y][placementField.x] != DocumentaryShotResult.NOT_SET
+            && shotResultMap[placementField.y][placementField.x] != DocumentaryShotResult.HIT) {
           isPlacementValid = false;
           break;
         }
@@ -375,7 +402,7 @@ public class HardAlgorithm implements Algorithm {
     ArrayList<Coordinates> surroundingFields = surroundingFields(coordinates);
 
     for (Coordinates surroundingField : surroundingFields) {
-      if (this.shotResultMap[surroundingField.x][surroundingField.y]
+      if (this.shotResultMap[surroundingField.y][surroundingField.x]
           == DocumentaryShotResult.NOT_SET) {
         map.put(surroundingField, artificialWeight + map.get(surroundingField));
       }

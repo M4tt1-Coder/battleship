@@ -1,11 +1,13 @@
 package com.matti.battleship.types;
 
+import java.util.Objects;
+
 /**
  * Coordinates on the board. Represents an (x,y) pair.
  *
  * @author m4tt1
  */
-public class Coordinates {
+public class Coordinates implements Comparable<Coordinates> {
   /** X ordinate */
   public int x;
 
@@ -63,6 +65,34 @@ public class Coordinates {
    */
   @Override
   public String toString() {
-    return x + "|" + y;
+    return " [ x:" + x + "| y:" + y + " ] ";
+  }
+
+  @Override
+  public int compareTo(Coordinates otherCoordinates) {
+    if (otherCoordinates == null) {
+      throw new NullPointerException("Cannot compare to 'Coordinates' object that is null!");
+    }
+
+    int cmpX = Integer.compare(this.x, otherCoordinates.x);
+    if (cmpX != 0) {
+      return cmpX; // If x differs, this determines the order
+    }
+
+    // If x is equal, compare y
+    return Integer.compare(this.y, otherCoordinates.y);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    Coordinates that = (Coordinates) obj;
+    return x == that.x && y == that.y;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(x, y); // Using Objects.hash to create a combined hash
   }
 }

@@ -77,7 +77,7 @@ public class BoardUtils {
     }
 
     // check that the coordinates are on the board
-    return coordinates.x <= boardSize && coordinates.y <= boardSize;
+    return coordinates.x <= boardSize - 1 && coordinates.y <= boardSize - 1;
   }
 
   /**
@@ -213,11 +213,11 @@ public class BoardUtils {
           if (field.isOccupied()) {
             sb.append(" X ");
           } else {
-            sb.append(" O ");
+            sb.append(" 0 ");
           }
         } else {
           if (field.isOccupied()) {
-            sb.append(" S ");
+            sb.append(" □ ");
           } else {
             sb.append(" ~ ");
           }
