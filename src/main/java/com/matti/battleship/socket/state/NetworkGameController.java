@@ -51,13 +51,6 @@ public class NetworkGameController implements MessageListener {
     Message msg = MessageParser.parse(raw);
 
     sm.onMessageReceived(msg);
-
-    // switch (msg.getType()) {
-    //   case SHOT -> handleIncomingShot(msg);
-    //   case ANSWER -> handleIncomingAnswer(msg);
-    //   case PASS -> handleIncomingPass();
-    //   default -> { }
-    // }
   }
 
   @Override
@@ -117,7 +110,7 @@ public class NetworkGameController implements MessageListener {
   }
 
   // =========================================================
-  // Optional gameplay integration(wurde nicht eingebaut)
+  // Optional gameplay integration (not implemented)
   // =========================================================
 
   private void handleIncomingShot(Message msg) {

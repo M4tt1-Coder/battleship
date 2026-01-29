@@ -49,7 +49,7 @@ public class MessageListeningServerTest {
             log.info("[SERVER] recv: {}", m);
 
             try {
-              // Small Start state machine
+              // Small Handshake state machine
               if ("done".equalsIgnoreCase(m)) {
                 if (phase.get() == Phase.WAIT_DONE_AFTER_SIZE) {
                   server.send("ships 5 4 3 3 2");
@@ -64,7 +64,7 @@ public class MessageListeningServerTest {
               }
 
               if ("ready".equalsIgnoreCase(m) && phase.get() == Phase.WAIT_READY_FROM_CLIENT) {
-                log.info("[SERVER] Start is done. CHAT mode.");
+                log.info("[SERVER] Handshake is done. CHAT mode.");
                 phase.set(Phase.CHAT);
                 return;
               }
@@ -87,45 +87,46 @@ public class MessageListeningServerTest {
     server.send("size 10");
 
     // CLI loop
-    Scanner in = new Scanner(System.in);
-    while (true) {
-      System.out.print("> ");
-      String line = in.nextLine();
-      if (line == null) continue;
+    try (Scanner in = new Scanner(System.in)) {
+      while (true) {
+        System.out.print("> ");
+        String line = in.nextLine();
+        if (line == null) continue;
 
-      String cmd = line.trim();
+        String cmd = line.trim();
 
-      if (cmd.equalsIgnoreCase("exit")) {
-        log.info("[SERVER] exit.");
-        server.close();
-        return;
-      }
+        if (cmd.equalsIgnoreCase("exit")) {
+          log.info("[SERVER] exit.");
+          server.close();
+          return;
+        }
 
-      // --- Task 2 commands ---
-      if (cmd.equalsIgnoreCase("listen stop")) {
-        server.stopListening();
-        log.info("[SERVER] listening STOPPED");
-        continue;
-      }
+        // --- Task 2 commands ---
+        if (cmd.equalsIgnoreCase("listen stop")) {
+          server.stopListening();
+          log.info("[SERVER] listening STOPPED");
+          continue;
+        }
 
-      if (cmd.equalsIgnoreCase("listen start")) {
-        startListeningIfNeeded(server, listenThreadRef, listenLock);
-        continue;
-      }
+        if (cmd.equalsIgnoreCase("listen start")) {
+          startListeningIfNeeded(server, listenThreadRef, listenLock);
+          continue;
+        }
 
-      if (cmd.equalsIgnoreCase("phase")) {
-        log.info("[SERVER] phase={}", phase.get());
-        continue;
-      }
+        if (cmd.equalsIgnoreCase("phase")) {
+          log.info("[SERVER] phase={}", phase.get());
+          continue;
+        }
 
-      if (cmd.isBlank()) continue;
+        if (cmd.isBlank()) continue;
 
-      // raw debug send
-      try {
-        server.send(cmd);
-        log.info("[SERVER] sent: {}", cmd);
-      } catch (Exception e) {
-        log.error("[SERVER] send failed: {}", e.getMessage(), e);
+        // raw debug send
+        try {
+          server.send(cmd);
+          log.info("[SERVER] sent: {}", cmd);
+        } catch (Exception e) {
+          log.error("[SERVER] send failed: {}", e.getMessage(), e);
+        }
       }
     }
   }

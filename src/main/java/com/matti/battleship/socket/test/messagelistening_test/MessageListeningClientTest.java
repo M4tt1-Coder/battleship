@@ -62,75 +62,76 @@ public class MessageListeningClientTest {
     startListeningIfNeeded(client, listenThreadRef, listenLock);
 
     // CLI loop
-    Scanner in = new Scanner(System.in);
-    while (true) {
-      System.out.print("> ");
-      String line = in.nextLine();
-      if (line == null) continue;
+    try (Scanner in = new Scanner(System.in)) {
+      while (true) {
+        System.out.print("> ");
+        String line = in.nextLine();
+        if (line == null) continue;
 
-      String cmd = line.trim();
+        String cmd = line.trim();
 
-      if (cmd.equalsIgnoreCase("exit")) {
-        log.info("[CLIENT] exit.");
-        client.disconnect();
-        return;
-      }
-
-      // --- Task 2 commands ---
-      if (cmd.equalsIgnoreCase("listen stop")) {
-        client.stopListening();
-        log.info("[CLIENT] listening STOPPED");
-        continue;
-      }
-
-      if (cmd.equalsIgnoreCase("listen start")) {
-        startListeningIfNeeded(client, listenThreadRef, listenLock);
-        continue;
-      }
-
-      if (cmd.equalsIgnoreCase("state")) {
-        log.info("[CLIENT] state={}", controller.getStateMachine().getState());
-        continue;
-      }
-
-      if (cmd.equalsIgnoreCase("done")) {
-        try {
-          controller.sendDone();
-          log.info("[CLIENT] sent: done");
-        } catch (Exception e) {
-          log.error("[CLIENT] sendDone failed: {}", e.getMessage(), e);
+        if (cmd.equalsIgnoreCase("exit")) {
+          log.info("[CLIENT] exit.");
+          client.disconnect();
+          return;
         }
-        continue;
-      }
 
-      if (cmd.equalsIgnoreCase("ok")) {
-        try {
-          controller.sendOk();
-          log.info("[CLIENT] sent: ok");
-        } catch (Exception e) {
-          log.error("[CLIENT] sendOk failed: {}", e.getMessage(), e);
+        // --- Task 2 commands ---
+        if (cmd.equalsIgnoreCase("listen stop")) {
+          client.stopListening();
+          log.info("[CLIENT] listening STOPPED");
+          continue;
         }
-        continue;
-      }
 
-      if (cmd.equalsIgnoreCase("start")) {
-        try {
-          controller.sendReady();
-          log.info("[CLIENT] sent: ready");
-        } catch (Exception e) {
-          log.error("[CLIENT] sendReady failed: {}", e.getMessage(), e);
+        if (cmd.equalsIgnoreCase("listen start")) {
+          startListeningIfNeeded(client, listenThreadRef, listenLock);
+          continue;
         }
-        continue;
-      }
 
-      if (cmd.isBlank()) continue;
+        if (cmd.equalsIgnoreCase("state")) {
+          log.info("[CLIENT] state={}", controller.getStateMachine().getState());
+          continue;
+        }
 
-      // raw debug send
-      try {
-        client.send(cmd);
-        log.info("[CLIENT] sent: {}", cmd);
-      } catch (Exception e) {
-        log.error("[CLIENT] send failed: {}", e.getMessage(), e);
+        if (cmd.equalsIgnoreCase("done")) {
+          try {
+            controller.sendDone();
+            log.info("[CLIENT] sent: done");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendDone failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("ok")) {
+          try {
+            controller.sendOk();
+            log.info("[CLIENT] sent: ok");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendOk failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("start")) {
+          try {
+            controller.sendReady();
+            log.info("[CLIENT] sent: ready");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendReady failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.isBlank()) continue;
+
+        // raw debug send
+        try {
+          client.send(cmd);
+          log.info("[CLIENT] sent: {}", cmd);
+        } catch (Exception e) {
+          log.error("[CLIENT] send failed: {}", e.getMessage(), e);
+        }
       }
     }
   }

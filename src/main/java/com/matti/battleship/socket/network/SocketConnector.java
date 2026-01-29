@@ -69,7 +69,7 @@ public class SocketConnector {
    * Poll timeout (ms) so we can stop listenLoop without closing socket. Without a timeout,
    * readLine() could block forever and stopListening() would not take effect.
    */
-  private final int listenPollTimeoutMs = 200;
+  private final int listenPollTimeoutMs = 1000;
 
   // ===== Duo-Tracking =====
 
@@ -113,6 +113,11 @@ public class SocketConnector {
       this.socket.setSoTimeout(listenPollTimeoutMs);
     } catch (Exception ignored) {
       // if this fails, stopListening won't interrupt a blocking readLine
+      System.err.println(
+          "WARNING: Failed to set socket SO_TIMEOUT to "
+              + listenPollTimeoutMs
+              + " ms; stopListening() may not interrupt blocking reads.");
+      ignored.printStackTrace(System.err);
     }
 
     // Create buffered stream wrappers for line-based communication.
@@ -184,6 +189,10 @@ public class SocketConnector {
    * is called with null.
    *
    * <p>Manual stop -> NO onConnectionClosed callback (because the socket is still open).
+   *
+   * <p>Note: If listeningEnabled is false when entering this method, it will be automatically
+   * re-enabled. This ensures the loop can start even if stopListening() was called before the
+   * thread began.
    */
   public void listenLoop() {
     // ensure enabled when entering (optional)

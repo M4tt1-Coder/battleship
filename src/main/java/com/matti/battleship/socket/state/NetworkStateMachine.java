@@ -207,9 +207,18 @@ public class NetworkStateMachine {
   }
 
   private int safeIntArg(Message msg, int idx, int fallback) {
+    if (msg == null) {
+      return fallback;
+    }
+
+    String[] args = msg.getArgs();
+    if (args == null || idx < 0 || idx >= args.length || args[idx] == null) {
+      return fallback;
+    }
+
     try {
-      return Integer.parseInt(msg.getArgs()[idx]);
-    } catch (Exception e) {
+      return Integer.parseInt(args[idx]);
+    } catch (NumberFormatException e) {
       return fallback;
     }
   }
