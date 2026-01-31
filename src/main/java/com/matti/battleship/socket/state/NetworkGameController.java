@@ -9,9 +9,9 @@ import com.matti.battleship.socket.protocol.MessageType;
 /**
  * Bridge between raw socket lines and the {@link NetworkStateMachine}.
  *
- * <p>This controller implements {@link IMessageListener} so it can receive raw protocol lines
- * from the network layer. Incoming lines are parsed into {@link Message} objects and forwarded
- * to the {@link NetworkStateMachine}.
+ * <p>This controller implements {@link IMessageListener} so it can receive raw protocol lines from
+ * the network layer. Incoming lines are parsed into {@link Message} objects and forwarded to the
+ * {@link NetworkStateMachine}.
  *
  * <p>GUI-IMPORTANT: There are no automatic acknowledgements anymore. The GUI / game logic must
  * explicitly call {@link #sendDone()}, {@link #sendOk()} and {@link #sendReady()} when appropriate.
@@ -137,8 +137,8 @@ public class NetworkGameController implements IMessageListener {
   /**
    * Sends {@code done} as acknowledgement for the last setup command.
    *
-   * <p>GUI-IMPORTANT: Call this when the GUI/game logic completed the requested step
-   * (e.g. after applying size/ships).
+   * <p>GUI-IMPORTANT: Call this when the GUI/game logic completed the requested step (e.g. after
+   * applying size/ships).
    *
    * @throws Exception if sending fails or the protocol state does not allow it
    * @author WoFabian
@@ -175,7 +175,9 @@ public class NetworkGameController implements IMessageListener {
    * Sends a typed protocol command after validating it against the current state.
    *
    * <p>LOGIC-IMPORTANT: The state machine is updated in two steps:
+   *
    * <p>1) validate with {@link NetworkStateMachine#canSend(MessageType)}
+   *
    * <p>2) after sending, advance via {@link NetworkStateMachine#onMessageSent(MessageType)}
    *
    * @param type message type used for protocol validation
@@ -186,7 +188,7 @@ public class NetworkGameController implements IMessageListener {
   private void sendTyped(MessageType type, String raw) throws Exception {
     if (!sm.canSend(type)) {
       throw new IllegalStateException(
-              "Cannot send " + type + " in state " + sm.getState() + " (isServer=" + isServer + ")");
+          "Cannot send " + type + " in state " + sm.getState() + " (isServer=" + isServer + ")");
     }
 
     sender.send(raw);

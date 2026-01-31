@@ -3,17 +3,20 @@ package com.matti.battleship.socket.state;
 /**
  * Protocol states matching the agreed Battleship communication protocol.
  *
- * <p>This enum describes the allowed communication phases for the ping-pong protocol between
- * server and client. The state machine uses these values to validate message order and to decide
- * which commands are allowed to be sent next.
+ * <p>This enum describes the allowed communication phases for the ping-pong protocol between server
+ * and client. The state machine uses these values to validate message order and to decide which
+ * commands are allowed to be sent next.
  *
  * <p>LOGIC-IMPORTANT: The setup is server-driven. The server sends setup commands and the client
  * acknowledges with {@code done}/{@code ok}/{@code ready}. After {@code ready/ready}, gameplay
  * starts and turns alternate via {@code shot}/{@code answer}/{@code pass}.
  *
  * <p>Naming convention:
+ *
  * <p>{@code C_*} states are used by the client-side state machine
+ *
  * <p>{@code S_*} states are used by the server-side state machine
+ *
  * <p>Gameplay states (e.g. {@link #MY_TURN}) are shared for both sides
  *
  * @author WoFabian
@@ -95,4 +98,3 @@ public enum GameState {
   /** Game ended (optional). */
   GAME_OVER
 }
-

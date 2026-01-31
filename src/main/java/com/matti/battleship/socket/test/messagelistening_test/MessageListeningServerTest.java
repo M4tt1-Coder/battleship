@@ -2,24 +2,27 @@ package com.matti.battleship.socket.test.messagelistening_test;
 
 import com.matti.battleship.socket.GlobalConnector;
 import com.matti.battleship.socket.network.IMessageListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * CLI test server for validating the "start/stop listening without closing the socket" feature.
  *
  * <p>This test hosts a TCP server using {@link GlobalConnector} and performs a minimal handshake:
+ *
  * <p>1) send {@code size 10}
+ *
  * <p>2) wait for {@code done} -> send {@code ships ...}
+ *
  * <p>3) wait for {@code done} -> send {@code ready}
+ *
  * <p>4) wait for {@code ready} -> switch into "chat mode" (raw messages)
  *
- * <p>LOGIC-IMPORTANT: Listening can be stopped/started without closing the socket using
- * {@link GlobalConnector#requestStopListening()} / {@link GlobalConnector#requestStartListening()}.
- * This test makes it easy to verify that stop is NOT treated as a disconnect.
+ * <p>LOGIC-IMPORTANT: Listening can be stopped/started without closing the socket using {@link
+ * GlobalConnector#requestStopListening()} / {@link GlobalConnector#requestStartListening()}. This
+ * test makes it easy to verify that stop is NOT treated as a disconnect.
  *
  * <p>GUI-OPTIONAL: This is a development tool; it simulates the server side without a real GUI.
  *
@@ -69,41 +72,41 @@ public class MessageListeningServerTest {
 
     // Install listener BEFORE accept so the connector events are routed correctly once connected.
     global.setMessageListener(
-            new IMessageListener() {
-              @Override
-              public void onMessageReceived(String msg) {
-                String m = (msg == null) ? "" : msg.trim();
-                log.info("[SERVER] recv: {}", m);
+        new IMessageListener() {
+          @Override
+          public void onMessageReceived(String msg) {
+            String m = (msg == null) ? "" : msg.trim();
+            log.info("[SERVER] recv: {}", m);
 
-                try {
-                  // Minimal handshake driven by test phases.
-                  if ("done".equalsIgnoreCase(m)) {
-                    if (phase.get() == Phase.WAIT_DONE_AFTER_SIZE) {
-                      global.sendMessage("ships 5 4 3 3 2");
-                      phase.set(Phase.WAIT_DONE_AFTER_SHIPS);
-                      return;
-                    }
-                    if (phase.get() == Phase.WAIT_DONE_AFTER_SHIPS) {
-                      global.sendMessage("ready");
-                      phase.set(Phase.WAIT_READY_FROM_CLIENT);
-                      return;
-                    }
-                  }
-
-                  if ("ready".equalsIgnoreCase(m) && phase.get() == Phase.WAIT_READY_FROM_CLIENT) {
-                    log.info("[SERVER] ✅ CHAT MODE");
-                    phase.set(Phase.CHAT);
-                  }
-                } catch (Exception e) {
-                  log.error("[SERVER] send failed", e);
+            try {
+              // Minimal handshake driven by test phases.
+              if ("done".equalsIgnoreCase(m)) {
+                if (phase.get() == Phase.WAIT_DONE_AFTER_SIZE) {
+                  global.sendMessage("ships 5 4 3 3 2");
+                  phase.set(Phase.WAIT_DONE_AFTER_SHIPS);
+                  return;
+                }
+                if (phase.get() == Phase.WAIT_DONE_AFTER_SHIPS) {
+                  global.sendMessage("ready");
+                  phase.set(Phase.WAIT_READY_FROM_CLIENT);
+                  return;
                 }
               }
 
-              @Override
-              public void onConnectionClosed(Exception e) {
-                log.warn("[SERVER] connection closed: {}", (e != null ? e.getMessage() : "null"));
+              if ("ready".equalsIgnoreCase(m) && phase.get() == Phase.WAIT_READY_FROM_CLIENT) {
+                log.info("[SERVER] CHAT MODE");
+                phase.set(Phase.CHAT);
               }
-            });
+            } catch (Exception e) {
+              log.error("[SERVER] send failed", e);
+            }
+          }
+
+          @Override
+          public void onConnectionClosed(Exception e) {
+            log.warn("[SERVER] connection closed: {}", (e != null ? e.getMessage() : "null"));
+          }
+        });
 
     // Accept client (blocking).
     log.info("[SERVER] acceptClient... (blocking)");
@@ -152,8 +155,8 @@ public class MessageListeningServerTest {
    * Starts the listening thread if none is currently running.
    *
    * <p>LOGIC-IMPORTANT: We store the thread reference to avoid multiple listen loops on the same
-   * socket. Before starting, we re-enable listening using
-   * {@link GlobalConnector#requestStartListening()} (Task 2).
+   * socket. Before starting, we re-enable listening using {@link
+   * GlobalConnector#requestStartListening()} (Task 2).
    *
    * @param global global connector instance used for listenLoop and start/stop flags
    * @param ref reference that stores the currently running listen thread

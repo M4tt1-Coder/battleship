@@ -8,15 +8,15 @@ import java.net.Socket;
  * Low-level TCP line IO for the Battleship protocol (no threads inside).
  *
  * <p>This class is responsible for sending and receiving single protocol lines over an existing
- * {@link Socket}. It deliberately does not create threads; the caller decides where/when
- * {@link #listenLoop()} runs.
+ * {@link Socket}. It deliberately does not create threads; the caller decides where/when {@link
+ * #listenLoop()} runs.
  *
- * <p>LOGIC-IMPORTANT: Listening can be started/stopped without closing the socket (Task 2).
- * This is implemented by using a socket timeout so {@code readLine()} wakes up regularly and the
- * loop can check stop flags.
+ * <p>LOGIC-IMPORTANT: Listening can be started/stopped without closing the socket (Task 2). This is
+ * implemented by using a socket timeout so {@code readLine()} wakes up regularly and the loop can
+ * check stop flags.
  *
- * <p>LOGIC-IMPORTANT: Turn logging is handled here (via {@link TurnLog}). The connector derives
- * a "turn" from protocol commands and writes a readable send/receive pairing to the log.
+ * <p>LOGIC-IMPORTANT: Turn logging is handled here (via {@link TurnLog}). The connector derives a
+ * "turn" from protocol commands and writes a readable send/receive pairing to the log.
  *
  * @author WoFabian
  */
@@ -75,8 +75,8 @@ public class SocketConnector {
   /**
    * Enables/disables message processing inside {@link #listenLoop()} without closing the socket.
    *
-   * <p>LOGIC-IMPORTANT: When disabled, the loop stays alive but does not process incoming lines
-   * (it will idle briefly and then re-check flags).
+   * <p>LOGIC-IMPORTANT: When disabled, the loop stays alive but does not process incoming lines (it
+   * will idle briefly and then re-check flags).
    */
   private volatile boolean listeningEnabled = true;
 
@@ -175,8 +175,8 @@ public class SocketConnector {
   /**
    * Blocking receive loop that forwards incoming protocol lines to the listener.
    *
-   * <p>LOGIC-IMPORTANT: This method is intentionally blocking and does not start threads.
-   * The caller must run it in a suitable background context.
+   * <p>LOGIC-IMPORTANT: This method is intentionally blocking and does not start threads. The
+   * caller must run it in a suitable background context.
    *
    * <p>LOGIC-IMPORTANT: A stop request is NOT treated as a disconnect. Only a real remote close
    * (readLine() returns null) triggers {@link IMessageListener#onConnectionClosed(Exception)}.

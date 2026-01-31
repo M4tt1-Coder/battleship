@@ -3,21 +3,20 @@ package com.matti.battleship.socket.test.messagelistening_test;
 import com.matti.battleship.socket.GlobalConnector;
 import com.matti.battleship.socket.network.IMessageListener;
 import com.matti.battleship.socket.state.NetworkGameController;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * CLI test client for validating the "start/stop listening without closing the socket" feature.
  *
- * <p>This test connects to a locally running server and starts a background thread that runs
- * {@link GlobalConnector#listenLoop()}.
+ * <p>This test connects to a locally running server and starts a background thread that runs {@link
+ * GlobalConnector#listenLoop()}.
  *
- * <p>LOGIC-IMPORTANT: The listening loop can be stopped and started again via
- * {@link GlobalConnector#requestStopListening()} / {@link GlobalConnector#requestStartListening()}.
- * This is used to verify Task 2 behavior (stop receiving without closing the TCP connection).
+ * <p>LOGIC-IMPORTANT: The listening loop can be stopped and started again via {@link
+ * GlobalConnector#requestStopListening()} / {@link GlobalConnector#requestStartListening()}. This
+ * is used to verify Task 2 behavior (stop receiving without closing the TCP connection).
  *
  * <p>LOGIC-IMPORTANT: Incoming raw lines are forwarded to {@link NetworkGameController} so the
  * {@link com.matti.battleship.socket.state.NetworkStateMachine} can be tested interactively without
@@ -46,18 +45,18 @@ public class MessageListeningClientTest {
     NetworkGameController controller = new NetworkGameController(false, global::sendMessage);
 
     // Listener: incoming -> controller + logging
-    global.setMessageListener(new IMessageListener() {
-      @Override
-      public void onMessageReceived(String message) {
-        controller.onMessageReceived(message);
-        log.info("[CLIENT] recv: {}", (message == null ? "null" : message.trim()));
-      }
+    global.setMessageListener(
+        new IMessageListener() {
+          @Override
+          public void onMessageReceived(String message) {
+            controller.onMessageReceived(message);
+          }
 
-      @Override
-      public void onConnectionClosed(Exception e) {
-        log.warn("[CLIENT] connection closed: {}", (e != null ? e.getMessage() : "null"));
-      }
-    });
+          @Override
+          public void onConnectionClosed(Exception e) {
+            log.warn("[CLIENT] connection closed: {}", (e != null ? e.getMessage() : "null"));
+          }
+        });
 
     // Connect to local server instance.
     global.connectToServer("localhost");
@@ -111,8 +110,8 @@ public class MessageListeningClientTest {
    * <p>LOGIC-IMPORTANT: We keep a reference to the thread so we don't accidentally start multiple
    * concurrent listen loops on the same socket.
    *
-   * <p>LOGIC-IMPORTANT: Before starting the thread, we call {@link GlobalConnector#requestStartListening()}
-   * to ensure the connector loop is enabled (Task 2).
+   * <p>LOGIC-IMPORTANT: Before starting the thread, we call {@link
+   * GlobalConnector#requestStartListening()} to ensure the connector loop is enabled (Task 2).
    *
    * @param global global connector instance used for listenLoop and start/stop flags
    * @param ref reference that stores the currently running listen thread

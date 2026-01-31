@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -77,7 +76,9 @@ public class ServerDiscoveryResponder {
    * Main loop that listens for UDP discovery packets and answers valid requests.
    *
    * <p>Protocol:
+   *
    * <p>Incoming: {@code DISCOVER}
+   *
    * <p>Outgoing: {@code HERE <port> <serverName>}
    *
    * <p>LOGIC-IMPORTANT: Only {@code DISCOVER} packets are answered. Unknown messages are ignored to

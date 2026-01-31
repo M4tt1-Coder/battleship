@@ -30,9 +30,9 @@ public class NetworkStateMachine {
   /**
    * Creates a new state machine for the given side.
    *
-   * <p>LOGIC-IMPORTANT: The initial state is different for server and client:
-   * the server starts by being allowed to send {@code size} or {@code load},
-   * while the client starts by waiting for one of those commands.
+   * <p>LOGIC-IMPORTANT: The initial state is different for server and client: the server starts by
+   * being allowed to send {@code size} or {@code load}, while the client starts by waiting for one
+   * of those commands.
    *
    * @param isServer true for server rules, false for client rules
    * @author WoFabian
@@ -131,9 +131,13 @@ public class NetworkStateMachine {
   /**
    * Advances the state machine after a message was sent successfully.
    *
-   * <p>LOGIC-IMPORTANT: Sending and receiving drive different transitions. The controller typically:
+   * <p>LOGIC-IMPORTANT: Sending and receiving drive different transitions. The controller
+   * typically:
+   *
    * <p>1) validates via {@link #canSend(MessageType)}
+   *
    * <p>2) sends the raw line over the network
+   *
    * <p>3) calls this method so the state machine moves forward
    *
    * @param type message type that was sent
