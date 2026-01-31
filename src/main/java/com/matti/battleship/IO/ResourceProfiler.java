@@ -95,7 +95,7 @@ public class ResourceProfiler {
   private void tryToLoadResource(String relPath) {
     try (InputStream input = getClass().getClassLoader().getResourceAsStream(relPath)) {
       if (input == null) {
-        logger.error("Resource at {} couldn't be loaded!", relPath);
+        logger.debug("Resource at {} couldn't be loaded!", relPath);
       }
     } catch (IOException e) {
       logger.error("The resource at {} couldn't be found or loaded! Error: {}", relPath, e);

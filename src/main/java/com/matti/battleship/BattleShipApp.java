@@ -257,13 +257,7 @@ public class BattleShipApp extends Application {
     Labels labelPressRToRotateR4 = new Labels("Press R to Rotate");
     labelPressRToRotateR4.setId("labelsNormal");
 
-    StackPane root4PlaceShips =
-        new StackPane(
-            buttonEndGameR4,
-            labelSelectPositionOfYourBoatsR4,
-            labelShipsSpawnWhenBoardInitializedR4,
-            buttonStartShootingR4,
-            labelPressRToRotateR4);
+    StackPane root4PlaceShips = new StackPane();
     root4PlaceShips.setId("root4PlaceShips");
 
     buttonEndGameR4.position(root4PlaceShips, -0.38, -0.43);
@@ -305,13 +299,7 @@ public class BattleShipApp extends Application {
     Labels labelTextEnemySideR5 = new Labels("Your field");
     labelTextEnemySideR5.setId("labelsNormal");
 
-    StackPane root5ShootOnShips =
-        new StackPane(
-            buttonEndGameR5,
-            labelBackgroundShootingR5,
-            labelTextYourSideR5,
-            labelTextEnemySideR5,
-            buttonSafeGameR5);
+    StackPane root5ShootOnShips = new StackPane();
     root5ShootOnShips.setId("root5ShootOnShips");
 
     buttonEndGameR5.position(root5ShootOnShips, -0.38, -0.43);
@@ -517,7 +505,19 @@ public class BattleShipApp extends Application {
               throw new IllegalStateException(
                   "Loaded game state for wrong playing mode! For 'single player' please choose a file with the playing mode 'VS_AI'!");
             }
+            root5ShootOnShips
+                .getChildren()
+                .addAll(
+                    buttonEndGameR5,
+                    labelBackgroundShootingR5,
+                    buttonSafeGameR5,
+                    labelTextYourSideR5,
+                    labelTextEnemySideR5);
+
             preparePlayingGridPanes(root5ShootOnShips, this.game);
+            buttonEndGameR5.toFront();
+            buttonSafeGameR5.toFront();
+
             scene1.setRoot(root5ShootOnShips);
           } catch (Exception ex) {
             System.out.println(ex.toString());
@@ -528,14 +528,16 @@ public class BattleShipApp extends Application {
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
+          System.out.println(source);
 
-          // root4
-          // .getChildren()
-          // .addAll(
-          // end_game_button_r4,
-          // background_label_select_position_r4,
-          // background_label_ships_r4,
-          // start_game_button_r4);
+          root4PlaceShips
+              .getChildren()
+              .addAll(
+                  labelSelectPositionOfYourBoatsR4,
+                  labelShipsSpawnWhenBoardInitializedR4,
+                  buttonStartShootingR4,
+                  labelPressRToRotateR4,
+                  buttonEndGameR4);
 
           if (source == buttonStartPlacingShipsR2) {
             if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
@@ -606,6 +608,8 @@ public class BattleShipApp extends Application {
     buttonEndGameR4.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
+          root5ShootOnShips.getChildren().clear();
+          this.board = null;
           scene1.setRoot(root1GamemodeSelection);
         });
 
@@ -620,6 +624,14 @@ public class BattleShipApp extends Application {
             e.consume();
             return;
           }
+          root5ShootOnShips
+              .getChildren()
+              .addAll(
+                  buttonEndGameR5,
+                  labelBackgroundShootingR5,
+                  buttonSafeGameR5,
+                  labelTextYourSideR5,
+                  labelTextEnemySideR5);
 
           // TODO: Add the case for playing against another player -> no board needs to be
           // added
@@ -641,11 +653,13 @@ public class BattleShipApp extends Application {
           if (this.game.getPlayingMode() == PlayingMode.VS_AI) {
             this.aIAlgorithm =
                 GameUtils.determineAlgorithmForTheGame(this.difficulty, selected_field_size);
+            this.game.setDifficulty(this.difficulty);
           }
 
           preparePlayingGridPanes(root5ShootOnShips, this.game);
 
           buttonEndGameR5.toFront();
+          buttonSafeGameR5.toFront();
           scene1.setRoot(root5ShootOnShips);
         });
 
@@ -653,16 +667,28 @@ public class BattleShipApp extends Application {
     buttonEndGameR5.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
+          root5ShootOnShips.getChildren().clear();
+          this.board = null;
           scene1.setRoot(root1GamemodeSelection);
         });
 
     buttonSafeGameR5.setOnAction(
         e -> {
-          System.out.println("I am");
           // TODO: Get back the file path for multiplayer
           if (!FileWriterService.safeGameStateToFile(this.game, null)) {
+            System.out.println("Failed to properly safe the gamestate!");
             return;
           }
+          root4PlaceShips.getChildren().clear();
+          root5ShootOnShips.getChildren().clear();
+          this.board = null;
+          this.game = null;
+          this.playingMode = null;
+          this.difficulty = null;
+          this.aIAlgorithm = null;
+          this.playerRole = null;
+          this.initialShipSetup = null;
+
           scene1.setRoot(root1GamemodeSelection);
         });
 
@@ -816,14 +842,11 @@ public class BattleShipApp extends Application {
 
             Coordinates[] fieldsOfShip = ShipUtils.getFieldsOfShip(opponentBoard, ship);
             for (Coordinates shipCoordinates : fieldsOfShip) {
-              StackPane shipCell =
-                  (StackPane)
+              Buttons shipCell =
+                  (Buttons)
                       GridPaneUtils.getNodeByRowColumn(
                           opponentPane, shipCoordinates.y, shipCoordinates.x);
-              PlayerBoardCellContext shipCellContext = (PlayerBoardCellContext) cell.getUserData();
-              shipCellContext.state = FieldDisplayState.SUNK;
-              shipCell.setUserData(shipCellContext);
-              shipCell.getChildren().clear();
+              shipCell.setGraphic(null);
               shipCell.setStyle("-fx-background-color: red;");
             }
           }
