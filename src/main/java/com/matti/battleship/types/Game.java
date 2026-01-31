@@ -1,6 +1,7 @@
 package com.matti.battleship.types;
 
 import com.matti.battleship.enums.*;
+import com.matti.battleship.socket.GlobalConnector;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.GameUtils;
 import com.matti.battleship.utils.PlayingUtils;
@@ -54,6 +55,8 @@ public class Game {
   /** The difficulty level of the AI. Can be null if not set. */
   @Nullable private AIDifficulty difficulty;
 
+  @Nullable private GlobalConnector connector;
+
   public Game(
       PlayingMode playingMode,
       @NotNull Player player,
@@ -73,6 +76,7 @@ public class Game {
     this.whoseTurn = turn; // Default starting turn
     this.winner = Winner.NONE_YET; // when starting the game no player has won yet
     this.initialShipSetup = initialShipSetup;
+    this.connector = new GlobalConnector();
   }
 
   // ----- Methods -----

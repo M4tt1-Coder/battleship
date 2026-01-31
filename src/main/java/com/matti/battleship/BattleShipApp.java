@@ -1,6 +1,7 @@
 package com.matti.battleship;
 
 import com.matti.battleship.IO.FileReaderService;
+import com.matti.battleship.IO.ResourceProfiler;
 import com.matti.battleship.computer.Algorithm;
 import com.matti.battleship.computer.PlacementAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
@@ -1080,7 +1081,6 @@ public class BattleShipApp extends Application {
         Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
     for (Coordinates coor : fieldsOfShip) {
-      // TODO: Add image for a sunken ship here
       Buttons btn = (Buttons) GridPaneUtils.getNodeByRowColumn(gridPane, coor.y, coor.x);
       btn.setGraphic(null);
       btn.setStyle("-fx-background-color: red;");
@@ -1215,29 +1215,9 @@ public class BattleShipApp extends Application {
 
       Rectangle ship = new Rectangle();
 
-      int ship_length = length.getValue();
-      String imagePath;
+      String imagePath = new ResourceProfiler().getPictureOfShip(length);
 
-      switch (ship_length) {
-        case 2:
-          imagePath = "/com/matti/battleship/images/ships/destroyer_length2.png";
-          break;
-
-        case 3:
-          imagePath = "/com/matti/battleship/images/ships/submarine_length3.png";
-          break;
-
-        case 4:
-          imagePath = "/com/matti/battleship/images/ships/aircraft_carrier_length4.png";
-          break;
-
-        case 5:
-          imagePath = "/com/matti/battleship/images/ships/cruiser_length5.png";
-          break;
-
-        default:
-          throw new IllegalArgumentException("Unbekannte Schiffslänge: " + ship_length);
-      }
+      System.out.println(imagePath);
 
       Image ship_image = new Image(getClass().getResource(imagePath).toExternalForm());
 
