@@ -12,7 +12,7 @@ package com.matti.battleship.socket.protocol;
  *
  * @author WoFabian
  */
-public interface ProtocolListener {
+public interface IProtocolListener {
 
   /**
    * Called for every parsed protocol message received from the network.
