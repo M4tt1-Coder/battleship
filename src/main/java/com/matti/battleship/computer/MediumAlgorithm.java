@@ -2,6 +2,7 @@ package com.matti.battleship.computer;
 
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.types.Coordinates;
+import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Game;
 import com.matti.battleship.utils.BoardUtils;
 import java.util.*;
@@ -120,5 +121,25 @@ public class MediumAlgorithm implements Algorithm {
     }
 
     return output;
+  }
+
+  public void prepareAfterLoadingFromFile(Game game) {
+    // get all fields that have been shot at
+    for (Field[] row : game.player.board.board) {
+      for (Field field : row) {
+        if (field.wasShotAt()) {
+          this.alreadyShotAt.add(field.getCoordinates());
+        }
+      }
+    }
+    // get the potential next targets
+    for (Field[] row : game.player.board.board) {
+      for (Field field : row) {
+        if (field.wasShotAt() && field.isOccupied()) {
+          this.potentialTargets.addAll(
+              getNextPotentialTargets(game.player.board.getSize(), field.getCoordinates()));
+        }
+      }
+    }
   }
 }

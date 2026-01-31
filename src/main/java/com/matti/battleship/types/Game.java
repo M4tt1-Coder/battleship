@@ -273,15 +273,8 @@ public class Game {
         if (opponent.board.checkIfShipWasSunk()) {
           if (opponent.board.areAllShipsSunk()) {
             logger.info("--- PLAYER won ---");
+            this.winner = Winner.PLAYER;
             PlayingUtils.show_pop_up_information(root, "PLAYER won", 3000);
-            // try {
-            // Thread.sleep(5000);
-            // System.exit(0);
-            //
-            // } catch (Exception e) {
-            // // catching the exception
-            // System.out.println(e);
-            // }
           }
           shotResult = ShotAttemptResult.SUNK;
         }
@@ -306,6 +299,7 @@ public class Game {
           // TODO: close socket connection for multiplayer
           if (player.board.areAllShipsSunk()) {
             logger.info("--- OPPONENT won ---");
+            this.winner = Winner.OPPONENT;
             PlayingUtils.show_pop_up_information(root, "OPPONENT won", 3000);
             // System.exit(0);
           }

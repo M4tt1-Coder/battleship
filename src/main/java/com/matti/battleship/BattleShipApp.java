@@ -1,5 +1,6 @@
 package com.matti.battleship;
 
+import com.matti.battleship.IO.FileReaderService;
 import com.matti.battleship.computer.Algorithm;
 import com.matti.battleship.computer.PlacementAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
@@ -24,7 +25,6 @@ import com.matti.battleship.utils.datatypes.PlayerBoardCellContext.FieldDisplayS
 import com.matti.battleship.utils.datatypes.ShipGridElement;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import javafx.animation.KeyFrame;
@@ -38,6 +38,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
@@ -51,7 +52,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Translate;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.jetbrains.annotations.Nullable;
@@ -72,10 +72,6 @@ public class BattleShipApp extends Application {
   // OPTIONAL: falls du BOARD_SIZE weiter als "Default" behalten willst
   private double BOARD_SIZE = 400;
   private double cellSize = BOARD_SIZE / selected_field_size;
-  private String server_name = "battleship";
-
-  private String singleplayer_start_button_id = "startSingleplayerButton";
-  private String multiplayer_start_button_id = "startMultiplayerButton";
 
   // ----- Temporary Game -----
   private Game game;
@@ -478,23 +474,35 @@ public class BattleShipApp extends Application {
     // ----------------------
     back_button_r2.setOnAction(e -> scene1.setRoot(root1));
 
-    // TODO: Add feature of loading a game state from a file
-
     load_game_button_r2.setOnAction(
         e -> {
-          FileChooser fileChooser_r2 = new FileChooser();
-          fileChooser_r2.setTitle("Vorheriges Spiel laden");
-          fileChooser_r2.setInitialDirectory(new File("."));
-          fileChooser_r2
-              .getExtensionFilters()
-              .add(new FileChooser.ExtensionFilter("*.png", "*.jpg", "*.jpeg"));
-          File file = fileChooser_r2.showOpenDialog((Stage) root2.getScene().getWindow());
+          File storageFile = FileReaderService.chooseSaveFile(root2.getScene().getWindow());
+          try {
+            this.game = FileReaderService.loadGameFromFile(storageFile);
+            this.selected_field_size = this.game.player.board.getSize();
+            this.playingMode = this.game.getPlayingMode();
+            this.board = this.game.player.board;
+            // player choose single player so the playing mode can't be 'VS_PLAYER'
+            if (game.getPlayingMode() == PlayingMode.VS_AI) {
+              this.aIAlgorithm =
+                  GameUtils.determineAlgorithmForTheGame(
+                      this.game.getDifficulty(), selected_field_size);
+              this.aIAlgorithm.prepareAfterLoadingFromFile(this.game);
+            } else {
+              throw new IllegalStateException(
+                  "Loaded game state for wrong playing mode! For 'single player' please choose a file with the playing mode 'VS_AI'!");
+            }
+            preparePlayingGridPanes(root5, this.game);
+            scene1.setRoot(root5);
+          } catch (Exception ex) {
+            System.out.println(ex.toString());
+            return;
+          }
         });
 
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
-          System.out.println(source);
 
           root4
               .getChildren()
@@ -504,8 +512,6 @@ public class BattleShipApp extends Application {
                   background_label_ships_r4,
                   start_game_button_r4);
 
-          // TODO: error in logic when singleplayer value was once initialised -> stays in
-          // state
           if (source == start_game_button_r2) {
             if (!select_field_size_r2.getText().isEmpty()) {
               try {
@@ -526,14 +532,12 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = 10;
               }
             }
-            // TODO: Implementation of setting the server_name
             if (!select_server_name_r6.getText().isEmpty()) {}
           }
 
           // prepare ship setup for ship placement
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
-          System.out.println(Arrays.toString(this.initialShipSetup));
 
           // save current AIDifficulty
           String selectedDifficultyString =
@@ -612,41 +616,8 @@ public class BattleShipApp extends Application {
                 GameUtils.determineAlgorithmForTheGame(this.difficulty, selected_field_size);
           }
 
-          GridPane grid = new GridPane();
-          grid.setHgap(0);
-          grid.setVgap(0);
-          grid.setPadding(new Insets(12));
+          preparePlayingGridPanes(root5, this.game);
 
-          // OPTIONAL: Grid auch dynamisch groß machen
-          grid.prefWidthProperty().bind(boardSize);
-          grid.prefHeightProperty().bind(boardSize);
-
-          GridPane button_grid = new GridPane();
-          button_grid.setHgap(0);
-          button_grid.setVgap(0);
-          button_grid.setPadding(new Insets(12));
-          button_grid.prefWidthProperty().bind(boardSize);
-          button_grid.prefHeightProperty().bind(boardSize);
-
-          GridPane cell_grid = new GridPane();
-          cell_grid.setHgap(0);
-          cell_grid.setVgap(0);
-          cell_grid.setPadding(new Insets(12));
-          cell_grid.prefWidthProperty().bind(boardSize);
-          cell_grid.prefHeightProperty().bind(boardSize);
-
-          initializePlayingBoardOpponentGrid(cell_grid);
-          initializePlayingBoardButtonGrid(button_grid, cell_grid, root5);
-
-          StackPane.setAlignment(button_grid, Pos.CENTER);
-          button_grid.translateXProperty().bind(scene1.widthProperty().multiply(-0.24));
-
-          StackPane.setAlignment(cell_grid, Pos.CENTER);
-          cell_grid.translateXProperty().bind(scene1.widthProperty().multiply(0.24));
-
-          root5.getChildren().addAll(cell_grid, button_grid);
-          button_grid.setAlignment(Pos.CENTER);
-          cell_grid.setAlignment(Pos.CENTER);
           end_game_button_r5.toFront();
           scene1.setRoot(root5);
         });
@@ -701,28 +672,148 @@ public class BattleShipApp extends Application {
   // _________________________________________________________________
 
   /**
-   * Updates the visual representation of the player's UI board to reflect the current state of the
-   * game board.
+   * Prepares and initializes the playing grid panes for the game UI.
    *
-   * <p>This method iterates through each field in the provided {@link Board} and updates the
-   * corresponding UI cell in the {@link GridPane} if the field's state has changed. It retrieves
-   * the cell's user data, which is a {@link PlayerBoardCellContext}, and compares its current state
-   * with the theoretical state of the field. If there's a difference, it updates the UI style
-   * accordingly:
+   * <p>This method creates two {@link GridPane} instances for the player's and opponent's boards,
+   * configures their layout properties, binds their preferred sizes to the {@code boardSize}
+   * property, and initializes their content through dedicated initialization methods. It also
+   * positions the grids within the root pane using translation bindings based on the scene's width,
+   * ensuring a responsive layout.
    *
-   * <ul>
-   *   <li>Yellow for MISS
-   *   <li>Red for HIT
-   *   <li>Black for SUNK
-   * </ul>
-   *
-   * If the state unexpectedly reverts to {@code NOT_SET}, an {@link UnknownError} is thrown.
-   *
-   * @param playerPane the {@link GridPane} representing the player's UI board.
-   * @param playerBoard the {@link Board} object representing the current game state of the player's
-   *     board.
+   * @param root the root {@link Pane} to which the playing grid panes will be added.
    */
-  private void applyBoardUpdatesToPlayersUIBoard(GridPane playerPane, Board playerBoard) {
+  private void preparePlayingGridPanes(Pane root, Game game) {
+    // delete all existing gridpane children of the root
+    for (Node node : root.getChildren()) {
+      if (node instanceof GridPane) {
+        root.getChildren().remove(node);
+      }
+    }
+
+    GridPane playerGrid = new GridPane();
+    playerGrid.setHgap(0);
+    playerGrid.setVgap(0);
+    playerGrid.setPadding(new Insets(12));
+    playerGrid.prefWidthProperty().bind(boardSize);
+    playerGrid.prefHeightProperty().bind(boardSize);
+
+    GridPane opponentGrid = new GridPane();
+    opponentGrid.setHgap(0);
+    opponentGrid.setVgap(0);
+    opponentGrid.setPadding(new Insets(12));
+    opponentGrid.prefWidthProperty().bind(boardSize);
+    opponentGrid.prefHeightProperty().bind(boardSize);
+
+    initializePlayingBoardOpponentGrid(opponentGrid);
+    initializePlayingBoardPlayerGrid(playerGrid, opponentGrid, root);
+
+    StackPane.setAlignment(playerGrid, Pos.CENTER);
+    playerGrid.translateXProperty().bind(scene1.widthProperty().multiply(-0.24));
+
+    StackPane.setAlignment(opponentGrid, Pos.CENTER);
+    opponentGrid.translateXProperty().bind(scene1.widthProperty().multiply(0.24));
+
+    // synchronize the UI boards according to the datastructures
+    applyBoardUpdatesToOpponentsUIBoard(opponentGrid, game.player.board);
+    applyBoardUpdatesToPlayerUIBoard(playerGrid, game.opponent.board);
+
+    root.getChildren().addAll(opponentGrid, playerGrid);
+    playerGrid.setAlignment(Pos.CENTER);
+    opponentGrid.setAlignment(Pos.CENTER);
+  }
+
+  /**
+   * Updates the opponent's game UI board based on the current state of the opponent's logical
+   * board. This method is responsible for synchronizing the visual representation of the game with
+   * the actual game state. It iterates over the opponent's logical board, updating the
+   * corresponding UI elements in the opponent's game board.
+   *
+   * @param opponentPane The GridPane containing the opponent's UI board, which needs to be updated
+   *     to reflect the current game state.
+   * @param opponentBoard The opponent's logical board, which contains the current state of the
+   *     game.
+   * @param gameStatus The current status of the game, which determines the appearance of certain UI
+   *     elements.
+   */
+  private void applyBoardUpdatesToPlayerUIBoard(GridPane opponentPane, Board opponentBoard) {
+    DoubleBinding BUTTON_SIZE =
+        Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
+
+    Image imgMiss =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/game/tile_miss.png")
+                .toExternalForm());
+    Image imgHit =
+        new Image(
+            getClass()
+                .getResource("/com/matti/battleship/images/game/tile_hit.png")
+                .toExternalForm());
+
+    for (Field[] row : opponentBoard.board) {
+      for (Field field : row) {
+        Coordinates coor = field.getCoordinates();
+        Buttons cell = (Buttons) GridPaneUtils.getNodeByRowColumn(opponentPane, coor.y, coor.x);
+        FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field);
+        // update ui according to changes
+        ImageViews iv;
+        switch (fieldState) {
+          case MISS -> {
+            iv = new ImageViews(imgMiss);
+
+            iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+            iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+            iv.setPreserveRatio(false);
+
+            cell.setGraphic(iv);
+          }
+          case HIT -> {
+            iv = new ImageViews(imgHit);
+
+            iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+            iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+            iv.setPreserveRatio(false);
+
+            cell.setGraphic(iv);
+          }
+          case SUNK -> {
+            Ship ship = opponentBoard.getShipByCoordinates(coor);
+            if (ship == null) {
+              throw new NullPointerException("The ship at " + coor.toString() + " can't be null!");
+            }
+
+            Coordinates[] fieldsOfShip = ShipUtils.getFieldsOfShip(opponentBoard, ship);
+            for (Coordinates shipCoordinates : fieldsOfShip) {
+              StackPane shipCell =
+                  (StackPane)
+                      GridPaneUtils.getNodeByRowColumn(
+                          opponentPane, shipCoordinates.y, shipCoordinates.x);
+              PlayerBoardCellContext shipCellContext = (PlayerBoardCellContext) cell.getUserData();
+              shipCellContext.state = FieldDisplayState.SUNK;
+              shipCell.setUserData(shipCellContext);
+              shipCell.getChildren().clear();
+              shipCell.setStyle("-fx-background-color: red;");
+            }
+          }
+          case NOT_SET -> {}
+        }
+      }
+    }
+  }
+
+  /**
+   * Updates the opponent's game UI board based on the current state of the opponent's logical
+   * board. This method is responsible for synchronizing the visual representation of the game with
+   * the actual game state. It iterates over the opponent's logical board, updating the
+   * corresponding UI elements in the opponent's game board.
+   *
+   * @param opponentPane The GridPane containing the opponent's UI board, which needs to be updated
+   *     to reflect the current game state.
+   * @param playerBoard The opponent's logical board, which contains the current state of the game.
+   * @param gameStatus The current status of the game, which determines the appearance of certain UI
+   *     elements.
+   */
+  private void applyBoardUpdatesToOpponentsUIBoard(GridPane opponentPane, Board playerBoard) {
     DoubleBinding BUTTON_SIZE =
         Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
 
@@ -740,7 +831,7 @@ public class BattleShipApp extends Application {
     for (Field[] row : playerBoard.board) {
       for (Field field : row) {
         Coordinates coor = field.getCoordinates();
-        StackPane cell = (StackPane) GridPaneUtils.getNodeByRowColumn(playerPane, coor.y, coor.x);
+        StackPane cell = (StackPane) GridPaneUtils.getNodeByRowColumn(opponentPane, coor.y, coor.x);
         PlayerBoardCellContext context = (PlayerBoardCellContext) cell.getUserData();
         FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field);
         if (context.state != fieldState) {
@@ -777,12 +868,11 @@ public class BattleShipApp extends Application {
               }
 
               Coordinates[] fieldsOfShip = ShipUtils.getFieldsOfShip(playerBoard, ship);
-              System.out.print(Arrays.toString(fieldsOfShip));
               for (Coordinates shipCoordinates : fieldsOfShip) {
                 StackPane shipCell =
                     (StackPane)
                         GridPaneUtils.getNodeByRowColumn(
-                            playerPane, shipCoordinates.y, shipCoordinates.x);
+                            opponentPane, shipCoordinates.y, shipCoordinates.x);
                 PlayerBoardCellContext shipCellContext =
                     (PlayerBoardCellContext) cell.getUserData();
                 shipCellContext.state = FieldDisplayState.SUNK;
@@ -851,26 +941,16 @@ public class BattleShipApp extends Application {
     }
   }
 
-  // _________________________________________________________________
-  // ----- Helpers -----
-  // _________________________________________________________________
-
   /**
-   * Initializes the game board grid with buttons for user interaction.
+   * Initializes the playing board for a player by creating a grid of buttons in the specified
+   * GridPane. Each button represents a field on the board, and its size is determined by the
+   * current board size and selected field size.
    *
-   * <p>This method dynamically creates a grid of buttons corresponding to the selected field size
-   * and binds their size properties to a calculated BUTTON_SIZE, ensuring that buttons resize
-   * responsively when the board size or field size changes. Each button is styled consistently and
-   * configured with an event handler that updates its graphic upon being clicked, indicating a hit
-   * or miss with an appropriate image.
-   *
-   * <p>Images for "miss" and "hit" states are loaded from resources and scaled according to button
-   * size to maintain visual consistency. The grid is added to the provided GridPane layout.
-   *
-   * @param pane the GridPane to which the buttons will be added, representing the game board grid.
+   * @param pane The GridPane where the player's playing board will be rendered.
+   * @param opponentPane The GridPane where the opponent's playing board will be rendered.
+   * @param root The parent Pane of the player's playing board.
    */
-  private void initializePlayingBoardButtonGrid(GridPane pane, GridPane playerPane, Pane root) {
-    // NEW: dynamische Buttongröße (statt BOARD_SIZE)
+  private void initializePlayingBoardPlayerGrid(GridPane pane, GridPane opponentPane, Pane root) {
     DoubleBinding BUTTON_SIZE =
         Bindings.createDoubleBinding(
             () -> (boardSize.get() / selected_field_size) * 0.9, boardSize);
@@ -938,8 +1018,7 @@ public class BattleShipApp extends Application {
               if (this.game.getWhoseTurn() == PlayerTurn.OPPONENT) {
                 // wait for the opponents move
                 this.aIAlgorithm.takeAShot(this.game, root);
-                // TODO: Show result on opponent board
-                applyBoardUpdatesToPlayersUIBoard(playerPane, this.game.player.board);
+                applyBoardUpdatesToOpponentsUIBoard(opponentPane, this.game.player.board);
               }
             });
 
@@ -1207,7 +1286,6 @@ public class BattleShipApp extends Application {
       ship.translateXProperty().bind(clampedX);
       ship.setTranslateY(0);
 
-      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 

@@ -107,6 +107,30 @@ public class HardAlgorithm implements Algorithm {
     logger.info("Finished firing!");
   }
 
+  public void prepareAfterLoadingFromFile(Game game) {
+    // get all fields -> fill the shotResultMap
+    for (Field[] row : game.player.board.board) {
+      for (Field field : row) {
+        int x = field.getCoordinates().x;
+        int y = field.getCoordinates().y;
+        if (field.wasShotAt()) {
+          if (field.isOccupied()) {
+            if (field.getShip() != null && field.getShip().getHasSunk()) {
+              markAllFieldsOfShipAsSunk(field.getCoordinates());
+              markAllFieldsAroundSunkenShipAsMiss(field.getCoordinates());
+            } else {
+              this.shotResultMap[y][x] = DocumentaryShotResult.HIT;
+            }
+          } else {
+            this.shotResultMap[y][x] = DocumentaryShotResult.MISS;
+          }
+        }
+      }
+    }
+    // calculate the heatMap
+    calculateHeatMap(game.player.board);
+  }
+
   // ----- private methods -----
 
   /**
