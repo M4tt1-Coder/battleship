@@ -171,8 +171,7 @@ public class TestClientDiscoveryManuell {
             // Once we see a ready response, we treat the connection as "established".
             if ("ready".equalsIgnoreCase(m) && !readyAck[0]) {
               readyAck[0] = true;
-              System.out.println(
-                  "[CLIENT] Verbindung steht. Du kannst jetzt Nachrichten senden.");
+              System.out.println("[CLIENT] Verbindung steht. Du kannst jetzt Nachrichten senden.");
             }
           }
 

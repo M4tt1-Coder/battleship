@@ -37,7 +37,7 @@ public class TestServerDiscovery {
    */
   public static void main(String[] args) throws Exception {
     GlobalConnector global = new GlobalConnector();
-    global.setServerName("Fubi Bubi" +"");
+    global.setServerName("Fubi Bubi" + "");
 
     // Listener must be installed BEFORE acceptClient so the internal forwarding/busy handling is
     // active immediately.
