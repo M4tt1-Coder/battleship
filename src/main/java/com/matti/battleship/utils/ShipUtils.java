@@ -8,6 +8,10 @@ import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Ship;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -161,5 +165,31 @@ public class ShipUtils {
       throw new IllegalArgumentException(
           "There can't be a duplicate of a field inside of the list of fields of a ship!");
     }
+  }
+
+  /**
+   * Rotates the given image by a specified angle in degrees.
+   *
+   * <p>This method creates an {@link ImageView} node with the input image, applies the rotation,
+   * and then snapshots the rotated view into a new {@link Image}. The rotation occurs around the
+   * center of the image by default. The resulting image has a transparent background and includes
+   * all parts of the rotated image, properly adjusted for size.
+   *
+   * @param inputImage The original {@link Image} to be rotated.
+   * @param angle The rotation angle in degrees. Positive values rotate clockwise, negative values
+   *     rotate counter-clockwise.
+   * @return A new {@link Image} object representing the input image rotated by the specified angle.
+   *     The size of the returned image generally increases to accommodate the entire rotated image.
+   * @throws NullPointerException if {@code inputImage} is null.
+   */
+  public static Image rotateImage(Image inputImage, double angle) {
+    // Create a temporary ImageView for rotation
+    ImageView iv = new ImageView(inputImage);
+    iv.setRotate(angle);
+
+    SnapshotParameters params = new SnapshotParameters();
+    params.setFill(Color.TRANSPARENT);
+    // Snapshot the rotated image
+    return iv.snapshot(params, null);
   }
 }

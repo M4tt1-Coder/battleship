@@ -19,7 +19,6 @@ public class PlayingUtils {
   }
 
   public static void show_pop_up_information(Pane root, String text, int duration) {
-    System.out.println("We are here");
     Labels popup = new Labels(text);
     popup.setId("label_pop_up_information");
     popup.setVisible(false);

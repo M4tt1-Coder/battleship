@@ -1,239 +1,308 @@
 
-
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&display=swap");
 /*-----------------------------------------------------------------------------*/
 /* root 1 */
 
-#Singleplayer_button_r1 {
+#buttonSingleplayerR1 {
     -fx-background-color: linear-gradient(to bottom, #3cb371, #2e8b57);
     -fx-text-fill: white;
-    -fx-opacity: 0.8;
-    -fx-font-family: "Montserrat";
-    -fx-font-size: 30px;
-    -fx-font-weight: 800;
+    -fx-opacity: 0.7;
+    -fx-font-family: "Orbitron";
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
     -fx-padding: 12px 28px;
-    -fx-border-color: #000000;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
 }
-#Singleplayer_button_r1:hover {
+#buttonSingleplayerR1:hover {
     -fx-background-color: linear-gradient(to bottom, #5adfa0, #43b97a);
-    -fx-opacity: 0.7;
+    -fx-opacity: 0.6;
 }
 
-#Multiplayer_button_r1 {
+#buttonMultiplayerR1 {
     -fx-background-color: linear-gradient(to bottom, #c0392b, #992d22);
     -fx-text-fill: white;
-    -fx-opacity: 0.8;
-    -fx-font-family: "Montserrat";
-    -fx-font-size: 30px;
-    -fx-font-weight: 800;
+    -fx-opacity: 0.7;
+    -fx-font-family: "Orbitron";
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+    -fx-text-fill: white;
     -fx-padding: 12px 28px;
-    -fx-border-color: #000000;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
 }
-#Multiplayer_button_r1:hover {
+#buttonMultiplayerR1:hover {
     -fx-background-color: linear-gradient(to bottom, #d64535, #a93226);
-    -fx-opacity: 0.7;
+    -fx-opacity: 0.6;
 }
 
 
-#label_battleship_lobby_r1 {
-    -fx-background-color: #3498db;
+
+/*---------------------------------------------------------------------Allgemein*/
+/* Allgemein*/
+
+#labelsBackgroundBlueCenter {
+    -fx-background-color: rgba(7, 58, 97, 0.82);
+    -fx-font-family: "Orbitron";
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+    -fx-alignment: center;
     -fx-text-fill: white;
-    -fx-padding: 10px 20px;
+    -fx-padding: 18px 30px;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+}
+
+/*------------------------------------*/
+
+#labelBackgroundBlueTopCenter {
+    -fx-background-color: rgba(7, 58, 97, 0.82);
+    -fx-font-family: "Orbitron";
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+    -fx-alignment: top-center;
+    -fx-text-fill: white;
+    -fx-padding: 18px 30px;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+}
+
+/*------------------------------------*/
+
+#buttonsGoBack {
+    -fx-background-image: url(../images/go_back.png);
+    -fx-background-size: 100% 100%;
+    -fx-background-color: transparent;
+}
+#buttonsGoBack:hover {
+    -fx-opacity: 0.6;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/*------------------------------------*/
+
+#buttonsNormal {
+    -fx-background-color: rgba(160, 160, 160, 0.55);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 1px;
+
+    -fx-font-family: "Orbitron";
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1e1e1e;
+
+    -fx-padding: 8px 14px;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 14, 0.25, 0, 3);
+}
+#buttonsNormal:hover {
+    -fx-opacity: 0.6;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+    -fx-background-color: rgba(180, 180, 180, 0.65);
+}
+#buttonsNormal:focused {
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+}
+
+/*------------------------------------*/
+
+#buttonsSaveAndLoad,
+#buttonsEndGame {
+    -fx-background-color: linear-gradient(to bottom, #c0392b, #992d22);
+    -fx-text-fill: white;
+    -fx-opacity: 0.95;
+    -fx-font-family: "Orbitron";
+        -fx-font-weight: 600;
+        -fx-font-size: 10px;
+    -fx-border-color: #000000;
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
-    -fx-alignment: center;
+    -fx-padding: 8px 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
+}
+#buttonsSaveAndLoad:hover,
+#buttonsEndGame:hover {
+    -fx-opacity: 0.8;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
 }
 
-#stack_pane_root1 {
+/*------------------------------------*/
+
+#comboboxes {
+    -fx-background-color: rgba(160, 160, 160, 0.55);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-width: 1px;
+    -fx-font-family: "Orbitron";
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1e1e1e;
+    -fx-padding: 6px 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 14, 0.25, 0, 3);
+}
+#comboboxes.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1e1e1e;
+}
+#comboboxes.arrow-button {
+    -fx-background-color: rgba(130, 130, 130, 0.55);
+    -fx-background-radius: 0 12px 12px 0;
+}
+#comboboxes.arrow {
+    -fx-background-color: #2b2b2b;
+}
+#comboboxes-popup .list-view {
+    -fx-background-color: rgba(140, 140, 140, 0.90);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+}
+#comboboxes-popup .list-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+#comboboxes-popup .list-cell:selected {
+    -fx-background-color: rgba(90, 90, 90, 0.45);
+    -fx-text-fill: white;
+}
+#comboboxes:focused {
+    -fx-border-color: rgba(255, 255, 255, 0.4);
+}
+
+/*------------------------------------*/
+
+ #textfields {
+     -fx-background-color: rgba(160, 160, 160, 0.55);
+     -fx-background-radius: 12px;
+     -fx-border-radius: 12px;
+     -fx-border-color: rgba(255, 255, 255, 0.25);
+     -fx-border-width: 1px;
+     -fx-text-fill: #1e1e1e;
+     -fx-prompt-text-fill: rgba(30, 30, 30, 0.55);
+     -fx-font-family: "Orbitron";
+     -fx-font-size: 15px;
+     -fx-font-weight: 600;
+     -fx-padding: 10px 14px;
+     -fx-highlight-fill: rgba(255, 255, 255, 0.30);
+     -fx-highlight-text-fill: #1e1e1e;
+     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 14, 0.25, 0, 3);
+ }
+ #textfields:focused {
+     -fx-background-color: rgba(160, 160, 160, 0.70);
+     -fx-border-color: rgba(255, 255, 255, 0.40);
+ }
+ #textfields.caret {
+     -fx-stroke: #1e1e1e;
+ }
+
+ /*------------------------------------*/
+
+ #labelsNormal {
+    -fx-font-family: "Orbitron";
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+    -fx-text-fill: #ffffff;
+    -fx-alignment: center;
+    -fx-padding: 12 24 12 24;
+    -fx-background-color: transparent;
+    -fx-effect:
+    dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
+    dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
+ }
+
+  /*------------------------------------*/
+
+  #label_pop_up_information {
+    -fx-font-family: "Orbitron";
+    -fx-font-weight: 600;
+    -fx-font-size: 20px;
+    -fx-text-fill: #000000;
+    -fx-padding: 14 26 14 26;
+    -fx-background-radius: 14;
+    -fx-background-color: #E57373;
+    -fx-effect: dropshadow(
+        gaussian,
+        rgba(0, 0, 0, 0.35),
+        14,
+        0.4,
+        0,
+        4
+    );
+  }
+
+  /*------------------------------------*/
+
+  #labelWaitingScreen1 {
+      -fx-font-family: "Orbitron";
+      -fx-font-weight: 600;
+      -fx-font-size: 20px;
+      -fx-text-fill: #E57373;
+      /*-fx-text-fill: #ffffff;*/
+      -fx-padding: 12 24 12 24;
+      -fx-background-color: transparent;
+      -fx-border-radius: 14;
+      -fx-border-width: 1.5;
+      -fx-border-color: rgba(255, 255, 255, 0.35);
+      -fx-effect:
+          dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
+          dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
+  }
+
+/*------------------------------------*/
+
+  #labelWaitingScreen2 {
+          -fx-font-family: "Orbitron";
+          -fx-font-weight: 600;
+          -fx-font-size: 20px;
+          -fx-text-fill: #ffffff;
+          -fx-padding: 12 24 12 24;
+          -fx-background-color: transparent;
+          -fx-effect:
+              dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
+              dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
+  }
+
+
+/*-------------------------------------------------------------------*/
+/*--roots--*/
+
+#root1GamemodeSelection {
     -fx-background-image: url("../images/lobby_screen.png");
     -fx-background-size: 100% 100%;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
 }
 
-/*-----------------------------------------------------------------------------*/
-/* root 2 */
-
-#load_game_button_r2 {
-    -fx-background-color: linear-gradient(to bottom, #c0392b, #992d22);
-    -fx-text-fill: white;
-    -fx-opacity: 0.95;
-    -fx-font-family: "Montserrat";
-    -fx-border-color: #000000;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
-}
-#load_game_button_r2:hover {
-    -fx-opacity: 0.8;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
+#root2SingleplayerSettings,
+#root3JoinOtherServers,
+#root6MultiplayerSettings,
+#root7LoadingScreen {
+    -fx-background-color:
+        linear-gradient(
+            to bottom,
+            #c9c9c9 0%,
+            #b3b3b3 25%,
+            #9e9e9e 50%,
+            #8a8a8a 75%,
+            #7a7a7a 100%
+        );
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.25), 30, 0.4, 0, 0);
 }
 
 
-}
-
-#stack_pane_root2 {
-    -fx-background-color: #EEE9E9;
-    -fx-background-size: 100% 100%;
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
-}
-/*----------------------------------------------------------------------------*/
-/* root 3 */
-
-#start_new_game_button_r3 {
-    -fx-background-color: linear-gradient(to bottom, #ffffff, #a9d0ff);
-    -fx-text-fill: black;
-    -fx-opacity: 0.95;
-    -fx-font-family: "Montserrat";
-    -fx-border-color: #000000;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
-}
-#start_new_game_button_r3:hover {
-    -fx-opacity: 0.6;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-
-#stack_pane_root7 {
-    -fx-background-color: #3498db;
-}
-
-#label_waiting_screen {
-    #label_waiting_screen {
-        -fx-font-family: "Segoe UI", "Arial", sans-serif;
-        -fx-font-size: 60px;
-        -fx-font-weight: bold;
-
-        /* Text bleibt weiß, leicht veredelt */
-        -fx-text-fill: #E57373;
-        /*-fx-text-fill: #ffffff;*/
-
-        -fx-padding: 12 24 12 24;
-
-        /* kein Hintergrund */
-        -fx-background-color: transparent;
-
-        /* feiner, heller Rahmen für Struktur */
-        -fx-border-radius: 14;
-        -fx-border-width: 1.5;
-        -fx-border-color: rgba(255, 255, 255, 0.35);
-
-        /* subtiler Schatten für Tiefe */
-        -fx-effect:
-            dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
-            dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
-    }
-}
-
-#label_waiting_screen2 {
-    #label_waiting_screen {
-        -fx-font-family: "Segoe UI", "Arial", sans-serif;
-        -fx-font-size: 20px;
-
-        /* Text bleibt weiß, leicht veredelt */
-        -fx-text-fill: #ffffff;
-
-        -fx-padding: 12 24 12 24;
-
-        /* kein Hintergrund */
-        -fx-background-color: transparent;
-
-        /* subtiler Schatten für Tiefe */
-        -fx-effect:
-            dropshadow(gaussian, rgba(0,0,0,0.45), 10, 0.4, 0, 3),
-            dropshadow(gaussian, rgba(255,255,255,0.15), 6, 0.3, 0, -1);
-    }
-}
-
-
-
-/*----------------------------------------------------------------------------*/
-#back_button {
-    -fx-background-image: url(../images/go_back.png);
-    -fx-background-size: 100% 100%;
-    -fx-background-color: transparent;
-}
-#back_button:hover {
-    -fx-opacity: 0.6;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
-
-#end_game_button {
-    -fx-background-image: url(../images/end_game.png);
-    -fx-background-size: 100% 100%;
-    -fx-background-color: transparent;
-}
-
-#start_game_button {
-    -fx-background-color: linear-gradient(to bottom, #ffffff, #a9d0ff);
-    -fx-text-fill: black;
-    -fx-opacity: 0.95;
-    -fx-font-family: "Montserrat";
-    -fx-border-color: #000000;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
-}
-#start_game_button:hover {
-    -fx-opacity: 0.6;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-#text_field_field_size {
-
-  }
-
-#label_background_blue {
-    -fx-background-color: #3498db;
-    -fx-text-fill: white;
-    -fx-font-family: "Montserrat";
-    -fx-padding: 10px 20px;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-}
-
-#normal_button {
-    -fx-background-color: linear-gradient(to bottom, #ffffff, #a9d0ff);
-    -fx-text-fill: black;
-    -fx-opacity: 0.95;
-    -fx-font-family: "Montserrat";
-    -fx-border-color: #000000;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0.3, 0, 2);
-}
-#normal_button:hover {
-    -fx-opacity: 0.6;
-    -fx-scale-x: 1.03;
-    -fx-scale-y: 1.03;
-}
-
-#label_pop_up_information {
-  -fx-font-family: "Segoe UI", "Arial", sans-serif;
-  -fx-font-size: 18px;
-  -fx-font-weight: bold;
-
-  -fx-text-fill: #000000;
-
-  -fx-padding: 14 26 14 26;
-
-  -fx-background-radius: 14;
-  -fx-background-color: #E57373;
-
-  -fx-effect: dropshadow(
-      gaussian,
-      rgba(0, 0, 0, 0.35),
-      14,
-      0.4,
-      0,
-      4
-  );
+#root4PlaceShips,
+#root5ShootOnShips {
+    -fx-background-image: url("../images/game_background.png");
+        -fx-background-size: 100% 100%;
+        -fx-background-position: center;
+        -fx-background-repeat: no-repeat;
 }

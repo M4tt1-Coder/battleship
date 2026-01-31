@@ -44,7 +44,7 @@ public class Ship {
 
     ResourceProfiler profiler = new ResourceProfiler();
 
-    this.picPath = profiler.getPictureOfShip(length);
+    this.picPath = profiler.getPictureOfShip(length.getValue());
   }
 
   // ----- Methods -----
