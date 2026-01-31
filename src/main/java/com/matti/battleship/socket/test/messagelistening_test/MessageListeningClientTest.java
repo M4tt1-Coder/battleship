@@ -31,74 +31,75 @@ public class MessageListeningClientTest {
   /**
    * Starts the CLI test client and blocks for interactive user input.
    *
-   * <p>GUI-OPTIONAL: This is a pure console tool intended for development/testing only.
-   *
-   * @param args unused
-   * @throws Exception if connection setup fails
-   * @author WoFabian
-   */
-  public static void main(String[] args) throws Exception {
+    try (Scanner in = new Scanner(System.in)) {
+      while (true) {
+        System.out.print("> ");
+        String line = in.nextLine();
+        if (line == null) continue;
 
-    GlobalConnector global = new GlobalConnector();
+        String cmd = line.trim();
 
-    // Controller (Client): no auto-acks; we send done/ok/ready manually from CLI commands.
-    NetworkGameController controller = new NetworkGameController(false, global::sendMessage);
-
-    // Listener: incoming -> controller + logging
-    global.setMessageListener(
-        new IMessageListener() {
-          @Override
-          public void onMessageReceived(String message) {
-            controller.onMessageReceived(message);
-          }
-
-          @Override
-          public void onConnectionClosed(Exception e) {
-            log.warn("[CLIENT] connection closed: {}", (e != null ? e.getMessage() : "null"));
-          }
-        });
-
-    // Connect to local server instance.
-    global.connectToServer("localhost");
-
-    printCommands();
-    AtomicReference<Thread> listenThreadRef = new AtomicReference<>();
-
-    // Start listening initially.
-    startListeningIfNeeded(global, listenThreadRef);
-
-    Scanner in = new Scanner(System.in);
-    while (true) {
-      String raw = in.nextLine();
-      if (raw == null) continue;
-
-      final String cmd = raw.trim(); // effectively final -> safe for lambdas
-
-      switch (cmd) {
-        case "listen start" -> startListeningIfNeeded(global, listenThreadRef);
-
-        case "listen stop" -> {
-          global.requestStopListening();
-          log.info("[CLIENT] listening STOPPED");
-        }
-
-        case "state" -> log.info("[CLIENT] state={}", controller.getStateMachine().getState());
-
-        case "done" -> safe(controller::sendDone, "[CLIENT] sent: done");
-        case "ok" -> safe(controller::sendOk, "[CLIENT] sent: ok");
-        case "ready", "start" -> safe(controller::sendReady, "[CLIENT] sent: ready");
-
-        case "exit" -> {
-          log.info("[CLIENT] exit");
-          global.close();
+        if (cmd.equalsIgnoreCase("exit")) {
+          log.info("[CLIENT] exit.");
+          client.disconnect();
           return;
         }
 
-        default -> {
-          if (cmd.isBlank()) continue;
+        // --- Task 2 commands ---
+        if (cmd.equalsIgnoreCase("listen stop")) {
+          client.stopListening();
+          log.info("[CLIENT] listening STOPPED");
+          continue;
+        }
 
-          final String toSend = cmd; // explicit: the raw line we send over TCP
-          safe(() -> global.sendMessage(toSend), "[CLIENT] sent raw: " + toSend);
+        if (cmd.equalsIgnoreCase("listen start")) {
+          startListeningIfNeeded(client, listenThreadRef, listenLock);
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("state")) {
+          log.info("[CLIENT] state={}", controller.getStateMachine().getState());
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("done")) {
+          try {
+            controller.sendDone();
+            log.info("[CLIENT] sent: done");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendDone failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("ok")) {
+          try {
+            controller.sendOk();
+            log.info("[CLIENT] sent: ok");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendOk failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("start")) {
+          try {
+            controller.sendReady();
+            log.info("[CLIENT] sent: ready");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendReady failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.isBlank()) continue;
+
+        // raw debug send
+        try {
+          client.send(cmd);
+          log.info("[CLIENT] sent: {}", cmd);
+        } catch (Exception e) {
+          log.error("[CLIENT] send failed: {}", e.getMessage(), e);
         }
       }
     }
