@@ -254,13 +254,7 @@ public class BattleShipApp extends Application {
     Labels labelPressRToRotateR4 = new Labels("Press R to Rotate");
     labelPressRToRotateR4.setId("labelsNormal");
 
-    StackPane root4PlaceShips =
-        new StackPane(
-            buttonEndGameR4,
-            labelSelectPositionOfYourBoatsR4,
-            labelShipsSpawnWhenBoardInitializedR4,
-            buttonStartShootingR4,
-            labelPressRToRotateR4);
+    StackPane root4PlaceShips = new StackPane();
     root4PlaceShips.setId("root4PlaceShips");
 
     buttonEndGameR4.position(root4PlaceShips, -0.38, -0.43);
@@ -302,13 +296,7 @@ public class BattleShipApp extends Application {
     Labels labelTextEnemySideR5 = new Labels("Your field");
     labelTextEnemySideR5.setId("labelsNormal");
 
-    StackPane root5ShootOnShips =
-        new StackPane(
-            buttonEndGameR5,
-            labelBackgroundShootingR5,
-            buttonSafeGameR5,
-            labelTextYourSideR5,
-            labelTextEnemySideR5);
+    StackPane root5ShootOnShips = new StackPane();
     root5ShootOnShips.setId("root5ShootOnShips");
 
     buttonEndGameR5.position(root5ShootOnShips, -0.38, -0.43);
@@ -526,13 +514,14 @@ public class BattleShipApp extends Application {
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
 
-          // root4
-          // .getChildren()
-          // .addAll(
-          // end_game_button_r4,
-          // background_label_select_position_r4,
-          // background_label_ships_r4,
-          // start_game_button_r4);
+          root4PlaceShips
+              .getChildren()
+              .addAll(
+                  labelSelectPositionOfYourBoatsR4,
+                  labelShipsSpawnWhenBoardInitializedR4,
+                  buttonStartShootingR4,
+                  labelPressRToRotateR4,
+                  buttonEndGameR4);
 
           if (source == buttonStartPlacingShipsR2) {
             if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
@@ -603,11 +592,20 @@ public class BattleShipApp extends Application {
     buttonEndGameR4.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
+          this.board = null;
           scene1.setRoot(root1GamemodeSelection);
         });
 
     buttonStartShootingR4.setOnAction(
         e -> {
+          root5ShootOnShips
+              .getChildren()
+              .addAll(
+                  buttonEndGameR5,
+                  labelBackgroundShootingR5,
+                  buttonSafeGameR5,
+                  labelTextYourSideR5,
+                  labelTextEnemySideR5);
           // prevent starting a game when not all ships have been placed
           if (this.board.getNumberOfOccupiedFields()
               != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
@@ -643,6 +641,7 @@ public class BattleShipApp extends Application {
           preparePlayingGridPanes(root5ShootOnShips, this.game);
 
           buttonEndGameR5.toFront();
+          buttonSafeGameR5.toFront();
           scene1.setRoot(root5ShootOnShips);
         });
 
@@ -650,6 +649,7 @@ public class BattleShipApp extends Application {
     buttonEndGameR5.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
+          this.board = null;
           scene1.setRoot(root1GamemodeSelection);
         });
 
