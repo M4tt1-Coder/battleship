@@ -1,6 +1,5 @@
 package com.matti.battleship.IO;
 
-import com.matti.battleship.enums.ShipLength;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.logging.log4j.LogManager;
@@ -32,44 +31,52 @@ public class ResourceProfiler {
 
   /** File path to the image of a destroyer ship with length 2. */
   private static final String Ship2PicPath =
-      "com/matti/battleship/images/ships/destroyer_length2.png";
+      "/com/matti/battleship/images/ships/destroyer_length2.png";
 
   /** File path to the image of a submarine with length 3. */
   private static final String Ship3PicPath =
-      "com/matti/battleship/images/ships/submarine_length3.png";
+      "/com/matti/battleship/images/ships/submarine_length3.png";
 
   /** File path to the image of an aircraft carrier with length 4. */
   private static final String Ship4PicPath =
-      "com/matti/battleship/images/ships/aircraft_carrier_length4.png";
+      "/com/matti/battleship/images/ships/aircraft_carrier_length4.png";
 
   /** File path to the image of a cruiser with length 5. */
   private static final String Ship5PicPath =
-      "com/matti/battleship/images/ships/cruiser_length5.png";
+      "/com/matti/battleship/images/ships/cruiser_length5.png";
 
   // __________________________________
 
   /**
-   * Returns the file path to the image corresponding to the specified ship length.
+   * Retrieves the file path of the picture corresponding to a ship of the specified length.
    *
-   * @param shipLength the length of the ship, represented by the {@link ShipLength} enum
-   * @return the file path to the ship's image
-   * @throws IllegalArgumentException if the provided ship length is invalid
+   * <p>This method first ensures that all required ship picture resources are available by calling
+   * {@link #checkAllShipPictureResources()}. It then returns the path to the image file that
+   * visually represents a ship of the given length.
+   *
+   * <p>Valid ship lengths are integers from 2 to 5, inclusive. If an invalid length is provided,
+   * the method throws an {@link IllegalArgumentException}.
+   *
+   * @param shipLength The length of the ship (number of segments), expected to be between 2 and 5.
+   * @return The file path (as a {@link String}) to the image representing the ship of the specified
+   *     length.
+   * @throws IllegalArgumentException if {@code shipLength} is not within the valid range (2-5).
    */
-  public String getPictureOfShip(ShipLength shipLength) {
+  public String getPictureOfShip(int shipLength) {
     // Make sure all files really exist
     checkAllShipPictureResources();
 
     switch (shipLength) {
-      case Two:
+      case 2:
         return Ship2PicPath;
 
-      case Three:
+      case 3:
         return Ship3PicPath;
 
-      case Four:
+      case 4:
         return Ship4PicPath;
 
-      case Five:
+      case 5:
         return Ship5PicPath;
 
       default:

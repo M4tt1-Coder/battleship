@@ -13,4 +13,16 @@ public interface Algorithm {
    *     board.
    */
   public void takeAShot(Game game, Pane root);
+
+  /**
+   * Performs any necessary initialization or setup tasks after loading the game state from a file.
+   *
+   * <p>This method is called after the game data has been deserialized, allowing the game to
+   * re-establish transient states, initialize resources, or perform any other post-loading
+   * preparations required for the game to function correctly.
+   *
+   * @param game the {@link Game} instance that has been loaded from the file, which may require
+   *     additional setup.
+   */
+  public void prepareAfterLoadingFromFile(Game game);
 }

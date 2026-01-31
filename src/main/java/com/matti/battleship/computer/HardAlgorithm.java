@@ -2,6 +2,7 @@ package com.matti.battleship.computer;
 
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.enums.Winner;
 import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Field;
@@ -74,6 +75,8 @@ public class HardAlgorithm implements Algorithm {
 
   @Override
   public void takeAShot(Game game, Pane root) {
+    if (game.getWinner() != Winner.NONE_YET) return;
+
     Coordinates guessedCoordinates;
     do {
       if (this.heatMap.isEmpty()) {
@@ -105,6 +108,30 @@ public class HardAlgorithm implements Algorithm {
       takeAShot(game, root);
     }
     logger.info("Finished firing!");
+  }
+
+  public void prepareAfterLoadingFromFile(Game game) {
+    // get all fields -> fill the shotResultMap
+    for (Field[] row : game.player.board.board) {
+      for (Field field : row) {
+        int x = field.getCoordinates().x;
+        int y = field.getCoordinates().y;
+        if (field.wasShotAt()) {
+          if (field.isOccupied()) {
+            if (field.getShip() != null && field.getShip().getHasSunk()) {
+              markAllFieldsOfShipAsSunk(field.getCoordinates());
+              markAllFieldsAroundSunkenShipAsMiss(field.getCoordinates());
+            } else {
+              this.shotResultMap[y][x] = DocumentaryShotResult.HIT;
+            }
+          } else {
+            this.shotResultMap[y][x] = DocumentaryShotResult.MISS;
+          }
+        }
+      }
+    }
+    // calculate the heatMap
+    calculateHeatMap(game.player.board);
   }
 
   // ----- private methods -----
