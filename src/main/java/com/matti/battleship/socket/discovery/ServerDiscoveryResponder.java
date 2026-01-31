@@ -5,31 +5,44 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Responds to UDP broadcast discovery requests for Battleship servers.
  *
- * <p>This class listens for DISCOVER messages and replies with a HERE response that contains the
- * TCP game port and a human-readable server name.
+ * <p>This class listens for {@code DISCOVER} messages and replies with a {@code HERE} response
+ * containing the TCP game port and a human-readable server name.
  *
- * <p>LOGIC-IMPORTANT: If the server is already connected to a client (busy == true), discovery
- * requests are ignored so the server does not appear in the client's server list anymore.
+ * <p>LOGIC-IMPORTANT: The {@code busy} flag is shared with the TCP server lifecycle. If a client is
+ * already connected ({@code busy == true}), discovery requests are ignored so the server does not
+ * appear in the client's server list anymore.
  *
  * @author WoFabian
  */
 public class ServerDiscoveryResponder {
 
+  private static final Logger logger = LogManager.getLogger(ServerDiscoveryResponder.class);
+
   /** UDP port used for discovery. In this project it is the same as the TCP game port. */
   private final int port;
 
   /**
-   * Indicates whether this server is currently busy (already has a connected client). If busy ==
-   * true, discovery requests will be ignored.
+   * Indicates whether this server is currently busy (already has a connected client).
+   *
+   * <p>LOGIC-IMPORTANT: If {@code busy == true}, discovery requests will be ignored to prevent new
+   * clients from selecting a server that is already in use.
    */
   private final AtomicBoolean busy;
 
   /** Human readable server name that will be returned to the client. */
   private final String serverName;
 
+  /**
+   * Run flag for the discovery loop.
+   *
+   * <p>Declared volatile so {@link #stop()} can terminate the loop from another thread.
+   */
   private volatile boolean running = true;
 
   /**
@@ -51,8 +64,8 @@ public class ServerDiscoveryResponder {
   /**
    * Stops the responder loop.
    *
-   * <p>LOGIC-IMPORTANT: This only flips the running flag. If receive(...) is currently blocking,
-   * the loop will end after the next packet arrives or the socket is closed from outside.
+   * <p>LOGIC-IMPORTANT: This only flips the running flag. If {@code receive(...)} is currently
+   * blocking, the loop will end after the next packet arrives or the socket is closed from outside.
    *
    * @author WoFabian
    */
@@ -63,7 +76,12 @@ public class ServerDiscoveryResponder {
   /**
    * Main loop that listens for UDP discovery packets and answers valid requests.
    *
-   * <p>Protocol: - Incoming: DISCOVER - Outgoing: HERE port servername
+   * <p>Protocol:
+   * <p>Incoming: {@code DISCOVER}
+   * <p>Outgoing: {@code HERE <port> <serverName>}
+   *
+   * <p>LOGIC-IMPORTANT: Only {@code DISCOVER} packets are answered. Unknown messages are ignored to
+   * keep LAN discovery robust against noise/broadcast traffic.
    *
    * @author WoFabian
    */
@@ -80,7 +98,7 @@ public class ServerDiscoveryResponder {
         String msg = DiscoveryProtocol.str(packet.getData(), packet.getLength());
         if (!DiscoveryProtocol.DISCOVER.equals(msg)) continue;
 
-        // wenn schon ein Client verbunden ist: nicht mehr discoverbar
+        // If a client is already connected: do not appear in discovery results anymore.
         if (busy.get()) continue;
 
         InetAddress clientAddr = packet.getAddress();
@@ -94,7 +112,8 @@ public class ServerDiscoveryResponder {
       }
 
     } catch (Exception e) {
-      System.out.println("[DISCOVERY] Responder gestoppt: " + e.getMessage());
+      // Shutdown and socket errors are not fatal here; discovery is an optional helper feature.
+      logger.info("[DISCOVERY] Responder gestoppt: " + e.getMessage());
     }
   }
 }

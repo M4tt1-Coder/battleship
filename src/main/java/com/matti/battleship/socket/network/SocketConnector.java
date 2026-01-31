@@ -3,79 +3,55 @@ package com.matti.battleship.socket.network;
 import com.matti.battleship.socket.logging.TurnLog;
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 
 /**
- * Handles low-level TCP socket communication between client and server.
+ * Low-level TCP line IO for the Battleship protocol (no threads inside).
  *
- * <p>Responsibilities:
+ * <p>This class is responsible for sending and receiving single protocol lines over an existing
+ * {@link Socket}. It deliberately does not create threads; the caller decides where/when
+ * {@link #listenLoop()} runs.
  *
- * <ul>
- *   <li>Send messages over the socket (line-based protocol)
- *   <li>Receive messages in a (potential) background thread / loop
- *   <li>Forward received messages to a {@link MessageListener}
- *   <li>Maintain turn information (SERVER/CLIENT) for logging and debugging
- *   <li>Print separators after complete send/receive pairs (pair/duo tracking)
- * </ul>
+ * <p>LOGIC-IMPORTANT: Listening can be started/stopped without closing the socket (Task 2).
+ * This is implemented by using a socket timeout so {@code readLine()} wakes up regularly and the
+ * loop can check stop flags.
  *
- * <p>Note:
- *
- * <ul>
- *   <li>This class only transports messages and provides debug logging.
- *   <li>The real protocol/game flow should be handled by higher layers (NetworkGameController +
- *       NetworkStateMachine).
- * </ul>
- *
- * <p>NEW: Listening can be paused/resumed without closing the socket ({@link
- * #stopListening()}/{@link #startListening()}) using a short read timeout.
+ * <p>LOGIC-IMPORTANT: Turn logging is handled here (via {@link TurnLog}). The connector derives
+ * a "turn" from protocol commands and writes a readable send/receive pairing to the log.
  *
  * @author WoFabian
  */
 public class SocketConnector {
 
-  /** Underlying TCP socket. */
+  /** Underlying TCP socket used for sending and receiving protocol lines. */
   private final Socket socket;
 
-  /** Reader for incoming line-based messages. */
+  /** Line-based reader for incoming protocol messages. */
   private final BufferedReader reader;
 
-  /** Writer for outgoing line-based messages. */
+  /** Line-based writer for outgoing protocol messages. */
   private final BufferedWriter writer;
 
-  /** Turn and message logger. */
+  /** Turn log helper used to create readable turn-based send/receive output. */
   private final TurnLog log;
 
-  /** Current turn owner for logging purposes. Server always starts. */
+  /** Current logical turn label used by the log (protocol-derived, not a game-rule engine). */
   private String currentTurn = "SERVER";
 
-  /** Name of this side ("SERVER" or "CLIENT") derived from {@link TurnLog.Side}. */
+  /** Label for this side (SERVER or CLIENT) used only for logging/turn formatting. */
   private final String self;
 
-  /** Name of the remote side ("SERVER" or "CLIENT"). */
+  /** Label for the other side (SERVER or CLIENT) used only for logging/turn formatting. */
   private final String other;
 
-  /** Callback listener for message receive and connection close events. */
-  private MessageListener listener;
-
-  // ===== Listening Control =====
+  /** Optional callback for forwarding received lines to higher layers. */
+  private IMessageListener listener;
 
   /**
-   * Controls whether the blocking listen loop should continue. Marked volatile so changes are
-   * visible across threads.
-   */
-  private volatile boolean listeningEnabled = true;
-
-  /**
-   * Poll timeout (ms) so we can stop listenLoop without closing socket. Without a timeout,
-   * readLine() could block forever and stopListening() would not take effect.
-   */
-  private final int listenPollTimeoutMs = 200;
-
-  // ===== Duo-Tracking =====
-
-  /**
-   * Pair tracking state. Used to group a send and a receive into one "communication unit" so logs
-   * stay readable.
+   * Pairing state for log formatting.
+   *
+   * <p>LOGIC-IMPORTANT: We treat communication as send/receive "pairs" to insert separators and
+   * repeat headers only after a pair is complete. This keeps the TurnLog readable even when
+   * messages arrive very quickly.
    */
   private enum PairState {
     NONE,
@@ -83,146 +59,182 @@ public class SocketConnector {
     SAW_RECEIVED
   }
 
-  /** Current pair state. */
+  /** Current pairing state used to decide when a send/receive pair is complete. */
   private PairState pairState = PairState.NONE;
 
   /**
-   * Used for delayed turn switch after a "pass". The turn switch is applied only after the current
-   * pair has been completed.
+   * Turn switch marker used by PASS.
+   *
+   * <p>LOGIC-IMPORTANT: {@code pass} switches the turn after the current send/receive pair is
+   * completed (logging readability). We delay the header switch until {@link #finishPair()}.
    */
   private boolean pendingTurnSwitch = false;
 
+  // ===== Task 2 flags =====
+
   /**
-   * Creates a new SocketConnector for an already connected TCP socket.
+   * Enables/disables message processing inside {@link #listenLoop()} without closing the socket.
    *
-   * @param socket the connected socket (client or accepted server socket)
-   * @param log logger instance to track turns and message flow
-   * @throws IOException if socket streams cannot be created
+   * <p>LOGIC-IMPORTANT: When disabled, the loop stays alive but does not process incoming lines
+   * (it will idle briefly and then re-check flags).
+   */
+  private volatile boolean listeningEnabled = true;
+
+  /**
+   * Requests {@link #listenLoop()} to exit soon without closing the socket.
+   *
+   * <p>LOGIC-IMPORTANT: We rely on {@code SO_TIMEOUT} so {@code readLine()} wakes up periodically
+   * and this flag can be observed.
+   */
+  private volatile boolean stopLoopRequested = false;
+
+  /**
+   * Creates a connector for an already connected socket.
+   *
+   * <p>LOGIC-IMPORTANT: {@code SO_TIMEOUT} is set so {@code readLine()} does not block forever.
+   * This is required for Task 2 (stop listening without closing the socket).
+   *
+   * @param socket connected TCP socket
+   * @param log turn log instance for readable send/receive output
+   * @throws IOException if socket IO streams cannot be created
    * @author WoFabian
    */
   public SocketConnector(Socket socket, TurnLog log) throws IOException {
     this.socket = socket;
     this.log = log;
 
-    // Determine who "we" are based on the TurnLog side.
     this.self = (log.getSide() == TurnLog.Side.SERVER) ? "SERVER" : "CLIENT";
     this.other = self.equals("SERVER") ? "CLIENT" : "SERVER";
 
-    // IMPORTANT: timeout so readLine won't block forever -> allows stopListening()
-    try {
-      this.socket.setSoTimeout(listenPollTimeoutMs);
-    } catch (Exception ignored) {
-      // if this fails, stopListening won't interrupt a blocking readLine
-    }
+    // Important for Task 2:
+    // Allows read operations to wake up periodically so stopLoopRequested can be checked.
+    this.socket.setSoTimeout(250);
 
-    // Create buffered stream wrappers for line-based communication.
     this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-    // Server always starts -> initialize logging with server turn.
     log.beginTurn(currentTurn);
   }
 
   /**
-   * Registers a listener that will be notified when messages are received or when the connection
-   * closes due to an error.
+   * Sets the callback that receives incoming protocol lines and disconnect events.
    *
-   * @param listener callback receiver
+   * @param listener listener to notify (may be null)
    * @author WoFabian
    */
-  public void setMessageListener(MessageListener listener) {
+  public void setMessageListener(IMessageListener listener) {
     this.listener = listener;
   }
 
-  // ============ Manual control API ============
-
-  /** Enable listening (does NOT start a thread; just enables the loop condition). */
-  public void startListening() {
-    listeningEnabled = true;
-  }
-
-  /** Stop listening loop WITHOUT closing the socket. */
-  public void stopListening() {
-    listeningEnabled = false;
-  }
-
-  public boolean isListeningEnabled() {
-    return listeningEnabled;
-  }
-
-  /* ===================== SEND ===================== */
-
   /**
-   * Sends a message over the socket. The message is written as a single line and flushed
-   * immediately. Before sending, this method updates the internal turn state (for logging) and
-   * updates pair tracking to keep logs structured.
+   * Sends a single protocol line to the peer.
    *
-   * @param msg message to send (must be a single-line protocol command)
+   * <p>LOGIC-IMPORTANT: This updates the TurnLog and pairing state before writing to the socket so
+   * the log ordering always matches the intended protocol flow.
+   *
+   * @param msg one full protocol command line (without newline)
    * @throws IOException if writing to the socket fails
    * @author WoFabian
    */
   public synchronized void sendMessage(String msg) throws IOException {
-    // Turn handling is based on the command keyword.
     handleTurnOnSend(msg);
 
-    // Log outgoing message and update send/receive pairing.
     log.sent(msg);
     onSentForPair();
 
-    // Send message as a line.
     writer.write(msg);
     writer.newLine();
     writer.flush();
   }
 
-  /* ===================== RECEIVE ===================== */
+  /**
+   * Enables processing in {@link #listenLoop()} (Task 2).
+   *
+   * <p>LOGIC-IMPORTANT: This clears the stop request so a subsequent call to {@link #listenLoop()}
+   * can continue running.
+   *
+   * @author WoFabian
+   */
+  public void requestStartListening() {
+    listeningEnabled = true;
+    stopLoopRequested = false;
+  }
 
   /**
-   * BLOCKING loop, but stoppable via timeout + {@link #stopListening()} (socket stays open).
+   * Requests {@link #listenLoop()} to exit without closing the socket (Task 2).
    *
-   * <p>If the remote closes the socket (EOF), {@link MessageListener#onConnectionClosed(Exception)}
-   * is called with null.
+   * <p>LOGIC-IMPORTANT: The loop will exit "soon" because {@code readLine()} wakes up via timeout.
    *
-   * <p>Manual stop -> NO onConnectionClosed callback (because the socket is still open).
+   * @author WoFabian
+   */
+  public void requestStopListening() {
+    listeningEnabled = false;
+    stopLoopRequested = true; // exit listenLoop soon
+  }
+
+  /**
+   * Blocking receive loop that forwards incoming protocol lines to the listener.
+   *
+   * <p>LOGIC-IMPORTANT: This method is intentionally blocking and does not start threads.
+   * The caller must run it in a suitable background context.
+   *
+   * <p>LOGIC-IMPORTANT: A stop request is NOT treated as a disconnect. Only a real remote close
+   * (readLine() returns null) triggers {@link IMessageListener#onConnectionClosed(Exception)}.
+   *
+   * @author WoFabian
    */
   public void listenLoop() {
-    // ensure enabled when entering (optional)
-    if (!listeningEnabled) listeningEnabled = true;
+    boolean remoteClosed = false;
 
     try {
-      while (listeningEnabled) {
-        try {
-          String line = reader.readLine();
+      while (!stopLoopRequested) {
 
-          // remote closed connection (EOF)
-          if (line == null) {
-            if (listener != null) listener.onConnectionClosed(null);
-            return;
+        if (!listeningEnabled) {
+          // Pause briefly to avoid a hot busy-loop while listening is disabled.
+          try {
+            Thread.sleep(50);
+          } catch (InterruptedException ignored) {
           }
-
-          handleTurnOnReceive(line);
-
-          log.received(line);
-          onReceivedForPair();
-
-          if (listener != null) listener.onMessageReceived(line);
-
-        } catch (SocketTimeoutException timeout) {
-          // normal: just used to re-check listeningEnabled
+          continue;
         }
+
+        String line;
+        try {
+          line = reader.readLine();
+        } catch (InterruptedIOException timeout) {
+          // Expected due to SO_TIMEOUT: used to periodically re-check stop flags.
+          continue;
+        }
+
+        if (line == null) { // remote closed
+          remoteClosed = true;
+          break;
+        }
+
+        handleTurnOnReceive(line);
+
+        log.received(line);
+        onReceivedForPair();
+
+        if (listener != null) listener.onMessageReceived(line);
       }
 
-      // Manual stop -> NO onConnectionClosed callback (socket still open)
-      return;
+      // Stop requested => NOT a connection close.
+      if (stopLoopRequested) return;
+
+      // Only if remote really closed.
+      if (remoteClosed && listener != null) listener.onConnectionClosed(null);
 
     } catch (Exception e) {
-      // Only notify close if we did not stop manually
-      if (listeningEnabled && listener != null) listener.onConnectionClosed(e);
+      if (listener != null) listener.onConnectionClosed(e);
     }
   }
 
   /**
-   * Closes the underlying socket connection.
+   * Closes the underlying socket.
+   *
+   * <p>LOGIC-IMPORTANT: This is a hard shutdown and will also end any active {@link #listenLoop()}
+   * due to IO errors / stream closure.
    *
    * @author WoFabian
    */
@@ -230,45 +242,26 @@ public class SocketConnector {
     try {
       socket.close();
     } catch (IOException ignored) {
-      // intentionally ignored; close best-effort
     }
   }
 
-  /* ===================== PAIR LOGIC ===================== */
-
-  /**
-   * Updates pair tracking after a send event. If the last event was a receive, the pair is
-   * complete.
-   *
-   * @author WoFabian
-   */
+  /** Updates pair state after sending and finishes a pair once both directions were observed. */
   private void onSentForPair() {
-    if (pairState == PairState.SAW_RECEIVED) {
-      finishPair();
-    } else {
-      pairState = PairState.SAW_SENT;
-    }
+    if (pairState == PairState.SAW_RECEIVED) finishPair();
+    else pairState = PairState.SAW_SENT;
   }
 
-  /**
-   * Updates pair tracking after a receive event. If the last event was a send, the pair is
-   * complete.
-   *
-   * @author WoFabian
-   */
+  /** Updates pair state after receiving and finishes a pair once both directions were observed. */
   private void onReceivedForPair() {
-    if (pairState == PairState.SAW_SENT) {
-      finishPair();
-    } else {
-      pairState = PairState.SAW_RECEIVED;
-    }
+    if (pairState == PairState.SAW_SENT) finishPair();
+    else pairState = PairState.SAW_RECEIVED;
   }
 
   /**
-   * Finishes a full send/receive pair and prints separators / headers. Also applies delayed turn
-   * switching (used for "pass") after the pair is complete.
+   * Completes the current send/receive pair and formats the TurnLog boundary.
    *
-   * @author WoFabian
+   * <p>LOGIC-IMPORTANT: A delayed turn switch (pendingTurnSwitch) is applied here so the log header
+   * only changes after the pair is visually separated.
    */
   private void finishPair() {
     pairState = PairState.NONE;
@@ -276,7 +269,6 @@ public class SocketConnector {
     log.separator();
     log.repeatTurnHeader();
 
-    // Apply delayed turn switch after "pass".
     if (pendingTurnSwitch) {
       currentTurn = other;
       pendingTurnSwitch = false;
@@ -285,35 +277,24 @@ public class SocketConnector {
   }
 
   /**
-   * IMPORTANT: Turn handling inside SocketConnector is only used for readable console output
-   * (TurnLog). It does not replace the protocol/game state machine.
+   * Applies turn/log rules for an outgoing message.
    *
-   * @author WoFabian
-   */
-  /* ===================== TURN LOGIC ===================== */
-
-  /**
-   * Updates the current turn owner based on an outgoing command.
-   *
-   * @param msg outgoing message
-   * @author WoFabian
+   * <p>LOGIC-IMPORTANT: This does not enforce game rules. It only derives a readable turn header
+   * for the TurnLog based on the protocol command flow.
    */
   private void handleTurnOnSend(String msg) {
     String cmd = firstWord(msg);
 
     switch (cmd) {
       case "size", "ships", "load", "ready", "done" -> {
-        // Setup messages are considered server-driven.
         currentTurn = "SERVER";
         log.beginTurn(currentTurn);
       }
       case "shot" -> {
-        // When we send a shot, it's our active turn.
         currentTurn = self;
         log.beginTurn(currentTurn);
       }
       case "pass" -> {
-        // Pass switches turn AFTER the current pair is finished.
         log.beginTurn(currentTurn);
         pendingTurnSwitch = true;
       }
@@ -322,34 +303,29 @@ public class SocketConnector {
   }
 
   /**
-   * Updates the current turn owner based on an incoming command.
+   * Applies turn/log rules for an incoming message.
    *
-   * @param msg incoming message
-   * @author WoFabian
+   * <p>LOGIC-IMPORTANT: Some commands (e.g. {@code answer}) may change the derived "turn" based on
+   * their parameters. This is only used for logging readability.
    */
   private void handleTurnOnReceive(String msg) {
     String cmd = firstWord(msg);
 
     switch (cmd) {
       case "size", "ships", "load", "ready" -> {
-        // Setup messages are considered server-driven.
         currentTurn = "SERVER";
         log.beginTurn(currentTurn);
       }
       case "shot" -> {
-        // If we receive a shot, the other side is shooting.
         currentTurn = other;
         log.beginTurn(currentTurn);
       }
       case "answer" -> {
-        // Turn switching depends on the answer result.
-        // Convention here: answer 0 => miss => other side gets turn.
         int a = parseAnswer(msg);
         if (a == 0) currentTurn = other;
         log.beginTurn(currentTurn);
       }
       case "pass" -> {
-        // Pass switches after pair completion.
         log.beginTurn(currentTurn);
         pendingTurnSwitch = true;
       }
@@ -357,14 +333,11 @@ public class SocketConnector {
     }
   }
 
-  /* ===================== HELPERS ===================== */
-
   /**
-   * Extracts the first token (command keyword) from a message.
+   * Extracts the first protocol token (command) from a line.
    *
-   * @param msg raw message line
-   * @return lowercase first word or empty string if msg is null/empty
-   * @author WoFabian
+   * <p>LOGIC-IMPORTANT: Commands are treated case-insensitively to be robust against input
+   * variations during testing/CLI usage.
    */
   private String firstWord(String msg) {
     if (msg == null) return "";
@@ -374,11 +347,10 @@ public class SocketConnector {
   }
 
   /**
-   * Parses the integer argument from an "answer" message. Expected format: "answer <number>"
+   * Parses the numeric argument of an {@code answer} command.
    *
-   * @param msg full message line
-   * @return parsed answer value, or -1 if parsing fails
-   * @author WoFabian
+   * <p>LOGIC-IMPORTANT: Returns {@code -1} if the message is malformed so logging logic can fall
+   * back to a safe default.
    */
   private int parseAnswer(String msg) {
     try {
