@@ -108,7 +108,7 @@ public class SocketConnector {
 
     // Important for Task 2:
     // Allows read operations to wake up periodically so stopLoopRequested can be checked.
-    this.socket.setSoTimeout(250);
+    this.socket.setSoTimeout(750);
 
     this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     this.writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
