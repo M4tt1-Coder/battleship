@@ -258,7 +258,13 @@ public class BattleShipApp extends Application {
     Labels labelPressRToRotateR4 = new Labels("Press R to Rotate");
     labelPressRToRotateR4.setId("labelsNormal");
 
-    StackPane root4PlaceShips = new StackPane();
+    StackPane root4PlaceShips =
+        new StackPane(
+            buttonEndGameR4,
+            labelSelectPositionOfYourBoatsR4,
+            labelShipsSpawnWhenBoardInitializedR4,
+            buttonStartShootingR4,
+            labelPressRToRotateR4);
     root4PlaceShips.setId("root4PlaceShips");
 
     buttonEndGameR4.position(root4PlaceShips, -0.38, -0.43);
@@ -484,6 +490,7 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3JoinOtherServers);
           this.playingMode = PlayingMode.VS_PLAYER;
+          discover_servers(root3JoinOtherServers);
         });
 
     // --------------------------------- root 2
@@ -509,15 +516,6 @@ public class BattleShipApp extends Application {
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
           System.out.println(source);
-
-          root4PlaceShips
-              .getChildren()
-              .addAll(
-                  buttonEndGameR4,
-                  labelSelectPositionOfYourBoatsR4,
-                  labelShipsSpawnWhenBoardInitializedR4,
-                  buttonStartShootingR4,
-                  labelPressRToRotateR4);
 
           // TODO: error in logic when singleplayer value was once initialised -> stays in
           // state
@@ -585,6 +583,7 @@ public class BattleShipApp extends Application {
 
     buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
     buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
+    buttonRefreshServersR3.setOnAction(e -> discover_servers(root3JoinOtherServers));
 
     // --------------------------------- root 4
     buttonEndGameR4.setOnAction(
@@ -1494,9 +1493,10 @@ public class BattleShipApp extends Application {
     if (amount_of_discovered_servers == 0) {
       System.out.println("No servers found");
       Labels labelNoServersFound = new Labels("No servers found");
+      labelNoServersFound.setId("labelsNormal");
       labelNoServersFound.position(root, 0, 0);
-      labelNoServersFound.fontsize(root, 0.02);
-      labelNoServersFound.size(root, 0.2, 0.07);
+      labelNoServersFound.fontsize(root, 0.015);
+      labelNoServersFound.size(root, 0.3, 0.07);
       root.getChildren().add(labelNoServersFound);
     } else {
       for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
