@@ -52,7 +52,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.jetbrains.annotations.Nullable;
@@ -1126,6 +1125,7 @@ public class BattleShipApp extends Application {
     DoubleBinding cs =
         Bindings.createDoubleBinding(
             () -> this.boardSize.get() / selected_field_size, this.boardSize);
+    double rotationAngle = 0.;
 
     switch (newDirection) {
       case DOWN:
@@ -1137,8 +1137,11 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(shipRect, col);
         GridPane.setRowSpan(shipRect, shipLength);
         GridPane.setColumnSpan(shipRect, 1);
+
         shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
         shipRect.widthProperty().bind(cs.multiply(0.8));
+
+        rotationAngle = 90.;
 
         break;
       case UP:
@@ -1153,6 +1156,8 @@ public class BattleShipApp extends Application {
         shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
         shipRect.widthProperty().bind(cs.multiply(0.8));
 
+        rotationAngle = 270.;
+
         break;
       case RIGHT:
         if (col + (shipLength - 1) > boardSize) {
@@ -1166,6 +1171,8 @@ public class BattleShipApp extends Application {
         shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
         shipRect.heightProperty().bind(cs.multiply(0.8));
 
+        rotationAngle = 0.;
+
         break;
       case LEFT:
         if (col - (shipLength - 1) < 0) {
@@ -1178,8 +1185,16 @@ public class BattleShipApp extends Application {
         GridPane.setColumnSpan(shipRect, shipLength);
         shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
         shipRect.heightProperty().bind(cs.multiply(0.8));
+
+        rotationAngle = 180.;
+
         break;
     }
+    String imagePath = new ResourceProfiler().getPictureOfShip(shipLength);
+    Image ship_image =
+        ShipUtils.rotateImage(
+            new Image(getClass().getResource(imagePath).toExternalForm()), rotationAngle);
+    shipRect.setFill(new ImagePattern(ship_image));
     GridPane.setHalignment(shipRect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(shipRect, javafx.geometry.VPos.CENTER);
   }
@@ -1215,9 +1230,7 @@ public class BattleShipApp extends Application {
 
       Rectangle ship = new Rectangle();
 
-      String imagePath = new ResourceProfiler().getPictureOfShip(length);
-
-      System.out.println(imagePath);
+      String imagePath = new ResourceProfiler().getPictureOfShip(length.getValue());
 
       Image ship_image = new Image(getClass().getResource(imagePath).toExternalForm());
 
@@ -1225,10 +1238,6 @@ public class BattleShipApp extends Application {
       ship.setArcWidth(10);
       ship.setArcHeight(10);
 
-      Translate rotFix = new Translate(0, 0);
-      ship.getTransforms().add(rotFix);
-
-      // NEW: Schiffgröße dynamisch
       ship.widthProperty().bind(cs.multiply(length.getValue()).multiply(0.94)); // 0.94
       ship.heightProperty().bind(cs.multiply(0.8)); // 0.8
 
@@ -1241,7 +1250,6 @@ public class BattleShipApp extends Application {
             // ---------- rotate logic
             scene1.getRoot().requestFocus();
             scene1.setOnKeyPressed(
-                // ship.setOnKeyPressed(
                 e -> {
                   if (e.getCode() == KeyCode.R) { // Wenn R gedrückt
                     ShipGridElement data = (ShipGridElement) ship.getUserData();
@@ -1563,7 +1571,8 @@ public class BattleShipApp extends Application {
     } else {
       for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
         String server_name = list_of_discovered_servers.get(i).name();
-        String host_name = list_of_discovered_servers.get(i).host(); // optional, if needed
+        // String host_name = list_of_discovered_servers.get(i).host(); // optional, if
+        // needed
         Buttons join_server_button = new Buttons(server_name);
         int row = i / 3;
         int col = i % 3;

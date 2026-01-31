@@ -1,6 +1,7 @@
 package com.matti.battleship.computer;
 
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.enums.Winner;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Game;
@@ -41,6 +42,7 @@ public class EasyAlgorithm implements Algorithm {
   }
 
   public void takeAShot(Game game, Pane root) {
+    if (game.getWinner() != Winner.NONE_YET) return;
     Coordinates coordinates;
 
     do {

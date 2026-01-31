@@ -1,6 +1,7 @@
 package com.matti.battleship.computer;
 
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.enums.Winner;
 import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Field;
 import com.matti.battleship.types.Game;
@@ -55,6 +56,8 @@ public class MediumAlgorithm implements Algorithm {
    */
   @Override
   public void takeAShot(Game game, Pane root) {
+    if (game.getWinner() != Winner.NONE_YET) return;
+
     Coordinates guessedCoordinates;
     do {
       if (potentialTargets.isEmpty()) {
