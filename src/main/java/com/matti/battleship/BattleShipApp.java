@@ -1,6 +1,7 @@
 package com.matti.battleship;
 
 import com.matti.battleship.IO.FileReaderService;
+import com.matti.battleship.IO.FileWriterService;
 import com.matti.battleship.IO.ResourceProfiler;
 import com.matti.battleship.computer.Algorithm;
 import com.matti.battleship.computer.PlacementAlgorithm;
@@ -41,6 +42,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
@@ -50,6 +52,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -306,18 +309,14 @@ public class BattleShipApp extends Application {
         new StackPane(
             buttonEndGameR5,
             labelBackgroundShootingR5,
-            buttonSafeGameR5,
             labelTextYourSideR5,
-            labelTextEnemySideR5);
+            labelTextEnemySideR5,
+            buttonSafeGameR5);
     root5ShootOnShips.setId("root5ShootOnShips");
 
     buttonEndGameR5.position(root5ShootOnShips, -0.38, -0.43);
     buttonEndGameR5.fontsize(root5ShootOnShips, 0.02);
     buttonEndGameR5.size(root5ShootOnShips, 0.18, 0.07);
-
-    buttonSafeGameR5.position(root5ShootOnShips, 0.3, 0.4);
-    buttonSafeGameR5.fontsize(root5ShootOnShips, 0.015);
-    buttonSafeGameR5.size(root5ShootOnShips, 0.2, 0.08);
 
     labelBackgroundShootingR5.position(root5ShootOnShips, 0, -0.01);
     labelBackgroundShootingR5.fontsize(root5ShootOnShips, 0.03);
@@ -330,6 +329,10 @@ public class BattleShipApp extends Application {
     labelTextEnemySideR5.position(root5ShootOnShips, 0.25, -0.33);
     labelTextEnemySideR5.fontsize(root5ShootOnShips, 0.03);
     labelTextEnemySideR5.size(root5ShootOnShips, 0.3, 0.08);
+
+    buttonSafeGameR5.position(root5ShootOnShips, 0.3, 0.4);
+    buttonSafeGameR5.fontsize(root5ShootOnShips, 0.015);
+    buttonSafeGameR5.size(root5ShootOnShips, 0.2, 0.08);
 
     // ---------------root 6
     // ---------------------------------------------------------------------
@@ -650,6 +653,16 @@ public class BattleShipApp extends Application {
     buttonEndGameR5.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
+          scene1.setRoot(root1GamemodeSelection);
+        });
+
+    buttonSafeGameR5.setOnAction(
+        e -> {
+          System.out.println("I am");
+          // TODO: Get back the file path for multiplayer
+          if (!FileWriterService.safeGameStateToFile(this.game, null)) {
+            return;
+          }
           scene1.setRoot(root1GamemodeSelection);
         });
 
@@ -1291,7 +1304,10 @@ public class BattleShipApp extends Application {
 
             // -----------
             Dragboard db = ship.startDragAndDrop(TransferMode.MOVE);
-            WritableImage snapshot = ship.snapshot(null, null);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setFill(Color.TRANSPARENT);
+
+            WritableImage snapshot = ship.snapshot(params, null);
             db.setDragView(snapshot);
             ClipboardContent content = new ClipboardContent();
             content.putString(String.format("SHIP_WIDTH_%d", PlayingUtils.getRandomInt()));
