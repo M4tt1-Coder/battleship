@@ -17,7 +17,7 @@ package com.matti.battleship.socket.network;
  *
  * @author WoFabian
  */
-public interface MessageListener {
+public interface IMessageListener {
 
   /**
    * Called whenever a full protocol line/message was received.
