@@ -106,7 +106,6 @@ public class SocketConnector {
     this.self = (log.getSide() == TurnLog.Side.SERVER) ? "SERVER" : "CLIENT";
     this.other = self.equals("SERVER") ? "CLIENT" : "SERVER";
 
-    // Important for Task 2:
     // Allows read operations to wake up periodically so stopLoopRequested can be checked.
     this.socket.setSoTimeout(750);
 
