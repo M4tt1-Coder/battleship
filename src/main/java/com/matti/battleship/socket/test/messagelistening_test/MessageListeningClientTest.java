@@ -1,7 +1,9 @@
 package com.matti.battleship.socket.test.messagelistening_test;
 
 import com.matti.battleship.socket.GlobalConnector;
+import com.matti.battleship.socket.network.IMessageListener;
 import com.matti.battleship.socket.state.NetworkGameController;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,41 +31,82 @@ public class MessageListeningClientTest {
   /**
    * Starts the CLI test client and blocks for interactive user input.
    *
-   * <p>try (Scanner in = new Scanner(System.in)) { while (true) { System.out.print("> "); String
-   * line = in.nextLine(); if (line == null) continue;
-   *
-   * <p>String cmd = line.trim();
-   *
-   * <p>if (cmd.equalsIgnoreCase("exit")) { log.info("[CLIENT] exit."); client.disconnect(); return;
-   * }
-   *
-   * <p>// --- Task 2 commands --- if (cmd.equalsIgnoreCase("listen stop")) {
-   * client.stopListening(); log.info("[CLIENT] listening STOPPED"); continue; }
-   *
-   * <p>if (cmd.equalsIgnoreCase("listen start")) { startListeningIfNeeded(client, listenThreadRef,
-   * listenLock); continue; }
-   *
-   * <p>if (cmd.equalsIgnoreCase("state")) { log.info("[CLIENT] state={}",
-   * controller.getStateMachine().getState()); continue; }
-   *
-   * <p>if (cmd.equalsIgnoreCase("done")) { try { controller.sendDone(); log.info("[CLIENT] sent:
-   * done"); } catch (Exception e) { log.error("[CLIENT] sendDone failed: {}", e.getMessage(), e); }
-   * continue; }
-   *
-   * <p>if (cmd.equalsIgnoreCase("ok")) { try { controller.sendOk(); log.info("[CLIENT] sent: ok");
-   * } catch (Exception e) { log.error("[CLIENT] sendOk failed: {}", e.getMessage(), e); } continue;
-   * }
-   *
-   * <p>if (cmd.equalsIgnoreCase("start")) { try { controller.sendReady(); log.info("[CLIENT] sent:
-   * ready"); } catch (Exception e) { log.error("[CLIENT] sendReady failed: {}", e.getMessage(), e);
-   * } continue; }
-   *
-   * <p>if (cmd.isBlank()) continue;
-   *
-   * <p>// raw debug send try { client.send(cmd); log.info("[CLIENT] sent: {}", cmd); } catch
-   * (Exception e) { log.error("[CLIENT] send failed: {}", e.getMessage(), e); } } } }
-   *
-   * <p>/** Starts the listening thread if none is currently running.
+    try (Scanner in = new Scanner(System.in)) {
+      while (true) {
+        System.out.print("> ");
+        String line = in.nextLine();
+        if (line == null) continue;
+
+        String cmd = line.trim();
+
+        if (cmd.equalsIgnoreCase("exit")) {
+          log.info("[CLIENT] exit.");
+          client.disconnect();
+          return;
+        }
+
+        // --- Task 2 commands ---
+        if (cmd.equalsIgnoreCase("listen stop")) {
+          client.stopListening();
+          log.info("[CLIENT] listening STOPPED");
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("listen start")) {
+          startListeningIfNeeded(client, listenThreadRef, listenLock);
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("state")) {
+          log.info("[CLIENT] state={}", controller.getStateMachine().getState());
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("done")) {
+          try {
+            controller.sendDone();
+            log.info("[CLIENT] sent: done");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendDone failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("ok")) {
+          try {
+            controller.sendOk();
+            log.info("[CLIENT] sent: ok");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendOk failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.equalsIgnoreCase("start")) {
+          try {
+            controller.sendReady();
+            log.info("[CLIENT] sent: ready");
+          } catch (Exception e) {
+            log.error("[CLIENT] sendReady failed: {}", e.getMessage(), e);
+          }
+          continue;
+        }
+
+        if (cmd.isBlank()) continue;
+
+        // raw debug send
+        try {
+          client.send(cmd);
+          log.info("[CLIENT] sent: {}", cmd);
+        } catch (Exception e) {
+          log.error("[CLIENT] send failed: {}", e.getMessage(), e);
+        }
+      }
+    }
+  }
+
+  /**
+   * Starts the listening thread if none is currently running.
    *
    * <p>LOGIC-IMPORTANT: We keep a reference to the thread so we don't accidentally start multiple
    * concurrent listen loops on the same socket.
