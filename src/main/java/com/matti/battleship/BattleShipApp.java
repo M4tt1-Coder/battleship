@@ -1069,22 +1069,22 @@ public class BattleShipApp extends Application {
               // process the shot response
               switch (res) {
                 case MISS -> {
-                    iv = new ImageViews(imgMiss);
-                    
-                    iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
-                    iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
-                    iv.setPreserveRatio(false);
-                    
-                    btn.setGraphic(iv);
+                  iv = new ImageViews(imgMiss);
+
+                  iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.setPreserveRatio(false);
+
+                  btn.setGraphic(iv);
                 }
                 case HIT -> {
-                    iv = new ImageViews(imgHit);
-                    
-                    iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
-                    iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
-                    iv.setPreserveRatio(false);
-                    
-                    btn.setGraphic(iv);
+                  iv = new ImageViews(imgHit);
+
+                  iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.fitHeightProperty().bind(BUTTON_SIZE.multiply(0.4));
+                  iv.setPreserveRatio(false);
+
+                  btn.setGraphic(iv);
                 }
                 case SUNK -> applyChangesToButtonsAfterShipSunk(pane, coordinates);
                 case INVALID -> System.out.println("Invalid shot! Please try again!");
@@ -1176,62 +1176,62 @@ public class BattleShipApp extends Application {
 
     switch (newDirection) {
       case DOWN -> {
-          if (row + (shipLength - 1) > boardSize - 1) {
-              System.out.println("Couldn't rotate the ship to" + newDirection.toString());
-              return;
-          }
-          GridPane.setRowIndex(shipRect, row);
-          GridPane.setColumnIndex(shipRect, col);
-          GridPane.setRowSpan(shipRect, shipLength);
-          GridPane.setColumnSpan(shipRect, 1);
-          
-          shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
-          shipRect.widthProperty().bind(cs.multiply(0.8));
-          
-          rotationAngle = 90.;
-          }
+        if (row + (shipLength - 1) > boardSize - 1) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row);
+        GridPane.setColumnIndex(shipRect, col);
+        GridPane.setRowSpan(shipRect, shipLength);
+        GridPane.setColumnSpan(shipRect, 1);
+
+        shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.widthProperty().bind(cs.multiply(0.8));
+
+        rotationAngle = 90.;
+      }
       case UP -> {
-          if (row - (shipLength - 1) < 0) {
-              System.out.println("Couldn't rotate the ship to" + newDirection.toString());
-              return;
-          }
-          GridPane.setRowIndex(shipRect, row - (shipLength - 1));
-          GridPane.setColumnIndex(shipRect, col);
-          GridPane.setRowSpan(shipRect, shipLength);
-          GridPane.setColumnSpan(shipRect, 1);
-          shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
-          shipRect.widthProperty().bind(cs.multiply(0.8));
-          
-          rotationAngle = 270.;
-          }
+        if (row - (shipLength - 1) < 0) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row - (shipLength - 1));
+        GridPane.setColumnIndex(shipRect, col);
+        GridPane.setRowSpan(shipRect, shipLength);
+        GridPane.setColumnSpan(shipRect, 1);
+        shipRect.heightProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.widthProperty().bind(cs.multiply(0.8));
+
+        rotationAngle = 270.;
+      }
       case RIGHT -> {
-          if (col + (shipLength - 1) > boardSize) {
-              System.out.println("Couldn't rotate the ship to" + newDirection.toString());
-              return;
-          }
-          GridPane.setRowIndex(shipRect, row);
-          GridPane.setColumnIndex(shipRect, col);
-          GridPane.setRowSpan(shipRect, 1);
-          GridPane.setColumnSpan(shipRect, shipLength);
-          shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
-          shipRect.heightProperty().bind(cs.multiply(0.8));
-          
-          rotationAngle = 0.;
-          }
+        if (col + (shipLength - 1) > boardSize) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row);
+        GridPane.setColumnIndex(shipRect, col);
+        GridPane.setRowSpan(shipRect, 1);
+        GridPane.setColumnSpan(shipRect, shipLength);
+        shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.heightProperty().bind(cs.multiply(0.8));
+
+        rotationAngle = 0.;
+      }
       case LEFT -> {
-          if (col - (shipLength - 1) < 0) {
-              System.out.println("Couldn't rotate the ship to" + newDirection.toString());
-              return;
-          }
-          GridPane.setRowIndex(shipRect, row);
-          GridPane.setColumnIndex(shipRect, col - (shipLength - 1));
-          GridPane.setRowSpan(shipRect, 1);
-          GridPane.setColumnSpan(shipRect, shipLength);
-          shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
-          shipRect.heightProperty().bind(cs.multiply(0.8));
-          
-          rotationAngle = 180.;
-          }
+        if (col - (shipLength - 1) < 0) {
+          System.out.println("Couldn't rotate the ship to" + newDirection.toString());
+          return;
+        }
+        GridPane.setRowIndex(shipRect, row);
+        GridPane.setColumnIndex(shipRect, col - (shipLength - 1));
+        GridPane.setRowSpan(shipRect, 1);
+        GridPane.setColumnSpan(shipRect, shipLength);
+        shipRect.widthProperty().bind(cs.multiply(shipLength * 0.94));
+        shipRect.heightProperty().bind(cs.multiply(0.8));
+
+        rotationAngle = 180.;
+      }
     }
     String imagePath = new ResourceProfiler().getPictureOfShip(shipLength);
     Image ship_image =
@@ -1545,49 +1545,49 @@ public class BattleShipApp extends Application {
     grid.getChildren().add(rect);
     switch (direction) {
       case DOWN -> {
-          int finalColD = col;
-          int finalRowD = row;
-          if (row + (length - 1) > boardSize - 1) {
-              finalRowD = boardSize - length;
-          }
-          GridPane.setRowIndex(rect, finalRowD);
-          GridPane.setColumnIndex(rect, finalColD);
-          GridPane.setRowSpan(rect, length);
-          GridPane.setColumnSpan(rect, 1);
-          }
+        int finalColD = col;
+        int finalRowD = row;
+        if (row + (length - 1) > boardSize - 1) {
+          finalRowD = boardSize - length;
+        }
+        GridPane.setRowIndex(rect, finalRowD);
+        GridPane.setColumnIndex(rect, finalColD);
+        GridPane.setRowSpan(rect, length);
+        GridPane.setColumnSpan(rect, 1);
+      }
       case UP -> {
-          int finalColU = col;
-          int finalRowU = row;
-          if (row - (length - 1) < 0) {
-              finalRowU = length;
-          }
-          GridPane.setRowIndex(rect, finalRowU);
-          GridPane.setColumnIndex(rect, finalColU);
-          GridPane.setRowSpan(rect, length);
-          GridPane.setColumnSpan(rect, 1);
-          }
+        int finalColU = col;
+        int finalRowU = row;
+        if (row - (length - 1) < 0) {
+          finalRowU = length;
+        }
+        GridPane.setRowIndex(rect, finalRowU);
+        GridPane.setColumnIndex(rect, finalColU);
+        GridPane.setRowSpan(rect, length);
+        GridPane.setColumnSpan(rect, 1);
+      }
       case RIGHT -> {
-          int finalColR = col;
-          if (col + (length - 1) > boardSize - 1) {
-              finalColR = boardSize - length;
-          }
-          int finalRowR = row;
-          GridPane.setRowIndex(rect, finalRowR);
-          GridPane.setColumnIndex(rect, finalColR);
-          GridPane.setRowSpan(rect, 1);
-          GridPane.setColumnSpan(rect, length);
-          }
+        int finalColR = col;
+        if (col + (length - 1) > boardSize - 1) {
+          finalColR = boardSize - length;
+        }
+        int finalRowR = row;
+        GridPane.setRowIndex(rect, finalRowR);
+        GridPane.setColumnIndex(rect, finalColR);
+        GridPane.setRowSpan(rect, 1);
+        GridPane.setColumnSpan(rect, length);
+      }
       case LEFT -> {
-          int finalColL = col;
-          if (col - (length - 1) < 0) {
-              finalColL = length;
-          }
-          int finalRowL = row;
-          GridPane.setRowIndex(rect, finalRowL);
-          GridPane.setColumnIndex(rect, finalColL);
-          GridPane.setRowSpan(rect, 1);
-          GridPane.setColumnSpan(rect, length);
-          }
+        int finalColL = col;
+        if (col - (length - 1) < 0) {
+          finalColL = length;
+        }
+        int finalRowL = row;
+        GridPane.setRowIndex(rect, finalRowL);
+        GridPane.setColumnIndex(rect, finalColL);
+        GridPane.setRowSpan(rect, 1);
+        GridPane.setColumnSpan(rect, length);
+      }
     }
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
