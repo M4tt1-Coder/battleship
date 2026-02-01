@@ -17,23 +17,17 @@ public class FileReaderService {
   // ---------------- FileChooser ----------------
 
   /**
-   * Opens a file chooser dialog to select a file for opening, specifically for
-   * loading a saved
+   * Opens a file chooser dialog to select a file for opening, specifically for loading a saved
    * game.
    *
-   * <p>
-   * The dialog title is set to "Load 'Game' from a file" and it initially opens
-   * in the
-   * "./target/" directory. It filters files to show only those with the ".txt"
-   * extension, labeled
+   * <p>The dialog title is set to "Load 'Game' from a file" and it initially opens in the
+   * "./target/" directory. It filters files to show only those with the ".txt" extension, labeled
    * as "Battleship Save (*.txt)".
    *
-   * @param ownerWindow the owner {@link Window} for the dialog, used to block
-   *                    input to other
-   *                    windows until closed.
-   * @return the selected {@link File} if the user chooses one; {@code null} if
-   *         the user cancels the
-   *         operation.
+   * @param ownerWindow the owner {@link Window} for the dialog, used to block input to other
+   *     windows until closed.
+   * @return the selected {@link File} if the user chooses one; {@code null} if the user cancels the
+   *     operation.
    */
   public static File chooseSaveFile(Window ownerWindow) {
     FileChooser chooser = new FileChooser();
@@ -52,13 +46,9 @@ public class FileReaderService {
   /**
    * Loads a {@link Game} instance from the specified save file.
    *
-   * <p>
-   * This method reads all lines from the file using UTF-8 encoding, parses the
-   * metadata,
-   * initializes the players and game state, fills their boards with the saved
-   * data, and sets
-   * additional game properties such as whether the game has ended, the winner,
-   * and the difficulty
+   * <p>This method reads all lines from the file using UTF-8 encoding, parses the metadata,
+   * initializes the players and game state, fills their boards with the saved data, and sets
+   * additional game properties such as whether the game has ended, the winner, and the difficulty
    * level.
    *
    * @param file the {@link File} object representing the saved game file to load.
@@ -96,9 +86,7 @@ public class FileReaderService {
   /**
    * A helper class to store metadata parsed from the game save file.
    *
-   * <p>
-   * Contains information about the game state, players, settings, and initial
-   * setup used during
+   * <p>Contains information about the game state, players, settings, and initial setup used during
    * the game loading process.
    */
   private static class ParsedMeta {
@@ -108,10 +96,7 @@ public class FileReaderService {
     /** The playing mode of the game, e.g., versus player or AI. */
     PlayingMode playingMode = PlayingMode.VS_PLAYER;
 
-    /**
-     * The initial setup of ships on the board, represented as an array of ship
-     * lengths.
-     */
+    /** The initial setup of ships on the board, represented as an array of ship lengths. */
     ShipLength[] initialSetup = new ShipLength[0];
 
     /** Whose turn it is to play. */
@@ -139,22 +124,15 @@ public class FileReaderService {
   /**
    * Parses the metadata from a list of lines representing the saved game file.
    *
-   * <p>
-   * This method processes the lines, identifies sections (such as "game",
-   * "Player", "Opponent"),
-   * and extracts key-value pairs to populate a {@link ParsedMeta} instance with
-   * the game's saved
-   * state. It handles parsing of boolean, enum, integer, and list values,
-   * delegating specific
-   * parsing tasks to helper methods like {@link #parsePlayingMode(String)},
-   * {@link
+   * <p>This method processes the lines, identifies sections (such as "game", "Player", "Opponent"),
+   * and extracts key-value pairs to populate a {@link ParsedMeta} instance with the game's saved
+   * state. It handles parsing of boolean, enum, integer, and list values, delegating specific
+   * parsing tasks to helper methods like {@link #parsePlayingMode(String)}, {@link
    * #parseShipSetup(String)}, etc.
    *
-   * @param lines the list of lines read from the save file, containing metadata
-   *              sections and
-   *              key-value pairs.
-   * @return a {@link ParsedMeta} object populated with the parsed game state
-   *         information.
+   * @param lines the list of lines read from the save file, containing metadata sections and
+   *     key-value pairs.
+   * @return a {@link ParsedMeta} object populated with the parsed game state information.
    */
   private static ParsedMeta parseMeta(List<String> lines) {
     ParsedMeta meta = new ParsedMeta();
@@ -163,16 +141,14 @@ public class FileReaderService {
 
     for (String raw : lines) {
       String line = raw.trim();
-      if (line.isEmpty())
-        continue;
+      if (line.isEmpty()) continue;
 
       if (line.startsWith("---")) {
         section = line.substring(3).trim().toLowerCase();
         continue;
       }
 
-      if (!line.contains("="))
-        continue;
+      if (!line.contains("=")) continue;
 
       String[] kv = line.split("=", 2);
       String key = kv[0].trim();
@@ -190,13 +166,11 @@ public class FileReaderService {
       }
 
       if (section.equals("Player")) {
-        if (key.equals("name"))
-          meta.playerName = value;
+        if (key.equals("name")) meta.playerName = value;
       }
 
       if (section.equals("Opponent")) {
-        if (key.equals("name"))
-          meta.opponentName = value;
+        if (key.equals("name")) meta.opponentName = value;
       }
 
       if (key.equals("size")) {
@@ -218,25 +192,17 @@ public class FileReaderService {
   }
 
   /**
-   * Fills the game boards for both the player and the opponent by parsing the
-   * provided lines.
+   * Fills the game boards for both the player and the opponent by parsing the provided lines.
    *
-   * <p>
-   * This method reads sectioned data from the input lines, identifying the
-   * current section
-   * (either "player" or "opponent") and updating the corresponding board's fields
-   * based on
-   * key-value pairs. It handles fields such as occupation status, shot status,
-   * and ship placement.
+   * <p>This method reads sectioned data from the input lines, identifying the current section
+   * (either "player" or "opponent") and updating the corresponding board's fields based on
+   * key-value pairs. It handles fields such as occupation status, shot status, and ship placement.
    * It utilizes helper methods like {@link #parseCoordinates(String)} and {@link
    * #parseShip(String)} to interpret coordinate and ship data.
    *
-   * @param lines         the list of lines representing the saved game board
-   *                      data.
-   * @param playerBoard   the Board object representing the player's game board to
-   *                      be filled.
-   * @param opponentBoard the Board object representing the opponent's game board
-   *                      to be filled.
+   * @param lines the list of lines representing the saved game board data.
+   * @param playerBoard the Board object representing the player's game board to be filled.
+   * @param opponentBoard the Board object representing the opponent's game board to be filled.
    */
   private static void fillBoards(List<String> lines, Board playerBoard, Board opponentBoard) {
     String section = "";
@@ -245,8 +211,7 @@ public class FileReaderService {
 
     for (String raw : lines) {
       String line = raw.trim();
-      if (line.isEmpty())
-        continue;
+      if (line.isEmpty()) continue;
 
       if (line.startsWith("---")) {
         section = line.substring(3).trim().toLowerCase();
@@ -256,8 +221,7 @@ public class FileReaderService {
           currentBoard = playerBoard;
         } else if (section.equals("opponent")) {
           currentBoard = opponentBoard;
-        } else
-          currentBoard = null;
+        } else currentBoard = null;
 
         continue;
       }
@@ -282,8 +246,7 @@ public class FileReaderService {
 
         case "wasShotAt" -> {
           boolean shot = Boolean.parseBoolean(value);
-          if (shot)
-            currentField.markAsShotAt();
+          if (shot) currentField.markAsShotAt();
         }
 
         case "ship" -> {
@@ -312,10 +275,8 @@ public class FileReaderService {
 
   private static Ship parseShip(String raw) {
     String s = raw.trim();
-    if (s.startsWith("("))
-      s = s.substring(1);
-    if (s.endsWith(")"))
-      s = s.substring(0, s.length() - 1);
+    if (s.startsWith("(")) s = s.substring(1);
+    if (s.endsWith(")")) s = s.substring(0, s.length() - 1);
 
     String[] parts = s.split(",");
 
@@ -326,8 +287,7 @@ public class FileReaderService {
 
     for (String p : parts) {
       String[] kv = p.split("=", 2);
-      if (kv.length < 2)
-        continue;
+      if (kv.length < 2) continue;
 
       String key = kv[0].trim();
       String value = kv[1].trim();
@@ -340,21 +300,18 @@ public class FileReaderService {
       }
     }
 
-    if (startStr == null || dir == null || len == null)
-      return null;
+    if (startStr == null || dir == null || len == null) return null;
 
     Ship ship = new Ship(parseCoordinates(startStr), dir, len);
 
-    if (hasSunk)
-      ship.alterHasSunk();
+    if (hasSunk) ship.alterHasSunk();
 
     return ship;
   }
 
   private static ShipLength[] parseShipSetup(String s) {
     String cleaned = s.trim().replace("[", "").replace("]", "").trim();
-    if (cleaned.isEmpty())
-      return new ShipLength[0];
+    if (cleaned.isEmpty()) return new ShipLength[0];
 
     String[] parts = cleaned.split(",");
     ShipLength[] out = new ShipLength[parts.length];
