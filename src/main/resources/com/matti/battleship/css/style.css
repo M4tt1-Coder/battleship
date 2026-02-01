@@ -75,6 +75,7 @@
 #buttonsGoBack {
     -fx-background-image: url(../images/go_back.png);
     -fx-background-size: 100% 100%;
+    -fx-opacity: 0.9;
     -fx-background-color: transparent;
 }
 #buttonsGoBack:hover {

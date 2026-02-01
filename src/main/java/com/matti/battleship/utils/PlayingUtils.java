@@ -18,13 +18,16 @@ public class PlayingUtils {
     return (int) (Math.random() * 100);
   }
 
-  public static void show_pop_up_information(Pane root, String text, int duration) {
+  public static void show_pop_up_information(
+      Pane root, String text, int duration, Boolean infinity) {
+    root.getChildren().removeIf(n -> "label_pop_up_information".equals(n.getId()));
     Labels popup = new Labels(text);
     popup.setId("label_pop_up_information");
     popup.setVisible(false);
 
     root.getChildren().add(popup);
     StackPane.setAlignment(popup, Pos.CENTER);
+    popup.toFront();
 
     popup.setOpacity(0);
     popup.setVisible(true);
@@ -34,15 +37,17 @@ public class PlayingUtils {
     fadeIn.setToValue(1);
     fadeIn.play();
 
-    PauseTransition wait = new PauseTransition(Duration.seconds(duration));
-    wait.setOnFinished(
-        e -> {
-          FadeTransition fadeOut = new FadeTransition(Duration.millis(200), popup);
-          fadeOut.setFromValue(1);
-          fadeOut.setToValue(0);
-          fadeOut.setOnFinished(ev -> popup.setVisible(false));
-          fadeOut.play();
-        });
-    wait.play();
+    if (!infinity) {
+      PauseTransition wait = new PauseTransition(Duration.millis(duration));
+      wait.setOnFinished(
+          e -> {
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(200), popup);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(ev -> root.getChildren().remove(popup));
+            fadeOut.play();
+          });
+      wait.play();
+    }
   }
 }
