@@ -535,11 +535,6 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR2.getText());
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
-                PlayingUtils.show_pop_up_information(
-                    root2SingleplayerSettings,
-                    "Invalid field size,\n Enter a value between 5 and 30",
-                    3000,
-                    false);
                 this.selected_field_size = 10;
               }
             }
@@ -549,11 +544,6 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR6.getText());
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
-                PlayingUtils.show_pop_up_information(
-                    root6MultiplayerSettings,
-                    "Invalid field size,\n Enter a value between 5 and 30",
-                    3000,
-                    false);
                 this.selected_field_size = 10;
               }
             }
@@ -565,6 +555,11 @@ public class BattleShipApp extends Application {
           // validate input data
           if (!BoardUtils.isValidBoardSize(this.selected_field_size)) {
             System.out.println("Please select a valid Board size!");
+            PlayingUtils.show_pop_up_information(
+                root2SingleplayerSettings,
+                "Invalid field size,\n Enter a value between 5 and 30",
+                3000,
+                false);
             return;
           }
           root4PlaceShips.getChildren().clear();
