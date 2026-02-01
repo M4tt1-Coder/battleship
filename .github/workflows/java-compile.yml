@@ -26,3 +26,5 @@ jobs:
           check-latest: true
           cache: "maven"
       - run: ./mvnw clean package
+      - name: Generate Documentation
+      - run: ./mvnw javadoc:javadoc

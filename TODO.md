@@ -16,4 +16,3 @@
 - [x] configure maven to have a clean source code compilation -> get .jar file https://www.youtube.com/watch?v=sE6oxriAOP4
 
 ## Ideas
-

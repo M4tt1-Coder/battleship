@@ -114,7 +114,6 @@ public final class GlobalConnector {
    * messages are forwarded once a connector is active.
    *
    * @param listener external listener (may be null)
-   * @author WoFabian
    */
   public void setMessageListener(IMessageListener listener) {
     this.externalListener = listener;
@@ -124,7 +123,6 @@ public final class GlobalConnector {
    * Returns the current role of this connector.
    *
    * @return current role
-   * @author WoFabian
    */
   public Role getRole() {
     return role;
@@ -134,7 +132,6 @@ public final class GlobalConnector {
    * Returns whether the server is currently busy (a client is connected).
    *
    * @return true if a client is connected (server-side busy state)
-   * @author WoFabian
    */
   public boolean isBusy() {
     return busy.get();
@@ -144,7 +141,6 @@ public final class GlobalConnector {
    * Exposes the busy flag so discovery components can share the same state.
    *
    * @return atomic busy flag
-   * @author WoFabian
    */
   public AtomicBoolean getBusyFlag() {
     return busy;
@@ -154,7 +150,6 @@ public final class GlobalConnector {
    * Returns the current server name used for UDP discovery.
    *
    * @return server name
-   * @author WoFabian
    */
   public String getServerName() {
     return serverName;
@@ -166,7 +161,6 @@ public final class GlobalConnector {
    * <p>LOGIC-IMPORTANT: Empty/blank names are ignored so clients always receive a usable entry.
    *
    * @param name server name (must not be blank)
-   * @author WoFabian
    */
   public void setServerName(String name) {
     if (name == null || name.isBlank()) return;
@@ -183,7 +177,6 @@ public final class GlobalConnector {
    *
    * @param host target host (IP or hostname)
    * @throws Exception if connecting or initializing the connector fails
-   * @author WoFabian
    */
   public synchronized void startAsClient(String host) throws Exception {
     Objects.requireNonNull(host, "host");
@@ -206,7 +199,6 @@ public final class GlobalConnector {
    *
    * @param host target host
    * @throws Exception if connecting fails
-   * @author WoFabian
    */
   public void connectToServer(String host) throws Exception {
     startAsClient(host);
@@ -221,7 +213,6 @@ public final class GlobalConnector {
    *
    * @param name server name used for discovery (ignored if blank)
    * @throws Exception if the server socket cannot be opened
-   * @author WoFabian
    */
   public synchronized void startAsServer(String name) throws Exception {
     setServerName(name);
@@ -236,7 +227,6 @@ public final class GlobalConnector {
    * <p>LOGIC-IMPORTANT: This resets {@code busy} to false so discovery can advertise the server.
    *
    * @throws Exception if binding the port fails
-   * @author WoFabian
    */
   public synchronized void openServerSocket() throws Exception {
     ensureRole(Role.SERVER);
@@ -258,7 +248,6 @@ public final class GlobalConnector {
    * advertising this server while the connection is active.
    *
    * @throws Exception if accepting the client fails
-   * @author WoFabian
    */
   public synchronized void acceptClient() throws Exception {
     ensureRole(Role.SERVER);
@@ -284,7 +273,6 @@ public final class GlobalConnector {
    * separate thread).
    *
    * @return newly created discovery responder
-   * @author WoFabian
    */
   public synchronized ServerDiscoveryResponder createDiscoveryResponder() {
     ensureRole(Role.SERVER);
@@ -296,7 +284,6 @@ public final class GlobalConnector {
    * Returns the current discovery responder instance if one was created.
    *
    * @return discovery responder or null
-   * @author WoFabian
    */
   public synchronized ServerDiscoveryResponder getDiscoveryResponder() {
     return discoveryResponder;
@@ -308,7 +295,6 @@ public final class GlobalConnector {
    * <p>GUI-IMPORTANT: The GUI typically uses this for a "Find Servers" / "Refresh List" action.
    *
    * @return new discovery scanner
-   * @author WoFabian
    */
   public ClientDiscoveryScanner createDiscoveryScanner() {
     return new ClientDiscoveryScanner(EnvConfig.getPort());
@@ -321,7 +307,6 @@ public final class GlobalConnector {
    *
    * @param msg one full protocol command line (without newline)
    * @throws Exception if no connection exists or sending fails
-   * @author WoFabian
    */
   public void sendMessage(String msg) throws Exception {
     requireConnector().sendMessage(msg);
@@ -331,27 +316,17 @@ public final class GlobalConnector {
    * Starts the blocking receive loop on the active connector.
    *
    * <p>GUI-IMPORTANT: This is blocking; run it in a background thread/task.
-   *
-   * @author WoFabian
    */
   public void listenLoop() {
     requireConnector().listenLoop();
   }
 
-  /**
-   * Enables processing in the connector listen loop without closing the socket (Task 2).
-   *
-   * @author WoFabian
-   */
+  /** Enables processing in the connector listen loop without closing the socket (Task 2). */
   public void requestStartListening() {
     requireConnector().requestStartListening();
   }
 
-  /**
-   * Requests the connector listen loop to exit without closing the socket (Task 2).
-   *
-   * @author WoFabian
-   */
+  /** Requests the connector listen loop to exit without closing the socket (Task 2). */
   public void requestStopListening() {
     requireConnector().requestStopListening();
   }
@@ -363,8 +338,6 @@ public final class GlobalConnector {
    *
    * <p>LOGIC-IMPORTANT: This is a full shutdown. Use {@link #resetConnectionOnly()} for "reconnect"
    * use cases where the role will be set again immediately.
-   *
-   * @author WoFabian
    */
   public synchronized void close() {
     stopDiscovery();

@@ -4,7 +4,8 @@
   "description": "Battleship game implementation in Java!",
   "scripts": {
     "format": "python3 run_maven_format.py",
-    "prepare": "husky"
+    "prepare:precommit": "husky",
+    "generate:docs": "python3 run_maven_docs.py"
   },
   "author": "Matthis Geißler <matthisgeissler@gmail.com>",
   "license": "MIT",
