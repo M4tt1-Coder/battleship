@@ -278,7 +278,7 @@ public class Game {
           if (opponent.board.areAllShipsSunk()) {
             logger.info("--- PLAYER won ---");
             this.winner = Winner.PLAYER;
-            PlayingUtils.show_pop_up_information(root, "PLAYER won", 3000);
+            PlayingUtils.show_pop_up_information(root, "PLAYER won", 3000, true);
           }
           shotResult = ShotAttemptResult.SUNK;
         }
@@ -304,7 +304,7 @@ public class Game {
           if (player.board.areAllShipsSunk()) {
             logger.info("--- OPPONENT won ---");
             this.winner = Winner.OPPONENT;
-            PlayingUtils.show_pop_up_information(root, "OPPONENT won", 3000);
+            PlayingUtils.show_pop_up_information(root, "OPPONENT won", 3000, true);
             // System.exit(0);
           }
           shotResult = ShotAttemptResult.SUNK;
