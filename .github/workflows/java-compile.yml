@@ -27,4 +27,4 @@ jobs:
           cache: "maven"
       - run: ./mvnw clean package
       - name: Generate Documentation
-      - run: ./mvnw javadoc:javadoc
+        run: ./mvnw javadoc:javadoc
