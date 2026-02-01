@@ -447,12 +447,12 @@ public class BattleShipApp extends Application {
     buttonGoBackR7.size(root7LoadingScreen, 0.07, 0.1);
 
     labelWaitingForOtherPlayerToJoinR7.position(root7LoadingScreen, 0, -0.2);
-    labelWaitingForOtherPlayerToJoinR7.fontsize(root7LoadingScreen, 0.05);
+    labelWaitingForOtherPlayerToJoinR7.fontsize(root7LoadingScreen, 0.035);
     labelWaitingForOtherPlayerToJoinR7.size(root7LoadingScreen, 0.7, 0.2);
     labelWaitingForOtherPlayerToJoinR7.setAlignment(Pos.CENTER);
 
     labelFunnyInfosR7.position(root7LoadingScreen, 0, 0);
-    labelFunnyInfosR7.fontsize(root7LoadingScreen, 0.03);
+    labelFunnyInfosR7.fontsize(root7LoadingScreen, 0.02);
     labelFunnyInfosR7.size(root7LoadingScreen, 0.4, 0.2);
     labelFunnyInfosR7.setAlignment(Pos.CENTER);
 
