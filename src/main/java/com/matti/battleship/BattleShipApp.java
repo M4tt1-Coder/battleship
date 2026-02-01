@@ -63,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO: Move all image loading to the 'ResourceProfiler' instance
 
-// option + shift + f -> format
+// option + shift + f -> formatieren
 public class BattleShipApp extends Application {
 
   private Scene scene1;
