@@ -135,6 +135,9 @@ public class BattleShipApp extends Application {
     ComboBoxes comboboxesDifficultySelectionR2 = new ComboBoxes();
     comboboxesDifficultySelectionR2.setId("comboboxes");
 
+    ComboBoxes comboboxesAmountOfShipsR2 = new ComboBoxes();
+    comboboxesAmountOfShipsR2.setId("comboboxes");
+
     TextFields textfieldSelectFieldSizeR2 = new TextFields();
     textfieldSelectFieldSizeR2.setId("textfields");
     textfieldSelectFieldSizeR2.setPromptText("Type in field size");
@@ -148,6 +151,9 @@ public class BattleShipApp extends Application {
     Labels labelTextSelectFieldSizeR2 = new Labels("Field Size:");
     labelTextSelectFieldSizeR2.setId("labelsNormal");
 
+    Labels labelTextSelectAmountOfShipsR2 = new Labels("Occupancy\n Rate of Ships:");
+    labelTextSelectAmountOfShipsR2.setId("labelsNormal");
+
     StackPane root2SingleplayerSettings =
         new StackPane(
             imageviewPlayerVsAiR2,
@@ -157,8 +163,10 @@ public class BattleShipApp extends Application {
             buttonLoadGameR2,
             textfieldSelectFieldSizeR2,
             comboboxesDifficultySelectionR2,
+            comboboxesAmountOfShipsR2,
             labelTextSelectDifficultyR2,
-            labelTextSelectFieldSizeR2);
+            labelTextSelectFieldSizeR2,
+            labelTextSelectAmountOfShipsR2);
     root2SingleplayerSettings.setId("root2SingleplayerSettings");
 
     imageviewPlayerVsAiR2.position(root2SingleplayerSettings, 0.25, 0.00);
@@ -177,25 +185,34 @@ public class BattleShipApp extends Application {
     buttonLoadGameR2.size(root2SingleplayerSettings, 0.13, 0.05);
 
     comboboxesDifficultySelectionR2.set_selections("Medium", "Easy", "Medium", "Hard");
-    comboboxesDifficultySelectionR2.position(root2SingleplayerSettings, -0.2, -0.05);
+    comboboxesDifficultySelectionR2.position(root2SingleplayerSettings, -0.2, -0.18);
     comboboxesDifficultySelectionR2.fontsize(root2SingleplayerSettings, 0.01);
     comboboxesDifficultySelectionR2.size(root2SingleplayerSettings, 0.15, 0.05);
 
-    textfieldSelectFieldSizeR2.position(root2SingleplayerSettings, -0.2, 0.1);
+    comboboxesAmountOfShipsR2.set_selections("30%", "15%", "20%", "30%");
+    comboboxesAmountOfShipsR2.position(root2SingleplayerSettings, -0.2, 0.12);
+    comboboxesAmountOfShipsR2.fontsize(root2SingleplayerSettings, 0.009);
+    comboboxesAmountOfShipsR2.size(root2SingleplayerSettings, 0.15, 0.05);
+
+    textfieldSelectFieldSizeR2.position(root2SingleplayerSettings, -0.2, -0.03);
     textfieldSelectFieldSizeR2.fontsize(root2SingleplayerSettings, 0.01);
     textfieldSelectFieldSizeR2.size(root2SingleplayerSettings, 0.15, 0.05);
 
-    labelSettingsR2.position(root2SingleplayerSettings, -0.255, 0.05);
+    labelSettingsR2.position(root2SingleplayerSettings, -0.255, -0.01);
     labelSettingsR2.fontsize(root2SingleplayerSettings, 0.04);
-    labelSettingsR2.size(root2SingleplayerSettings, 0.3, 0.6);
+    labelSettingsR2.size(root2SingleplayerSettings, 0.3, 0.65);
 
-    labelTextSelectDifficultyR2.position(root2SingleplayerSettings, -0.347, -0.05);
+    labelTextSelectDifficultyR2.position(root2SingleplayerSettings, -0.347, -0.18);
     labelTextSelectDifficultyR2.fontsize(root2SingleplayerSettings, 0.02);
     labelTextSelectDifficultyR2.size(root2SingleplayerSettings, 0.2, 0.07);
 
-    labelTextSelectFieldSizeR2.position(root2SingleplayerSettings, -0.343, 0.1);
+    labelTextSelectFieldSizeR2.position(root2SingleplayerSettings, -0.343, -0.03);
     labelTextSelectFieldSizeR2.fontsize(root2SingleplayerSettings, 0.02);
     labelTextSelectFieldSizeR2.size(root2SingleplayerSettings, 0.2, 0.07);
+
+    labelTextSelectAmountOfShipsR2.position(root2SingleplayerSettings, -0.343, 0.12);
+    labelTextSelectAmountOfShipsR2.fontsize(root2SingleplayerSettings, 0.015);
+    labelTextSelectAmountOfShipsR2.size(root2SingleplayerSettings, 0.2, 0.1);
 
     // ---------------root 3
     // ---------------------------------------------------------------------
@@ -249,7 +266,8 @@ public class BattleShipApp extends Application {
     Labels labelShipsSpawnWhenBoardInitializedR4 = new Labels("");
     labelShipsSpawnWhenBoardInitializedR4.setId("labelsBackgroundBlueCenter");
 
-    Labels labelPressRToRotateR4 = new Labels("Press R to Rotate");
+    Labels labelPressRToRotateR4 =
+        new Labels("Press R after the ship\n has been dropped\n onto the board to Rotate");
     labelPressRToRotateR4.setId("labelsNormal");
 
     StackPane root4PlaceShips = new StackPane();
@@ -272,8 +290,8 @@ public class BattleShipApp extends Application {
     labelShipsSpawnWhenBoardInitializedR4.size(root4PlaceShips, 1, 0.08);
 
     labelPressRToRotateR4.position(root4PlaceShips, 0.35, -0.2);
-    labelPressRToRotateR4.fontsize(root4PlaceShips, 0.015);
-    labelPressRToRotateR4.size(root4PlaceShips, 0.25, 0.1);
+    labelPressRToRotateR4.fontsize(root4PlaceShips, 0.012);
+    labelPressRToRotateR4.size(root4PlaceShips, 0.25, 0.3);
 
     // ---------------root 5
     // ---------------------------------------------------------------------
@@ -444,12 +462,12 @@ public class BattleShipApp extends Application {
     buttonGoBackR7.size(root7LoadingScreen, 0.07, 0.1);
 
     labelWaitingForOtherPlayerToJoinR7.position(root7LoadingScreen, 0, -0.2);
-    labelWaitingForOtherPlayerToJoinR7.fontsize(root7LoadingScreen, 0.05);
+    labelWaitingForOtherPlayerToJoinR7.fontsize(root7LoadingScreen, 0.035);
     labelWaitingForOtherPlayerToJoinR7.size(root7LoadingScreen, 0.7, 0.2);
     labelWaitingForOtherPlayerToJoinR7.setAlignment(Pos.CENTER);
 
     labelFunnyInfosR7.position(root7LoadingScreen, 0, 0);
-    labelFunnyInfosR7.fontsize(root7LoadingScreen, 0.03);
+    labelFunnyInfosR7.fontsize(root7LoadingScreen, 0.02);
     labelFunnyInfosR7.size(root7LoadingScreen, 0.4, 0.2);
     labelFunnyInfosR7.setAlignment(Pos.CENTER);
 
