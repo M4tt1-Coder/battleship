@@ -10,6 +10,12 @@ A graphical Battleship game implemented with Java and JavaFX.
 - Technologies
 - Installation
 - Usage
+    1. Start the application
+    2. select desired game mode
+    3. Singleplayer
+    4. Multiplayer
+    5. Create documentation
+- Problems and Challenges
 - Contributors
 - License
 
@@ -71,12 +77,21 @@ The project is divided into three main components:
   
   
 3. Singleplayer  
-    a) In singleplayer mode, choose the board size and the AI difficulty level.  
+    a) In singleplayer mode, choose the board size and the AI difficulty level.
+        The board size has to be between 5 and 30 cells.   
+        Without any input the field size is initialized with 10.    
         <img src="README_ressources/singleplayer_settings_screenshot.png" width="400">  
-    b) Place your ships on the board using drag and drop, rotate them as needed, and start the game.  
-        <img src="README_ressources/select_position_of_boats_screenshot.png" width="400">  
-    c) Players and AI take turns shooting until all ships of one side are destroyed.  
-        <img src="README_ressources/lobby_screen_screenshot.png" width="400">  
+    b) Alternatively you can load a game out of a `.txt` file  
+        <img src="README_ressources/load_game_screenshot.png" width="400">  
+    c) Place your ships on the board using drag and drop, rotate them as needed, and start the game. 
+        The rotation of the ship is only possible if the ship has been dragged and placed.  
+        <img src="README_ressources/select_position_of_boats_screenshot1.png" width="400">  
+        <img src="README_ressources/select_position_of_boats_screenshot2.png" width="400">  
+    d) Players and AI take turns shooting until all ships of one side are destroyed.  
+        <img src="README_ressources/shoot_on_enemy_field_screenshot1.png" width="400">  
+        <img src="README_ressources/shoot_on_enemy_field_screenshot2.png" width="400">  
+    e) You can always save the game by clicking on the "Save-Game-Button" and will be forwarded  
+    to the game mode selection menu  
 
 
 4. Multiplayer  
@@ -85,10 +100,13 @@ The project is divided into three main components:
     b)The host defines the lobby name and board size.  
         <img src="README_ressources/multiplayer_settings_screenshot.png" width="400">    
     c) The host has to wait until another player has joined  
-        <img src="README_ressources/multiplayer_settings_screenshot.png" width="400">  
-    d)Once all players have joined, each player places their ships and the game begins with alternating turns. (see Singleplayer)    
+        <img src="README_ressources/loading_screen_screenshot.png" width="400">  
+    d) Once all players have joined, each player places their ships and the game begins with alternating turns. (see Singleplayer)    
 
-During gameplay, all actions are performed via the graphical user interface.
+During gameplay, all actions are performed via the graphical user interface.  
+5. Create documentation  
+   !The code has to be compiled before  
+   Type in: `mvn javadoc:javadoc`  
 
 ## Contributors
 - Matthis Geissler (@M4tt1-Coder) – core development, game logic
