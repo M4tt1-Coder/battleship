@@ -484,8 +484,6 @@ public class BattleShipApp extends Application {
     // ----------------------
     buttonGoBackR2.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
 
-    // TODO: Add feature of loading a game state from a file
-
     buttonLoadGameR2.setOnAction(
         e -> {
           File storageFile =
@@ -559,7 +557,6 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = 10;
               }
             }
-            // TODO: Implementation of setting the server_name
             if (!textfieldSelectServerNameR6.getText().isEmpty()) {}
           }
 
@@ -1374,7 +1371,6 @@ public class BattleShipApp extends Application {
       ship.translateXProperty().bind(clampedX);
       ship.setTranslateY(0);
 
-      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
