@@ -23,11 +23,11 @@ public class EnvConfig {
   /*
    * Static initializer: runs once when the class is loaded.
    * It tries to read the ".env" file and load it into {@link #props}.
-   * If the file cannot be found or read, it silently falls back to default values.
+   * If the file cannot be found or read, it silently falls back to default
+   * values.
    * Note: This makes the project more robust in different run-configurations
    * (e.g., different working directories in IDEs).
    *
-   * @author WoFabian
    */
   static {
     try (FileInputStream fis = new FileInputStream(".env")) {
@@ -44,7 +44,6 @@ public class EnvConfig {
    * returned.
    *
    * @return the configured port number or {@link #DEFAULT_PORT} if not available/invalid
-   * @author WoFabian
    */
   public static int getPort() {
     // Read PORT from .env properties.

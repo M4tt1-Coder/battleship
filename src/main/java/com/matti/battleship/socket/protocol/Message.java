@@ -24,7 +24,6 @@ public class Message {
    *
    * @param type message type (command)
    * @param args message arguments as strings
-   * @author WoFabian
    */
   public Message(MessageType type, String... args) {
     this.type = type;
@@ -35,7 +34,6 @@ public class Message {
    * Returns the message type (command).
    *
    * @return the {@link MessageType} of this message
-   * @author WoFabian
    */
   public MessageType getType() {
     return type;
@@ -45,7 +43,6 @@ public class Message {
    * Returns the raw string arguments of the message.
    *
    * @return arguments array (may be empty)
-   * @author WoFabian
    */
   public String[] getArgs() {
     return args;
@@ -61,7 +58,6 @@ public class Message {
    * @return parsed integer value
    * @throws NumberFormatException if the argument is not a valid integer
    * @throws ArrayIndexOutOfBoundsException if the index is invalid
-   * @author WoFabian
    */
   public int getIntArg(int index) {
     return Integer.parseInt(args[index]);
@@ -77,7 +73,6 @@ public class Message {
    * @return parsed long value
    * @throws NumberFormatException if the argument is not a valid long
    * @throws ArrayIndexOutOfBoundsException if the index is invalid
-   * @author WoFabian
    */
   public long getArglong(int index) {
     return Long.parseLong(args[index]);
@@ -87,7 +82,6 @@ public class Message {
    * Debug string for logs and troubleshooting.
    *
    * @return string representation of this message
-   * @author WoFabian
    */
   @Override
   public String toString() {

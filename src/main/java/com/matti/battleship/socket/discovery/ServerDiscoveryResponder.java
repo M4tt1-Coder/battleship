@@ -50,13 +50,13 @@ public class ServerDiscoveryResponder {
    * @param port the UDP port to listen on
    * @param busy flag that tells whether the server should answer discovery requests
    * @param serverName the name that will be returned to discovered clients
-   * @author WoFabian
    */
   public ServerDiscoveryResponder(int port, AtomicBoolean busy, String serverName) {
     this.port = port;
     this.busy = busy;
 
-    // If no name is provided, use a default value so the client list still looks good.
+    // If no name is provided, use a default value so the client list still looks
+    // good.
     this.serverName = (serverName == null || serverName.isBlank()) ? "Battleship" : serverName;
   }
 
@@ -65,8 +65,6 @@ public class ServerDiscoveryResponder {
    *
    * <p>LOGIC-IMPORTANT: This only flips the running flag. If {@code receive(...)} is currently
    * blocking, the loop will end after the next packet arrives or the socket is closed from outside.
-   *
-   * @author WoFabian
    */
   public void stop() {
     running = false;
@@ -83,8 +81,6 @@ public class ServerDiscoveryResponder {
    *
    * <p>LOGIC-IMPORTANT: Only {@code DISCOVER} packets are answered. Unknown messages are ignored to
    * keep LAN discovery robust against noise/broadcast traffic.
-   *
-   * @author WoFabian
    */
   public void runLoop() {
     try (DatagramSocket socket = new DatagramSocket(port)) {
@@ -113,7 +109,8 @@ public class ServerDiscoveryResponder {
       }
 
     } catch (Exception e) {
-      // Shutdown and socket errors are not fatal here; discovery is an optional helper feature.
+      // Shutdown and socket errors are not fatal here; discovery is an optional
+      // helper feature.
       logger.info("[DISCOVERY] Responder gestoppt: " + e.getMessage());
     }
   }

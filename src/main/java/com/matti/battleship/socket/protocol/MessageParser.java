@@ -21,7 +21,6 @@ public class MessageParser {
    *
    * @param line complete raw line (e.g. "shot 3 4")
    * @return parsed {@link Message} containing type and arguments
-   * @author WoFabian
    */
   public static Message parse(String line) {
 
@@ -53,7 +52,8 @@ public class MessageParser {
       case "load" -> new Message(MessageType.LOAD, args);
       case "ok" -> new Message(MessageType.OK);
 
-      // Any unexpected command is treated as UNKNOWN (args still preserved for debugging).
+      // Any unexpected command is treated as UNKNOWN (args still preserved for
+      // debugging).
       default -> new Message(MessageType.UNKNOWN, args);
     };
   }

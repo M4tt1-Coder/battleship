@@ -44,7 +44,6 @@ public class TurnLog {
    * Creates a new TurnLog for the given side.
    *
    * @param side side of this instance (SERVER or CLIENT)
-   * @author WoFabian
    */
   public TurnLog(Side side) {
     this.side = side;
@@ -54,7 +53,6 @@ public class TurnLog {
    * Returns the side of this log instance.
    *
    * @return SERVER or CLIENT
-   * @author WoFabian
    */
   public Side getSide() {
     return side;
@@ -66,7 +64,6 @@ public class TurnLog {
    * <p>This method only prints a new header if the turn owner changed compared to the last call.
    *
    * @param turnOwner name of the current turn owner (usually "SERVER" or "CLIENT")
-   * @author WoFabian
    */
   public void beginTurn(String turnOwner) {
     if (turnOwner == null) return;
@@ -78,11 +75,7 @@ public class TurnLog {
     }
   }
 
-  /**
-   * Repeats the current turn header (useful after separators).
-   *
-   * @author WoFabian
-   */
+  /** Repeats the current turn header (useful after separators). */
   public void repeatTurnHeader() {
     if (currentTurnOwner != null) {
       printTurnHeader();
@@ -93,7 +86,6 @@ public class TurnLog {
    * Logs an outgoing message.
    *
    * @param msg protocol line that was sent
-   * @author WoFabian
    */
   public void sent(String msg) {
     logger.info("  [GESENDET ] " + msg);
@@ -103,7 +95,6 @@ public class TurnLog {
    * Logs an incoming message.
    *
    * @param msg protocol line that was received
-   * @author WoFabian
    */
   public void received(String msg) {
     logger.info("  [RECEIVED ] " + msg);
@@ -113,8 +104,6 @@ public class TurnLog {
    * Prints a separator line.
    *
    * <p>Used by SocketConnector after a complete send/receive pair so the console output is grouped.
-   *
-   * @author WoFabian
    */
   public void separator() {
     logger.info("  ------------------------");
@@ -125,8 +114,6 @@ public class TurnLog {
    *
    * <p>Uses parameterized logging ("{}") which is the recommended log4j style because it avoids
    * unnecessary string concatenations and keeps the log formatting consistent.
-   *
-   * @author WoFabian
    */
   private void printTurnHeader() {
     logger.info("");

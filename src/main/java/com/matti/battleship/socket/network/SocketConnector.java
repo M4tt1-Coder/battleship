@@ -97,7 +97,6 @@ public class SocketConnector {
    * @param socket connected TCP socket
    * @param log turn log instance for readable send/receive output
    * @throws IOException if socket IO streams cannot be created
-   * @author WoFabian
    */
   public SocketConnector(Socket socket, TurnLog log) throws IOException {
     this.socket = socket;
@@ -107,7 +106,8 @@ public class SocketConnector {
     this.other = self.equals("SERVER") ? "CLIENT" : "SERVER";
 
     // Important for Task 2:
-    // Allows read operations to wake up periodically so stopLoopRequested can be checked.
+    // Allows read operations to wake up periodically so stopLoopRequested can be
+    // checked.
     this.socket.setSoTimeout(250);
 
     this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -120,7 +120,6 @@ public class SocketConnector {
    * Sets the callback that receives incoming protocol lines and disconnect events.
    *
    * @param listener listener to notify (may be null)
-   * @author WoFabian
    */
   public void setMessageListener(IMessageListener listener) {
     this.listener = listener;
@@ -134,7 +133,6 @@ public class SocketConnector {
    *
    * @param msg one full protocol command line (without newline)
    * @throws IOException if writing to the socket fails
-   * @author WoFabian
    */
   public synchronized void sendMessage(String msg) throws IOException {
     handleTurnOnSend(msg);
@@ -152,8 +150,6 @@ public class SocketConnector {
    *
    * <p>LOGIC-IMPORTANT: This clears the stop request so a subsequent call to {@link #listenLoop()}
    * can continue running.
-   *
-   * @author WoFabian
    */
   public void requestStartListening() {
     listeningEnabled = true;
@@ -164,8 +160,6 @@ public class SocketConnector {
    * Requests {@link #listenLoop()} to exit without closing the socket (Task 2).
    *
    * <p>LOGIC-IMPORTANT: The loop will exit "soon" because {@code readLine()} wakes up via timeout.
-   *
-   * @author WoFabian
    */
   public void requestStopListening() {
     listeningEnabled = false;
@@ -180,8 +174,6 @@ public class SocketConnector {
    *
    * <p>LOGIC-IMPORTANT: A stop request is NOT treated as a disconnect. Only a real remote close
    * (readLine() returns null) triggers {@link IMessageListener#onConnectionClosed(Exception)}.
-   *
-   * @author WoFabian
    */
   public void listenLoop() {
     boolean remoteClosed = false;
@@ -235,8 +227,6 @@ public class SocketConnector {
    *
    * <p>LOGIC-IMPORTANT: This is a hard shutdown and will also end any active {@link #listenLoop()}
    * due to IO errors / stream closure.
-   *
-   * @author WoFabian
    */
   public void close() {
     try {
