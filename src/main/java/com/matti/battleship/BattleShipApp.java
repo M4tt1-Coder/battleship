@@ -503,6 +503,7 @@ public class BattleShipApp extends Application {
               throw new IllegalStateException(
                   "Loaded game state for wrong playing mode! For 'single player' please choose a file with the playing mode 'VS_AI'!");
             }
+            root5ShootOnShips.getChildren().clear();
             root5ShootOnShips
                 .getChildren()
                 .addAll(
@@ -513,8 +514,6 @@ public class BattleShipApp extends Application {
                     labelTextEnemySideR5);
 
             preparePlayingGridPanes(root5ShootOnShips, this.game);
-            buttonEndGameR5.toFront();
-            buttonSafeGameR5.toFront();
 
             scene1.setRoot(root5ShootOnShips);
           } catch (Exception ex) {
@@ -527,6 +526,7 @@ public class BattleShipApp extends Application {
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
 
+          root4PlaceShips.getChildren().clear();
           root4PlaceShips
               .getChildren()
               .addAll(
@@ -543,6 +543,11 @@ public class BattleShipApp extends Application {
                 this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
+                PlayingUtils.show_pop_up_information(
+                    root2SingleplayerSettings,
+                    "Invalid field size,\n Enter a value between 5 and 30",
+                    3000,
+                    false);
                 this.selected_field_size = 10;
               }
             }
@@ -553,6 +558,11 @@ public class BattleShipApp extends Application {
                 this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
+                PlayingUtils.show_pop_up_information(
+                    root6MultiplayerSettings,
+                    "Invalid field size,\n Enter a value between 5 and 30",
+                    3000,
+                    false);
                 this.selected_field_size = 10;
               }
             }
@@ -612,23 +622,29 @@ public class BattleShipApp extends Application {
 
     buttonStartShootingR4.setOnAction(
         e -> {
-          root5ShootOnShips
-              .getChildren()
-              .addAll(
-                  buttonEndGameR5,
-                  labelBackgroundShootingR5,
-                  buttonSafeGameR5,
-                  labelTextYourSideR5,
-                  labelTextEnemySideR5);
           // prevent starting a game when not all ships have been placed
           if (this.board.getNumberOfOccupiedFields()
               != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
                   this.board.getSize())) {
             System.out.println(
                 "You can't start a game if you don't have placed all ships on the board!");
+            PlayingUtils.show_pop_up_information(
+                root4PlaceShips,
+                "You can't start a game \n if you don't have placed all ships on the board!",
+                4000,
+                false);
             e.consume();
             return;
           }
+
+          root5ShootOnShips
+              .getChildren()
+              .setAll(
+                  buttonEndGameR5,
+                  labelBackgroundShootingR5,
+                  buttonSafeGameR5,
+                  labelTextYourSideR5,
+                  labelTextEnemySideR5);
 
           // TODO: Add the case for playing against another player -> no board needs to be
           // added
@@ -674,6 +690,8 @@ public class BattleShipApp extends Application {
           // TODO: Get back the file path for multiplayer
           if (!FileWriterService.safeGameStateToFile(this.game, null)) {
             System.out.println("Failed to properly safe the gamestate!");
+            PlayingUtils.show_pop_up_information(
+                root5ShootOnShips, "Failed to properly safe the gamestate!", 3000, false);
             return;
           }
           root4PlaceShips.getChildren().clear();
