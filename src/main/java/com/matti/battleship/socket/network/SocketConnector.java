@@ -8,15 +8,15 @@ import java.net.Socket;
  * Low-level TCP line IO for the Battleship protocol (no threads inside).
  *
  * <p>This class is responsible for sending and receiving single protocol lines over an existing
- * {@link Socket}. It deliberately does not create threads; the caller decides where/when
- * {@link #listenLoop()} runs.
+ * {@link Socket}. It deliberately does not create threads; the caller decides where/when {@link
+ * #listenLoop()} runs.
  *
- * <p>LOGIC-IMPORTANT: Listening can be started/stopped without closing the socket (Task 2).
- * This is implemented by using a socket timeout so {@code readLine()} wakes up regularly and the
- * loop can check stop flags.
+ * <p>LOGIC-IMPORTANT: Listening can be started/stopped without closing the socket (Task 2). This is
+ * implemented by using a socket timeout so {@code readLine()} wakes up regularly and the loop can
+ * check stop flags.
  *
- * <p>LOGIC-IMPORTANT: Turn logging is handled here (via {@link TurnLog}). The connector derives
- * a "turn" from protocol commands and writes a readable send/receive pairing to the log.
+ * <p>LOGIC-IMPORTANT: Turn logging is handled here (via {@link TurnLog}). The connector derives a
+ * "turn" from protocol commands and writes a readable send/receive pairing to the log.
  *
  * @author WoFabian
  */
@@ -50,8 +50,8 @@ public class SocketConnector {
    * Pairing state for log formatting.
    *
    * <p>LOGIC-IMPORTANT: We treat communication as send/receive "pairs" to insert separators and
-   * repeat headers only after a pair is complete. This keeps the {@link TurnLog} readable even
-   * when messages arrive very quickly.
+   * repeat headers only after a pair is complete. This keeps the {@link TurnLog} readable even when
+   * messages arrive very quickly.
    */
   private enum PairState {
     NONE,
@@ -73,9 +73,9 @@ public class SocketConnector {
   /**
    * Lock used to guard the listening control flags.
    *
-   * <p>LOGIC-IMPORTANT: The listen loop and GUI/controller calls may run on different threads.
-   * We guard reads/writes to {@code listeningEnabled} and {@code stopLoopRequested} to keep
-   * Task 2 behavior deterministic.
+   * <p>LOGIC-IMPORTANT: The listen loop and GUI/controller calls may run on different threads. We
+   * guard reads/writes to {@code listeningEnabled} and {@code stopLoopRequested} to keep Task 2
+   * behavior deterministic.
    */
   private final Object listenLock = new Object();
 
@@ -89,7 +89,8 @@ public class SocketConnector {
   /**
    * Requests {@link #listenLoop()} to exit without closing the socket.
    *
-   * <p>LOGIC-IMPORTANT: The loop exits "soon" because {@code readLine()} wakes up via {@code SO_TIMEOUT}.
+   * <p>LOGIC-IMPORTANT: The loop exits "soon" because {@code readLine()} wakes up via {@code
+   * SO_TIMEOUT}.
    */
   private boolean stopLoopRequested = false;
 
@@ -154,7 +155,8 @@ public class SocketConnector {
   /**
    * Enables processing in {@link #listenLoop()} and clears a previous stop request (Task 2).
    *
-   * <p>LOGIC-IMPORTANT: This does not start a thread; it only enables the loop if/when it is running.
+   * <p>LOGIC-IMPORTANT: This does not start a thread; it only enables the loop if/when it is
+   * running.
    *
    * @author WoFabian
    */
@@ -166,7 +168,8 @@ public class SocketConnector {
   }
 
   /**
-   * Disables processing and requests {@link #listenLoop()} to exit without closing the socket (Task 2).
+   * Disables processing and requests {@link #listenLoop()} to exit without closing the socket (Task
+   * 2).
    *
    * <p>LOGIC-IMPORTANT: This is intentionally not a disconnect. The TCP socket remains open.
    *
@@ -182,11 +185,12 @@ public class SocketConnector {
   /**
    * Blocking receive loop that forwards incoming protocol lines to the listener.
    *
-   * <p>LOGIC-IMPORTANT: This method is intentionally blocking and does not start threads.
-   * The caller must run it in a suitable background context.
+   * <p>LOGIC-IMPORTANT: This method is intentionally blocking and does not start threads. The
+   * caller must run it in a suitable background context.
    *
    * <p>LOGIC-IMPORTANT: A stop request is NOT treated as a disconnect. Only a real remote close
-   * ({@code readLine()} returns null) triggers {@link IMessageListener#onConnectionClosed(Exception)}.
+   * ({@code readLine()} returns null) triggers {@link
+   * IMessageListener#onConnectionClosed(Exception)}.
    *
    * @author WoFabian
    */
