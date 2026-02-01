@@ -95,7 +95,7 @@ public class NetworkGameController implements IMessageListener {
     System.out.println("[NET] connection closed: " + (e != null ? e.getMessage() : "null"));
   }
 
-  // ===== GUI/Logic sending API =====
+  // ===== GUI/Logic sending =====
 
   /**
    * Sends an array of ships using the messaging system.
