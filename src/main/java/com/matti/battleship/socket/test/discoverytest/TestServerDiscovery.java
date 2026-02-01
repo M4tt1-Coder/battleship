@@ -90,7 +90,7 @@ public class TestServerDiscovery {
               try {
                 System.out.println("[SERVER] acceptClient... (blocking)");
                 global.acceptClient();
-                System.out.println("[SERVER] ✅ Client verbunden.");
+                System.out.println("[SERVER] Client verbunden.");
                 startListeningIfNeeded(global, listenThreadRef);
               } catch (Exception e) {
                 System.out.println("[SERVER] accept failed: " + e.getMessage());
