@@ -1,5 +1,7 @@
 package com.matti.battleship.utils;
 
+import com.matti.battleship.types.Board;
+import com.matti.battleship.types.Coordinates;
 import com.matti.battleship.types.Field;
 import com.matti.battleship.utils.datatypes.PlayerBoardCellContext.FieldDisplayState;
 
@@ -7,36 +9,43 @@ import com.matti.battleship.utils.datatypes.PlayerBoardCellContext.FieldDisplayS
 public class FieldUtils {
 
   /**
-   * Determines the theoretical display state of a given field based on its shooting status and
-   * occupancy.
+   * Determines the theoretical display state of a specific field on the board based on its current
+   * status.
    *
-   * <p>The logic is as follows:
+   * <p>The method evaluates whether the field has been shot at, whether it is occupied by a ship,
+   * and whether the ship has sunk, to decide the appropriate {@link FieldDisplayState}.
    *
    * <ul>
-   *   <li>If the field was shot at:
-   *       <ul>
-   *         <li>If the field is occupied by a ship:
-   *             <ul>
-   *               <li>If the ship has sunk, returns {@link FieldDisplayState#SUNK}.
-   *               <li>Otherwise, returns {@link FieldDisplayState#HIT}.
-   *             </ul>
-   *         <li>If the field is not occupied, returns {@link FieldDisplayState#MISS}.
-   *       </ul>
-   *   <li>If the field was not shot at, returns {@link FieldDisplayState#NOT_SET}.
+   *   <li>If the field was shot at and contains a sunk ship segment, returns {@code SUNK}.
+   *   <li>If the field was shot at, contains a ship that is not sunk, but belongs to a sunk ship
+   *       group (based on coordinates), returns {@code SUNK}.
+   *   <li>If the field was shot at and contains an un-sunk ship segment, returns {@code HIT}.
+   *   <li>If the field was shot at and is empty, returns {@code MISS}.
+   *   <li>If the field was not shot at, returns {@code NOT_SET}.
    * </ul>
    *
-   * This method helps in determining the visual representation of a field based on game state.
+   * <p>Note: The comparison of coordinates uses reference equality; ensure {@link Coordinates}
+   * equality is properly overridden.
    *
-   * @param field the {@link Field} object to evaluate.
-   * @return the {@link FieldDisplayState} representing the theoretical state of the field.
+   * @param field The specific field to evaluate.
+   * @param board The game board containing all fields.
+   * @return The {@link FieldDisplayState} representing the theoretical state of the field.
    */
-  public static FieldDisplayState getTheoreticalStateOfField(Field field) {
+  public static FieldDisplayState getTheoreticalStateOfField(Field field, Board board) {
     if (field.wasShotAt()) {
       if (field.isOccupied()) {
         if (field.getShip() != null && field.getShip().getHasSunk()) {
           return FieldDisplayState.SUNK;
+        } else {
+          // could be that the field belongs ot ship that was sunk nut isn't at the
+          // 'startCoordinate'
+          for (Coordinates coor : board.getAllFieldsOfCurrentSunkenShips()) {
+            if (field.getCoordinates().x == coor.x && field.getCoordinates().y == coor.y) {
+              return FieldDisplayState.SUNK;
+            }
+          }
+          return FieldDisplayState.HIT;
         }
-        return FieldDisplayState.HIT;
       } else {
         return FieldDisplayState.MISS;
       }
