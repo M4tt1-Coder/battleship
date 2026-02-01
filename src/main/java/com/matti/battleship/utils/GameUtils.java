@@ -1,5 +1,8 @@
 package com.matti.battleship.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.matti.battleship.computer.Algorithm;
 import com.matti.battleship.computer.EasyAlgorithm;
 import com.matti.battleship.computer.HardAlgorithm;
@@ -7,8 +10,6 @@ import com.matti.battleship.computer.MediumAlgorithm;
 import com.matti.battleship.enums.AIDifficulty;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Player;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class GameUtils {
   private static final Logger logger = LogManager.getLogger(GameUtils.class);
@@ -44,14 +45,16 @@ public class GameUtils {
    */
   public static AIDifficulty getDifficultyFromString(String val) {
     switch (val) {
-      case "Easy":
-        return AIDifficulty.EASY;
-      case "Medium":
-        return AIDifficulty.MEDIUM;
-      case "Hard":
-        return AIDifficulty.HARD;
-      default:
-        throw new IllegalArgumentException("An invalid argument as AIDifficulty was passed!");
+      case "Easy" -> {
+          return AIDifficulty.EASY;
+          }
+      case "Medium" -> {
+          return AIDifficulty.MEDIUM;
+          }
+      case "Hard" -> {
+          return AIDifficulty.HARD;
+          }
+      default -> throw new IllegalArgumentException("An invalid argument as AIDifficulty was passed!");
     }
   }
 
@@ -76,14 +79,16 @@ public class GameUtils {
    */
   public static Algorithm determineAlgorithmForTheGame(AIDifficulty difficulty, int boardSize) {
     switch (difficulty) {
-      case EASY:
-        return new EasyAlgorithm();
-      case MEDIUM:
-        return new MediumAlgorithm();
-      case HARD:
-        return new HardAlgorithm(boardSize);
-      default:
-        throw new IllegalArgumentException(
+      case EASY -> {
+          return new EasyAlgorithm();
+          }
+      case MEDIUM -> {
+          return new MediumAlgorithm();
+          }
+      case HARD -> {
+          return new HardAlgorithm(boardSize);
+          }
+      default -> throw new IllegalArgumentException(
             "Unknown enum value for 'AIDifficulty' passed to 'determineAlgorithmForTheGame' method!");
     }
   }
@@ -108,7 +113,7 @@ public class GameUtils {
 
     // Verify if total ship length matches the board's required occupied fields
     int requiredOccupiedFields =
-        BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(player.board.getSize());
+        BoardUtils.getExactNumberOfMandatoryOccupiedFields(player.board.getSize(), player.board.getShipShare());
 
     if (totalShipLength != requiredOccupiedFields) {
       logger.error(
