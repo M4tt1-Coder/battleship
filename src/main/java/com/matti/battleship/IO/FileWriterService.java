@@ -171,7 +171,11 @@ public class FileWriterService {
         .append(game.getWhoseTurn())
         .append(lineSeparator)
         .append("winner=")
-        .append(game.getWinner());
+        .append(game.getWinner())
+        .append(lineSeparator)
+        .append("aiDifficulty=")
+        .append(game.getDifficulty())
+        .append(lineSeparator);
   }
 
   /**
