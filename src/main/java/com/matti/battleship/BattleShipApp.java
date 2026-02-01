@@ -534,6 +534,7 @@ public class BattleShipApp extends Application {
             if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR2.getText());
+                this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
@@ -543,6 +544,7 @@ public class BattleShipApp extends Application {
             if (!textfieldSelectFieldSizeR6.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR6.getText());
+                this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
@@ -1378,6 +1380,7 @@ public class BattleShipApp extends Application {
       ship.translateXProperty().bind(clampedX);
       ship.setTranslateY(0);
 
+      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
