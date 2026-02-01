@@ -130,31 +130,19 @@ public class GameUtils {
   }
 
   /**
-   * Validates the integrity of a {@link Player} instance at the start of the game. Checks if the
-   * player's name is not empty, the initial number of ships on the board is zero, and the board is
-   * empty.
+   * Validates the integrity of a Player instance to ensure it meets the required criteria.
    *
-   * @param player the {@link Player} instance to validate
-   * @return {@code true} if the player instance is valid; {@code false} otherwise
+   * <p>Currently, this validation checks whether the player's name is non-empty. Additional
+   * validation rules can be added as needed.
+   *
+   * @param player The Player object to validate. Must not be null.
+   * @return true if the Player instance passes all validation checks; false otherwise.
+   * @throws NullPointerException if the player parameter is null.
    */
   private static boolean validatePlayerInstance(Player player) {
     // make sure the name is longer then 0 characters
     if (player.getName().isEmpty()) {
       logger.error("The name of the player with the ID {} is empty!", player.getID());
-      return false;
-    }
-
-    // validate the initial board
-    // number of ships should be 0; field should be empty
-    if (player.board.numberOfShips != 0) {
-      logger.error(
-          "The board of the player {} with ID {} doesn't have an initial number of 0 at the start of the game!",
-          player.getName(),
-          player.getID());
-      return false;
-    }
-    if (!player.board.isBoardEmpty()) {
-      logger.error("The board of the player with the ID {} is not empty!", player.getID());
       return false;
     }
 

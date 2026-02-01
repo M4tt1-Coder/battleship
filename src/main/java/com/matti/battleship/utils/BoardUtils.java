@@ -155,7 +155,7 @@ public class BoardUtils {
         break;
       }
     }
-    return output.toArray(new Coordinates[0]);
+    return output.toArray(Coordinates[]::new);
   }
 
   /**
@@ -188,7 +188,7 @@ public class BoardUtils {
   public static ShipLength[] generateShipSetupForPlacement(int boardSize, ShipBoardShare share) {
     int numMandatoryFields = getExactNumberOfMandatoryOccupiedFields(boardSize, share);
 
-    ArrayList<ShipLength> initialShipSetup = new ArrayList<ShipLength>();
+    ArrayList<ShipLength> initialShipSetup = new ArrayList<>();
     // try to select an equal number of each ship size
 
     while (numMandatoryFields > 0) {
@@ -201,7 +201,7 @@ public class BoardUtils {
       }
     }
 
-    return initialShipSetup.toArray(new ShipLength[0]);
+    return initialShipSetup.toArray(ShipLength[]::new);
   }
 
   /**
@@ -263,6 +263,30 @@ public class BoardUtils {
       sb.append("\n");
     }
     logger.info("\n" + sb.toString());
+  }
+
+  /**
+   * Converts a string representation of a share percentage to its corresponding {@link
+   * ShipBoardShare} enum.
+   *
+   * @param str The string representing the share percentage (e.g., "15%", "20%", "30%").
+   * @return The corresponding {@link ShipBoardShare} enum value.
+   */
+  public static ShipBoardShare getShipShareFromString(String str) {
+    switch (str) {
+      case "15%" -> {
+        return ShipBoardShare.FIFTEEN;
+      }
+      case "20%" -> {
+        return ShipBoardShare.TWENTY;
+      }
+      case "30%" -> {
+        return ShipBoardShare.THIRTY;
+      }
+      default -> {
+        return ShipBoardShare.THIRTY;
+      }
+    }
   }
 
   // ----- private methods ------

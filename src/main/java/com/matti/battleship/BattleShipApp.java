@@ -10,6 +10,7 @@ import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.Role;
+import com.matti.battleship.enums.ShipBoardShare;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.socket.GlobalConnector;
@@ -537,7 +538,6 @@ public class BattleShipApp extends Application {
             scene1.setRoot(root5ShootOnShips);
           } catch (Exception ex) {
             System.out.println(ex.toString());
-            return;
           }
         });
 
@@ -588,9 +588,12 @@ public class BattleShipApp extends Application {
                   labelPressRToRotateR4,
                   buttonEndGameR4);
 
+          String selectedShipShareString =
+              comboboxesAmountOfShipsR2.getSelectionModel().getSelectedItem();
+          ShipBoardShare tempShipShare = BoardUtils.getShipShareFromString(selectedShipShareString);
           // prepare ship setup for ship placement
           this.initialShipSetup =
-              BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+              BoardUtils.generateShipSetupForPlacement(this.selected_field_size, tempShipShare);
 
           // save current AIDifficulty
           String selectedDifficultyString =
@@ -598,6 +601,7 @@ public class BattleShipApp extends Application {
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
           this.board = new Board(selected_field_size);
+          this.board.setShipShare(tempShipShare);
 
           GridPane battleGrid = new GridPane();
 
@@ -670,15 +674,19 @@ public class BattleShipApp extends Application {
           // initializing the playing boards
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
+          opponentBoard.setShipShare(this.board.getShipShare());
+          Player tempOpponent = new Player("Opponent", this.selected_field_size);
+          Player tempPlayer = new Player("Player", this.selected_field_size);
+          tempOpponent.board = opponentBoard;
+          tempPlayer.board = this.board;
+
           this.game =
               new Game(
                   this.playingMode,
-                  new Player("Player", this.selected_field_size),
-                  new Player("Opponent", this.selected_field_size),
+                  tempPlayer,
+                  tempOpponent,
                   PlayerTurn.PLAYER,
                   this.initialShipSetup);
-          this.game.opponent.board = opponentBoard;
-          this.game.player.board = this.board;
 
           // determine AI algorithm for the 'VS_AI' playing mode
           if (this.game.getPlayingMode() == PlayingMode.VS_AI) {
