@@ -69,12 +69,9 @@ public class BattleShipApp extends Application {
   private Scene scene1;
   private int selected_field_size = 10;
 
-  // NEW: Boardgröße dynamisch (abhängig von Scene)
   private final DoubleProperty boardSize = new SimpleDoubleProperty(400);
 
-  // OPTIONAL: falls du BOARD_SIZE weiter als "Default" behalten willst
   private double BOARD_SIZE = 400;
-  private double cellSize = BOARD_SIZE / selected_field_size;
 
   // ----- Temporary Game -----
   private Game game;
@@ -484,12 +481,14 @@ public class BattleShipApp extends Application {
     // ----------------------
     buttonGoBackR2.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
 
-    // TODO: Add feature of loading a game state from a file
-
     buttonLoadGameR2.setOnAction(
         e -> {
           File storageFile =
               FileReaderService.chooseSaveFile(root2SingleplayerSettings.getScene().getWindow());
+          if (storageFile == null) {
+            System.out.println("Please choose a file to load the game state from a file!");
+            return;
+          }
           try {
             this.game = FileReaderService.loadGameFromFile(storageFile);
             this.selected_field_size = this.game.player.board.getSize();
@@ -505,6 +504,7 @@ public class BattleShipApp extends Application {
               throw new IllegalStateException(
                   "Loaded game state for wrong playing mode! For 'single player' please choose a file with the playing mode 'VS_AI'!");
             }
+            root5ShootOnShips.getChildren().clear();
             root5ShootOnShips
                 .getChildren()
                 .addAll(
@@ -528,22 +528,11 @@ public class BattleShipApp extends Application {
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
-          System.out.println(source);
-
-          root4PlaceShips
-              .getChildren()
-              .addAll(
-                  labelSelectPositionOfYourBoatsR4,
-                  labelShipsSpawnWhenBoardInitializedR4,
-                  buttonStartShootingR4,
-                  labelPressRToRotateR4,
-                  buttonEndGameR4);
 
           if (source == buttonStartPlacingShipsR2) {
             if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR2.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
@@ -553,15 +542,35 @@ public class BattleShipApp extends Application {
             if (!textfieldSelectFieldSizeR6.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR6.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
               }
             }
-            // TODO: Implementation of setting the server_name
-            if (!textfieldSelectServerNameR6.getText().isEmpty()) {}
+            // if (!textfieldSelectServerNameR6.getText().isEmpty()) {
+            //
+            // }
           }
+
+          // validate input data
+          if (!BoardUtils.isValidBoardSize(this.selected_field_size)) {
+            System.out.println("Please select a valid Board size!");
+            PlayingUtils.show_pop_up_information(
+                root2SingleplayerSettings,
+                "Invalid field size,\n Enter a value between 5 and 30",
+                3000,
+                false);
+            return;
+          }
+          root4PlaceShips.getChildren().clear();
+          root4PlaceShips
+              .getChildren()
+              .addAll(
+                  labelSelectPositionOfYourBoatsR4,
+                  labelShipsSpawnWhenBoardInitializedR4,
+                  buttonStartShootingR4,
+                  labelPressRToRotateR4,
+                  buttonEndGameR4);
 
           // prepare ship setup for ship placement
           this.initialShipSetup =
@@ -621,12 +630,17 @@ public class BattleShipApp extends Application {
                   this.board.getSize())) {
             System.out.println(
                 "You can't start a game if you don't have placed all ships on the board!");
+            PlayingUtils.show_pop_up_information(
+                root4PlaceShips,
+                "You can't start a game \n if you don't have placed all ships on the board!",
+                4000,
+                false);
             e.consume();
             return;
           }
           root5ShootOnShips
               .getChildren()
-              .addAll(
+              .setAll(
                   buttonEndGameR5,
                   labelBackgroundShootingR5,
                   buttonSafeGameR5,
@@ -636,7 +650,7 @@ public class BattleShipApp extends Application {
           // TODO: Add the case for playing against another player -> no board needs to be
           // added
 
-          // initialising the playing boards
+          // initializing the playing boards
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
           this.game =
@@ -677,6 +691,8 @@ public class BattleShipApp extends Application {
           // TODO: Get back the file path for multiplayer
           if (!FileWriterService.safeGameStateToFile(this.game, null)) {
             System.out.println("Failed to properly safe the gamestate!");
+            PlayingUtils.show_pop_up_information(
+                root5ShootOnShips, "Failed to properly safe the gamestate!", 3000, false);
             return;
           }
           root4PlaceShips.getChildren().clear();
@@ -718,7 +734,6 @@ public class BattleShipApp extends Application {
     scene1 = new Scene(root1GamemodeSelection, 800, 600);
     scene1.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
 
-    // NEW: boardSize hängt an Scene-Größe
     boardSize.bind(Bindings.min(scene1.widthProperty(), scene1.heightProperty()).multiply(0.65));
 
     primaryStage.setTitle("Battleship");
@@ -987,7 +1002,6 @@ public class BattleShipApp extends Application {
 
         StackPane cell = new StackPane();
 
-        // NEW: Zellgröße dynamisch
         cell.prefWidthProperty().bind(cs);
         cell.prefHeightProperty().bind(cs);
         cell.minWidthProperty().bind(cs);
@@ -1043,7 +1057,6 @@ public class BattleShipApp extends Application {
                 + "-fx-background-repeat: no-repeat;"
                 + "-fx-background-position: center center;");
 
-        // NEW: Button skaliert mit boardSize
         btn.prefWidthProperty().bind(BUTTON_SIZE);
         btn.prefHeightProperty().bind(BUTTON_SIZE);
         btn.minWidthProperty().bind(BUTTON_SIZE);
@@ -1293,14 +1306,14 @@ public class BattleShipApp extends Application {
             scene1.getRoot().requestFocus();
             scene1.setOnKeyPressed(
                 e -> {
-                  if (e.getCode() == KeyCode.R) { // Wenn R gedrückt
+                  if (e.getCode() == KeyCode.R) {
                     ShipGridElement data = (ShipGridElement) ship.getUserData();
                     Direction oldDirection = data.getDirection();
-                    Direction newDir = // neue direction
+                    Direction newDir =
                         (oldDirection == Direction.RIGHT) ? Direction.DOWN : Direction.RIGHT;
 
                     data.setDirection(newDir);
-                    ship.setUserData(data); // neue data für ship speichern
+                    ship.setUserData(data);
 
                     // first remove ship
                     Ship removedShip = this.board.removeShip(data.getCoordinates());
@@ -1410,7 +1423,6 @@ public class BattleShipApp extends Application {
 
         StackPane cell = new StackPane();
 
-        // NEW: Zellgröße dynamisch
         cell.prefWidthProperty().bind(cs);
         cell.prefHeightProperty().bind(cs);
         cell.minWidthProperty().bind(cs);

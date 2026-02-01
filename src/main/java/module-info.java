@@ -16,4 +16,10 @@ module com.matti.battleship {
   requires jdk.jfr;
 
   exports com.matti.battleship;
+  exports com.matti.battleship.IO;
+  exports com.matti.battleship.enums;
+  exports com.matti.battleship.types;
+  exports com.matti.battleship.utils;
+  exports com.matti.battleship.socket;
+  exports com.matti.battleship.computer;
 }
