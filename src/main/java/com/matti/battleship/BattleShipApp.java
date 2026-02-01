@@ -12,6 +12,7 @@ import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.Role;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.socket.GlobalConnector;
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
 import com.matti.battleship.socket.discovery.DiscoveredServer;
@@ -69,14 +70,13 @@ public class BattleShipApp extends Application {
 
   private final DoubleProperty boardSize = new SimpleDoubleProperty(400);
 
-  private double BOARD_SIZE = 400;
-
   // ----- Temporary Game -----
   private Game game;
   private PlayingMode playingMode;
   @Nullable private AIDifficulty difficulty;
   @Nullable private Algorithm aIAlgorithm;
   @Nullable private Role playerRole;
+  @Nullable private GlobalConnector connector;
 
   // percentage rule ... 30% of the field must be occupied by ships
   private ShipLength[] initialShipSetup;
@@ -472,7 +472,7 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3JoinOtherServers);
           this.playingMode = PlayingMode.VS_PLAYER;
-          discover_servers(root3JoinOtherServers);
+          discover_servers(root3JoinOtherServers, scene1, root4PlaceShips);
         });
 
     // --------------------------------- root 2
@@ -609,7 +609,8 @@ public class BattleShipApp extends Application {
 
     buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
     buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
-    buttonRefreshServersR3.setOnAction(e -> discover_servers(root3JoinOtherServers));
+    buttonRefreshServersR3.setOnAction(
+        e -> discover_servers(root3JoinOtherServers, scene1, root4PlaceShips));
 
     // --------------------------------- root 4
     buttonEndGameR4.setOnAction(
@@ -717,8 +718,6 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root7LoadingScreen);
         });
-
-    // start_game_button_r6.setOnAction(startHandler);
 
     // --------------------------------- root 7
     // ----------------------
@@ -1603,9 +1602,8 @@ public class BattleShipApp extends Application {
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
   }
 
-  private void discover_servers(Pane root) {
-    EnvConfig config = new EnvConfig();
-    int port = config.getPort();
+  private void discover_servers(Pane root, Scene scene, Pane destinationPane) {
+    int port = EnvConfig.getPort();
     ClientDiscoveryScanner scanner = new ClientDiscoveryScanner(port);
     List<DiscoveredServer> list_of_discovered_servers = new ArrayList<>();
     try {
@@ -1625,7 +1623,7 @@ public class BattleShipApp extends Application {
     } else {
       for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
         String server_name = list_of_discovered_servers.get(i).name();
-        // String host_name = list_of_discovered_servers.get(i).host(); // optional, if
+        String host_name = list_of_discovered_servers.get(i).host(); // optional, if
         // needed
         Buttons join_server_button = new Buttons(server_name);
         int row = i / 3;
@@ -1636,12 +1634,48 @@ public class BattleShipApp extends Application {
         join_server_button.position(root, x_pos, y_pos);
         join_server_button.fontsize(root, 0.02);
         join_server_button.size(root, 0.13, 0.05);
+        join_server_button.setOnAction(
+            e -> {
+              // TODO: Complete socket implementation needs to be reworked -> can't get data
+              // out of scope IMessageListener.onMessageReceived
+
+              // this.connector = new GlobalConnector();
+              // try {
+              // this.connector.startAsClient(host_name);
+              // int currentSetup = 1;
+              // final int[] tempBoardSize = { -1 };
+              // IMessageListener listener = new IMessageListener() {
+              // @Override
+              // public void onMessageReceived(String mes) {
+              // Message message = MessageParser.parse(mes);
+              // switch (message.getType()) {
+              // case SIZE -> {
+              // tempBoardSize[0] = message.getIntArg(0);
+              //
+              // break;
+              // }
+              // }
+              // }
+              //
+              // @Override
+              // public void onConnectionClosed(Exception e) {
+              // }
+              //
+              // };
+              // this.connector.setMessageListener(listener);
+              // this.connector.listenLoop();
+              //
+              // scene.setRoot(destinationPane);
+              // } catch (Exception ex) {
+              // System.out.println(ex.getMessage());
+              // return;
+              // }
+            });
       }
     }
   }
 
   // Entry Point -> main function
-
   public static void main(String[] args) {
     launch(args);
   }
