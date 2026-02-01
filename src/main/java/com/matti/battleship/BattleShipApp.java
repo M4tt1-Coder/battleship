@@ -1,5 +1,38 @@
 package com.matti.battleship;
 
+/*
+ * BattleShipApp
+ * -------------
+ * JavaFX application entry point.
+ *
+ * UI concept:
+ * - One Scene (scene1); the root is switched depending on the current screen (scene1.setRoot(...)).
+ * - Multiple "rootX" StackPanes represent individual screens (game mode, settings, placement, playing, etc.).
+ *
+ * Data / logic:
+ * - Game, board, and AI are stored in the application object and updated when switching screens.
+ *
+ * Where to find:
+ *  -   JavaFX lifecycle/roots -> line 128
+ *  -   Button actions / navigation -> 557
+ *  -   Stage / SceneSetup -> 870
+ *  -   Helper functions -> 895
+ *
+ * root naming convention:
+ *  - Structure:
+ *      root<number><what_it_does>
+ *  - Example:
+ *      root2SingleplayerSettings
+ *
+ * object naming convention:
+ *  - Structure:
+ *      <type_of_object><what_it_does>R<number_of_root>
+ *  - Example:
+ *      buttonStartPlacingShipsR2
+ *
+ *
+ */
+
 import com.matti.battleship.IO.FileReaderService;
 import com.matti.battleship.IO.FileWriterService;
 import com.matti.battleship.IO.ResourceProfiler;
@@ -12,6 +45,7 @@ import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.Role;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
+import com.matti.battleship.socket.GlobalConnector;
 import com.matti.battleship.socket.config.EnvConfig;
 import com.matti.battleship.socket.discovery.ClientDiscoveryScanner;
 import com.matti.battleship.socket.discovery.DiscoveredServer;
@@ -66,46 +100,57 @@ import org.jetbrains.annotations.Nullable;
 // option + shift + f -> format
 public class BattleShipApp extends Application {
 
+  // -------------------------------------------------------------------
+  // Global UI state
+  // -------------------------------------------------------------------
+
+  // Main scene: the currently visible screen is controlled by replacing the root
   private Scene scene1;
+
+  // Settings / input: selected board size (default = 10)
   private int selected_field_size = 10;
 
+  // Responsive board pixel size (bound to the Scene size later)
   private final DoubleProperty boardSize = new SimpleDoubleProperty(400);
 
-  private double BOARD_SIZE = 400;
+  // -------------------------------------------------------------------
+  // Temporary game state (reset on end / save / etc.)
+  // -------------------------------------------------------------------
+  private Game game; // current game instance
+  private PlayingMode playingMode; // VS_AI or VS_PLAYER
+  @Nullable private AIDifficulty difficulty; // selected AI difficulty (VS_AI only)
+  @Nullable private Algorithm aIAlgorithm; // concrete AI strategy instance
+  @Nullable private Role playerRole; // player role (client/server)
 
-  // ----- Temporary Game -----
-  private Game game;
-  private PlayingMode playingMode;
-  @Nullable private AIDifficulty difficulty;
-  @Nullable private Algorithm aIAlgorithm;
-  @Nullable private Role playerRole;
-
-  // percentage rule ... 30% of the field must be occupied by ships
+  // Occupancy rule: initial ship setup derived from board size / occupancy %
   private ShipLength[] initialShipSetup;
 
-  // ----- Player -----
   private Board board;
 
-  // ----- Game Logic -----
+  // -------------------------------------------------------------------
+  // JavaFX lifecycle/roots
+  // -------------------------------------------------------------------
 
   @Override
   public void start(Stage primaryStage) {
 
-    // ---------------root 1
-    // ---------------------------------------------------------------------
-    // root1
+    // ================================================================
+    // ROOT 1: Game mode selection (Singleplayer / Multiplayer)
+    // ================================================================
 
+    // Button: go to singleplayer settings screen
     Buttons buttonSingleplayerR1 = new Buttons("Singleplayer");
     buttonSingleplayerR1.setId("buttonSingleplayerR1");
 
+    // Button: go to multiplayer server list screen
     Buttons buttonMultiplayerR1 = new Buttons("Multiplayer");
     buttonMultiplayerR1.setId("buttonMultiplayerR1");
 
+    // Screen root container for root1
     StackPane root1GamemodeSelection = new StackPane(buttonSingleplayerR1, buttonMultiplayerR1);
     root1GamemodeSelection.setId("root1GamemodeSelection");
 
-    // Layout root1:
-
+    // Layout root1: !position/size relative to the root pane
     buttonSingleplayerR1.position(root1GamemodeSelection, -0.25, 0.35);
     buttonSingleplayerR1.fontsize(root1GamemodeSelection, 0.05);
     buttonSingleplayerR1.size(root1GamemodeSelection, 0.5, 0.3);
@@ -114,10 +159,11 @@ public class BattleShipApp extends Application {
     buttonMultiplayerR1.fontsize(root1GamemodeSelection, 0.05);
     buttonMultiplayerR1.size(root1GamemodeSelection, 0.5, 0.3);
 
-    // ---------------root 2
-    // ---------------------------------------------------------------------
-    // root2
+    // ================================================================
+    // ROOT 2: Singleplayer settings (AI image + settings + start/load)
+    // ================================================================
 
+    // Background / preview image (player vs AI)
     Image imagePlayerVsAiR2 =
         new Image(
             getClass()
@@ -125,21 +171,29 @@ public class BattleShipApp extends Application {
                 .toExternalForm());
     ImageViews imageviewPlayerVsAiR2 = new ImageViews(imagePlayerVsAiR2);
 
+    // all the actions what the buttons do can be found in button actions
+
+    // Navigation button: go back to root1
     Buttons buttonGoBackR2 = new Buttons();
     buttonGoBackR2.setId("buttonsGoBack");
 
+    // Start flow: go to ship placement (root4)
     Buttons buttonStartPlacingShipsR2 = new Buttons("Start Game");
     buttonStartPlacingShipsR2.setId("buttonsNormal");
 
+    // Load saved game and jump directly into playing screen (root5)
     Buttons buttonLoadGameR2 = new Buttons("Load Game");
     buttonLoadGameR2.setId("buttonsSaveAndLoad");
 
+    // Difficulty selection for AI (Easy/Medium/Hard)
     ComboBoxes comboboxesDifficultySelectionR2 = new ComboBoxes();
     comboboxesDifficultySelectionR2.setId("comboboxes");
 
+    // Ship occupancy selection (15% / 20% / 30%)
     ComboBoxes comboboxesAmountOfShipsR2 = new ComboBoxes();
     comboboxesAmountOfShipsR2.setId("comboboxes");
 
+    // Input: field size text (validated later)
     TextFields textfieldSelectFieldSizeR2 = new TextFields();
     textfieldSelectFieldSizeR2.setId("textfields");
     textfieldSelectFieldSizeR2.setPromptText("Type in field size");
@@ -156,6 +210,7 @@ public class BattleShipApp extends Application {
     Labels labelTextSelectAmountOfShipsR2 = new Labels("Occupancy\n Rate of Ships:");
     labelTextSelectAmountOfShipsR2.setId("labelsNormal");
 
+    // Screen root container for root2 (order matters for z-index / stacking)
     StackPane root2SingleplayerSettings =
         new StackPane(
             imageviewPlayerVsAiR2,
@@ -170,6 +225,8 @@ public class BattleShipApp extends Application {
             labelTextSelectFieldSizeR2,
             labelTextSelectAmountOfShipsR2);
     root2SingleplayerSettings.setId("root2SingleplayerSettings");
+
+    // Layout root2:
 
     imageviewPlayerVsAiR2.position(root2SingleplayerSettings, 0.25, 0.00);
     imageviewPlayerVsAiR2.size(root2SingleplayerSettings, 0.5, 1);
@@ -216,16 +273,19 @@ public class BattleShipApp extends Application {
     labelTextSelectAmountOfShipsR2.fontsize(root2SingleplayerSettings, 0.015);
     labelTextSelectAmountOfShipsR2.size(root2SingleplayerSettings, 0.2, 0.1);
 
-    // ---------------root 3
-    // ---------------------------------------------------------------------
-    // root3
+    // ================================================================
+    // ROOT 3: Multiplayer server list / join screen
+    // ================================================================
 
+    // go back to root1
     Buttons buttonGoBackR3 = new Buttons();
     buttonGoBackR3.setId("buttonsGoBack");
 
+    // go to multiplayer settings screen
     Buttons buttonCreateOwnGameR3 = new Buttons("Create own Game");
     buttonCreateOwnGameR3.setId("buttonsNormal");
 
+    // calls discover function to search for available servers
     Buttons buttonRefreshServersR3 = new Buttons("Refresh Servers");
     buttonRefreshServersR3.setId("buttonsNormal");
 
@@ -236,6 +296,8 @@ public class BattleShipApp extends Application {
         new StackPane(
             buttonGoBackR3, labelJoinOtherPlayersR3, buttonCreateOwnGameR3, buttonRefreshServersR3);
     root3JoinOtherServers.setId("root3JoinOtherServers");
+
+    // Layout root3:
 
     buttonGoBackR3.position(root3JoinOtherServers, -0.45, -0.43);
     buttonGoBackR3.fontsize(root3JoinOtherServers, 0.01);
@@ -253,12 +315,15 @@ public class BattleShipApp extends Application {
     labelJoinOtherPlayersR3.fontsize(root3JoinOtherServers, 0.03);
     labelJoinOtherPlayersR3.size(root3JoinOtherServers, 0.7, 0.8);
 
-    // ---------------root 4
-    // ---------------------------------------------------------------------
-    // root4
+    // ================================================================
+    // ROOT 4: Ship placement screen
+    // ================================================================
+
+    // go back to root1
     Buttons buttonEndGameR4 = new Buttons("End Game");
     buttonEndGameR4.setId("buttonsEndGame");
 
+    // go to root5 to shoot
     Buttons buttonStartShootingR4 = new Buttons("Start");
     buttonStartShootingR4.setId("buttonsNormal");
 
@@ -272,8 +337,11 @@ public class BattleShipApp extends Application {
         new Labels("Press R after the ship\n has been dropped\n onto the board to Rotate");
     labelPressRToRotateR4.setId("labelsNormal");
 
+    // objects are added in button action of buttonStartGameR2
     StackPane root4PlaceShips = new StackPane();
     root4PlaceShips.setId("root4PlaceShips");
+
+    // Layout root4
 
     buttonEndGameR4.position(root4PlaceShips, -0.38, -0.43);
     buttonEndGameR4.fontsize(root4PlaceShips, 0.02);
@@ -295,13 +363,15 @@ public class BattleShipApp extends Application {
     labelPressRToRotateR4.fontsize(root4PlaceShips, 0.012);
     labelPressRToRotateR4.size(root4PlaceShips, 0.25, 0.3);
 
-    // ---------------root 5
-    // ---------------------------------------------------------------------
-    // root5
+    // ================================================================
+    // ROOT 5: Playing screen (shooting boards + save/end)
+    // ================================================================
 
+    //go to root1
     Buttons buttonEndGameR5 = new Buttons("End Game");
     buttonEndGameR5.setId("buttonsEndGame");
 
+    // Saves game into a .txt file
     Buttons buttonSafeGameR5 = new Buttons("Save Game");
     buttonSafeGameR5.setId("buttonsSaveAndLoad");
 
@@ -316,6 +386,8 @@ public class BattleShipApp extends Application {
 
     StackPane root5ShootOnShips = new StackPane();
     root5ShootOnShips.setId("root5ShootOnShips");
+
+    // Layout root5
 
     buttonEndGameR5.position(root5ShootOnShips, -0.38, -0.43);
     buttonEndGameR5.fontsize(root5ShootOnShips, 0.02);
@@ -337,9 +409,11 @@ public class BattleShipApp extends Application {
     buttonSafeGameR5.fontsize(root5ShootOnShips, 0.015);
     buttonSafeGameR5.size(root5ShootOnShips, 0.2, 0.08);
 
-    // ---------------root 6
-    // ---------------------------------------------------------------------
-    // root6
+    // ================================================================
+    // ROOT 6: Multiplayer settings (field size + server name)
+    // ================================================================
+
+    // Background / preview image (player vs player)
     Image imagePlayerVsPlayerR6 =
         new Image(
             getClass()
@@ -382,6 +456,8 @@ public class BattleShipApp extends Application {
             labelSelectServerNameR6);
     root6MultiplayerSettings.setId("root6MultiplayerSettings");
 
+    // Layout root6
+
     imageviewPlayerVsPlayerR6.position(root6MultiplayerSettings, 0.25, 0.00);
     imageviewPlayerVsPlayerR6.size(root6MultiplayerSettings, 0.5, 1);
 
@@ -413,9 +489,11 @@ public class BattleShipApp extends Application {
     labelSelectServerNameR6.fontsize(root6MultiplayerSettings, 0.02);
     labelSelectServerNameR6.size(root6MultiplayerSettings, 0.2, 0.1);
 
-    // ---------------root 7
-    // ---------------------------------------------------------------------
-    // root7
+    // ================================================================
+    // ROOT 7: Loading / waiting screen (multiplayer)
+    // ================================================================
+
+    // Animated GIF
     Image imageGifOfJetR7 =
         new Image(getClass().getResource("/com/matti/battleship/images/jet.gif").toExternalForm());
     ImageViews imageviewGifOfJetR7 = new ImageViews(imageGifOfJetR7);
@@ -426,6 +504,7 @@ public class BattleShipApp extends Application {
     Labels labelWaitingForOtherPlayerToJoinR7 = new Labels("Waiting for other player to join");
     labelWaitingForOtherPlayerToJoinR7.setId("labelWaitingScreen1");
 
+    // Text that changes every start with loading animation
     List<String> listFunnyTextsR7 =
         List.of(
             "Get a quick coffee",
@@ -439,6 +518,7 @@ public class BattleShipApp extends Application {
     Labels labelFunnyInfosR7 = new Labels(base);
     labelFunnyInfosR7.setId("labelWaitingScreen2");
 
+    // dot loading animation
     Timeline dots =
         new Timeline(
             new KeyFrame(Duration.millis(0), e -> labelFunnyInfosR7.setText(base)),
@@ -455,6 +535,8 @@ public class BattleShipApp extends Application {
             labelFunnyInfosR7,
             imageviewGifOfJetR7);
     root7LoadingScreen.setId("root7LoadingScreen");
+
+    // Layout root7
 
     imageviewGifOfJetR7.position(root7LoadingScreen, 0, 0.2);
     imageviewGifOfJetR7.size(root7LoadingScreen, 0.5, 0.5);
@@ -473,14 +555,12 @@ public class BattleShipApp extends Application {
     labelFunnyInfosR7.size(root7LoadingScreen, 0.4, 0.2);
     labelFunnyInfosR7.setAlignment(Pos.CENTER);
 
-    // ---------------root 8
-    // ---------------------------------------------------------------------
-    // root8
+    // ================================================================
+    // Button actions / navigation
+    // ================================================================
 
-    // ---------------button_actions---------------------------------------------------------------------
-
-    // --------------------------------- root 1
-    // ----------------------
+    // ---------------------- Root 1 actions ----------------------
+    // Singleplayer: go to settings screen and set playing mode
     buttonSingleplayerR1.setOnAction(
         e -> {
           scene1.setRoot(root2SingleplayerSettings);
@@ -488,6 +568,8 @@ public class BattleShipApp extends Application {
           // this.game = new Game(PlayingMode.VS_AI, new Player("Player", boardSize), ,
           // turn, initialShipSetup)
         });
+
+    // Multiplayer: go to server list and start discovery function
     buttonMultiplayerR1.setOnAction(
         e -> {
           scene1.setRoot(root3JoinOtherServers);
@@ -495,10 +577,13 @@ public class BattleShipApp extends Application {
           discover_servers(root3JoinOtherServers);
         });
 
-    // --------------------------------- root 2
-    // ----------------------
-    buttonGoBackR2.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
+    // ---------------------- Root 2 actions ----------------------
+    // Back to root1
+    buttonGoBackR2.setOnAction(e ->
+            scene1.setRoot(root1GamemodeSelection)
+    );
 
+    // Load saved singleplayer game and jump to playing screen (root5)
     buttonLoadGameR2.setOnAction(
         e -> {
           File storageFile =
@@ -532,7 +617,10 @@ public class BattleShipApp extends Application {
                     labelTextYourSideR5,
                     labelTextEnemySideR5);
 
+            // Create + initialize the playing grids for loaded state
             preparePlayingGridPanes(root5ShootOnShips, this.game);
+
+            // Ensure buttons stay visible on top
             buttonEndGameR5.toFront();
             buttonSafeGameR5.toFront();
 
@@ -543,10 +631,12 @@ public class BattleShipApp extends Application {
           }
         });
 
+    // Shared start handler: used by singleplayer start (root2) and intended for multiplayer start (root6)
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
 
+          // Read board size from root2 textfield (singleplayer)
           if (source == buttonStartPlacingShipsR2) {
             if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
               try {
@@ -556,6 +646,7 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = 10;
               }
             }
+            // Read board size from root6 textfield (multiplayer)
           } else if (source == buttonStartGameR6) {
             if (!textfieldSelectFieldSizeR6.getText().isEmpty()) {
               try {
@@ -565,12 +656,16 @@ public class BattleShipApp extends Application {
                 this.selected_field_size = 10;
               }
             }
-            // if (!textfieldSelectServerNameR6.getText().isEmpty()) {
-            //
-            // }
+
+            // Sets server Name
+            if (!textfieldSelectServerNameR6.getText().isEmpty()) {
+              GlobalConnector global = new GlobalConnector();
+              global.setServerName(textfieldSelectServerNameR6.getText());
+            }
+
           }
 
-          // validate input data
+          // Validate board size input
           if (!BoardUtils.isValidBoardSize(this.selected_field_size)) {
             System.out.println("Please select a valid Board size!");
             PlayingUtils.show_pop_up_information(
@@ -580,6 +675,8 @@ public class BattleShipApp extends Application {
                 false);
             return;
           }
+
+          // Rebuild root4 base UI elements
           root4PlaceShips.getChildren().clear();
           root4PlaceShips
               .getChildren()
@@ -590,19 +687,22 @@ public class BattleShipApp extends Application {
                   labelPressRToRotateR4,
                   buttonEndGameR4);
 
-          // prepare ship setup for ship placement
+          // Generate ship setup for placement (based on board size / occupancy)
           this.initialShipSetup =
               BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
 
-          // save current AIDifficulty
+          // Read selected difficulty from combobox and convert to enum
           String selectedDifficultyString =
               comboboxesDifficultySelectionR2.getSelectionModel().getSelectedItem();
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
+          // Create the logical board for placement
           this.board = new Board(selected_field_size);
 
+          // Create placement grid (visual)
           GridPane battleGrid = new GridPane();
 
+          // Bind grid size to responsive boardSize
           battleGrid.prefWidthProperty().bind(boardSize);
           battleGrid.prefHeightProperty().bind(boardSize);
           battleGrid.minWidthProperty().bind(boardSize);
@@ -612,11 +712,13 @@ public class BattleShipApp extends Application {
 
           battleGrid.setStyle("-fx-background-color: transparent;");
 
-          // initialize the grid with cells
+          // Create placement cells and drag/drop handlers
           initializePlacementBoard(battleGrid);
 
+          // Create draggable ship rectangles (outside the grid)
           prepareShipRectangles(root4PlaceShips);
 
+          // Add grid to the placement screen and navigate to root4
           root4PlaceShips.getChildren().add(battleGrid);
           StackPane.setAlignment(battleGrid, Pos.CENTER);
           scene1.setRoot(root4PlaceShips);
@@ -624,14 +726,22 @@ public class BattleShipApp extends Application {
 
     buttonStartPlacingShipsR2.setOnAction(startHandler);
 
-    // --------------------------------- root 3
-    // ----------------------
+    // ---------------------- Root 3 actions ----------------------
+    // Back to root1
+    buttonGoBackR3.setOnAction(e ->
+            scene1.setRoot(root1GamemodeSelection)
+    );
+    // Create own game -> open multiplayer settings (root6)
+    buttonCreateOwnGameR3.setOnAction(e ->
+            scene1.setRoot(root6MultiplayerSettings)
+    );
+    // Refresh discovered servers list
+    buttonRefreshServersR3.setOnAction(e ->
+            discover_servers(root3JoinOtherServers)
+    );
 
-    buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
-    buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
-    buttonRefreshServersR3.setOnAction(e -> discover_servers(root3JoinOtherServers));
-
-    // --------------------------------- root 4
+    // ---------------------- Root 4 actions ----------------------
+    // End placement/game: clear roots and return to root1
     buttonEndGameR4.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
@@ -640,6 +750,7 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root1GamemodeSelection);
         });
 
+    // Start shooting: validate placement, create game, place AI ships, go to root5
     buttonStartShootingR4.setOnAction(
         e -> {
           // prevent starting a game when not all ships have been placed
@@ -666,10 +777,9 @@ public class BattleShipApp extends Application {
                   labelTextYourSideR5,
                   labelTextEnemySideR5);
 
-          // TODO: Add the case for playing against another player -> no board needs to be
-          // added
+          // TODO: Add the case for playing against another player -> no board needs to be added
 
-          // initializing the playing boards
+          // Create opponent board and auto-place ships
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
           this.game =
@@ -689,6 +799,7 @@ public class BattleShipApp extends Application {
             this.game.setDifficulty(this.difficulty);
           }
 
+          // Build playing grids and sync UI to logical state
           preparePlayingGridPanes(root5ShootOnShips, this.game);
 
           buttonEndGameR5.toFront();
@@ -696,7 +807,8 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root5ShootOnShips);
         });
 
-    // --------------------------------- root 5
+    // ---------------------- Root 5 actions ----------------------
+    // End game from playing screen
     buttonEndGameR5.setOnAction(
         e -> {
           root4PlaceShips.getChildren().clear();
@@ -705,6 +817,8 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root1GamemodeSelection);
         });
 
+
+    // Save game state and fully reset game-related fields
     buttonSafeGameR5.setOnAction(
         e -> {
           // TODO: Get back the file path for multiplayer
@@ -714,8 +828,11 @@ public class BattleShipApp extends Application {
                 root5ShootOnShips, "Failed to properly safe the gamestate!", 3000, false);
             return;
           }
+          // Clear UI roots
           root4PlaceShips.getChildren().clear();
           root5ShootOnShips.getChildren().clear();
+
+          // Reset all gameplay state
           this.board = null;
           this.game = null;
           this.playingMode = null;
@@ -727,47 +844,60 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root1GamemodeSelection);
         });
 
-    // --------------------------------- root 6
-    // ----------------------
+    // ---------------------- Root 6 actions ----------------------
+    // Back to server list
     buttonGoBackR6.setOnAction(
         e -> {
           scene1.setRoot(root3JoinOtherServers);
         });
 
+    // Start multiplayer -> show waiting screen (root7)
+    //TODO: Add Multiplayer Connection logic
     buttonStartGameR6.setOnAction(
         e -> {
           scene1.setRoot(root7LoadingScreen);
         });
 
+    //TODO: If player joined zwisch to root5
+
     // start_game_button_r6.setOnAction(startHandler);
 
-    // --------------------------------- root 7
-    // ----------------------
+    // ---------------------- Root 7 actions ----------------------
+    // Back from waiting screen to server list
     buttonGoBackR7.setOnAction(
         e -> {
           scene1.setRoot(root3JoinOtherServers);
         });
 
-    // ---------------Stage
-    // Setup--------------------------------------------------------------
+    // ================================================================
+    // Stage / Scene setup
+    // ================================================================
+    //Create window with size 800x600
     scene1 = new Scene(root1GamemodeSelection, 800, 600);
+
+    //include stylesheet
     scene1.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
 
+    // Bind boardSize to the smaller window dimension (responsive square board),
+    // then scale to 65% of that dimension.
     boardSize.bind(Bindings.min(scene1.widthProperty(), scene1.heightProperty()).multiply(0.65));
 
+    // Stage title and (fav)icon.
     primaryStage.setTitle("Battleship");
     Image icon =
         new Image(
             getClass().getResource("/com/matti/battleship/images/favicon.png").toExternalForm());
     primaryStage.getIcons().add(icon);
+
+    // Attach the scene and show the stage.
     primaryStage.setScene(scene1);
     primaryStage.show();
   }
 
   // _________________________________________________________________
-  // ----- Helpers -----
+  // ----- Helper functions -----
   // _________________________________________________________________
-
+  //TODO: Outsource helper functions
   /**
    * Prepares and initializes the playing grid panes for the game UI.
    *
@@ -1625,6 +1755,18 @@ public class BattleShipApp extends Application {
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
   }
 
+  /**
+   * Discovers available multiplayer servers on the local network and updates the given UI root pane
+   * with corresponding join buttons (or a "No servers found" label if none are discovered).
+   *
+   * <p>This method reads the discovery port from {@link EnvConfig}, runs a {@link ClientDiscoveryScanner}
+   * with a fixed timeout, and collects {@link DiscoveredServer} results. It then renders up to 9 servers
+   * as buttons arranged in a simple 3-column grid using predefined relative positions.
+   *
+   * <p>If no servers are found, a centered information label is added to the root pane.
+   *
+   * @param root the UI container {@link Pane} that will receive the "no servers" label or the join buttons.
+   */
   private void discover_servers(Pane root) {
     EnvConfig config = new EnvConfig();
     int port = config.getPort();
