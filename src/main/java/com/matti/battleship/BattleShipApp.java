@@ -812,7 +812,7 @@ public class BattleShipApp extends Application {
       for (Field field : row) {
         Coordinates coor = field.getCoordinates();
         Buttons cell = (Buttons) GridPaneUtils.getNodeByRowColumn(opponentPane, coor.y, coor.x);
-        FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field);
+        FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field, opponentBoard);
         // update ui according to changes
         ImageViews iv;
         switch (fieldState) {
@@ -824,6 +824,7 @@ public class BattleShipApp extends Application {
             iv.setPreserveRatio(false);
 
             cell.setGraphic(iv);
+            break;
           }
           case HIT -> {
             iv = new ImageViews(imgHit);
@@ -833,6 +834,7 @@ public class BattleShipApp extends Application {
             iv.setPreserveRatio(false);
 
             cell.setGraphic(iv);
+            break;
           }
           case SUNK -> {
             Ship ship = opponentBoard.getShipByCoordinates(coor);
@@ -849,6 +851,7 @@ public class BattleShipApp extends Application {
               shipCell.setGraphic(null);
               shipCell.setStyle("-fx-background-color: red;");
             }
+            break;
           }
           case NOT_SET -> {}
         }
@@ -888,7 +891,7 @@ public class BattleShipApp extends Application {
         Coordinates coor = field.getCoordinates();
         StackPane cell = (StackPane) GridPaneUtils.getNodeByRowColumn(opponentPane, coor.y, coor.x);
         PlayerBoardCellContext context = (PlayerBoardCellContext) cell.getUserData();
-        FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field);
+        FieldDisplayState fieldState = FieldUtils.getTheoreticalStateOfField(field, playerBoard);
         if (context.state != fieldState) {
           context.state = fieldState;
           cell.setUserData(context);
@@ -904,6 +907,7 @@ public class BattleShipApp extends Application {
 
               cell.getChildren().clear();
               cell.getChildren().add(iv);
+              break;
             }
             case HIT -> {
               iv = new ImageViews(imgHit);
@@ -914,6 +918,7 @@ public class BattleShipApp extends Application {
 
               cell.getChildren().clear();
               cell.getChildren().add(iv);
+              break;
             }
             case SUNK -> {
               Ship ship = playerBoard.getShipByCoordinates(coor);
@@ -929,12 +934,13 @@ public class BattleShipApp extends Application {
                         GridPaneUtils.getNodeByRowColumn(
                             opponentPane, shipCoordinates.y, shipCoordinates.x);
                 PlayerBoardCellContext shipCellContext =
-                    (PlayerBoardCellContext) cell.getUserData();
+                    (PlayerBoardCellContext) shipCell.getUserData();
                 shipCellContext.state = FieldDisplayState.SUNK;
                 shipCell.setUserData(shipCellContext);
                 shipCell.getChildren().clear();
                 shipCell.setStyle("-fx-background-color: red;");
               }
+              break;
             }
             case NOT_SET -> {
               throw new UnknownError(

@@ -407,6 +407,37 @@ public class Board {
     return null;
   }
 
+  /**
+   * Retrieves the coordinates of all fields occupied by ships that have been sunk on the current
+   * board.
+   *
+   * <p>This method iterates through all fields on the game board, checks if the field has been shot
+   * at, and if it belongs to a ship that has sunk. For each such field, it retrieves all
+   * coordinates occupied by that ship and adds them to the output list.
+   *
+   * <p>The method returns an array of {@link Coordinates} representing all fields of sunk ships.
+   * Duplicate coordinates are unlikely but possible if multiple fields of the same ship are
+   * processed; however, since ships are sunk, this case should not occur.
+   *
+   * @return An array containing the {@link Coordinates} of all fields occupied by sunk ships.
+   */
+  public Coordinates[] getAllFieldsOfCurrentSunkenShips() {
+    ArrayList<Coordinates> output = new ArrayList<>();
+
+    for (Field[] row : this.board) {
+      for (Field field : row) {
+        if (field.wasShotAt() && field.getShip() != null && field.getShip().getHasSunk()) {
+          Coordinates[] shipCoordinates = ShipUtils.getFieldsOfShip(this, field.getShip());
+          for (Coordinates coor : shipCoordinates) {
+            output.add(coor);
+          }
+        }
+      }
+    }
+
+    return output.toArray(new Coordinates[0]);
+  }
+
   // ----- Private Methods -----
 
   /**
