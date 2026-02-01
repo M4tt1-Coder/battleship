@@ -569,7 +569,7 @@ public class BattleShipApp extends Application {
           }
           root4PlaceShips.getChildren().clear();
           root4PlaceShips
-              .getChilgetChildrendren()
+              .getChildren()
               .addAll(
                   labelSelectPositionOfYourBoatsR4,
                   labelShipsSpawnWhenBoardInitializedR4,
