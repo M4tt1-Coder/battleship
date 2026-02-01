@@ -61,8 +61,6 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO: Refactor code -> extract indenpendent snippets into external functions
 
-// TODO: Move all image loading to the 'ResourceProfiler' instance
-
 // option + shift + f -> formatieren
 public class BattleShipApp extends Application {
 
@@ -1387,7 +1385,6 @@ public class BattleShipApp extends Application {
       ship.translateXProperty().bind(clampedX);
       ship.setTranslateY(0);
 
-      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
