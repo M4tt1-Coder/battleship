@@ -17,6 +17,23 @@ import org.apache.logging.log4j.Logger;
 public class BoardUtils {
   private static final Logger logger = LogManager.getLogger(BoardUtils.class);
 
+  /** Define the maximum allowed size for the board */
+  private static final int MAX_BOARD_SIZE = 30;
+
+  /** Define the minimum allowed size for the board */
+  private static final int MIN_BOARD_SIZE = 5;
+
+  /**
+   * Checks if the provided board size is within the valid range.
+   *
+   * @param boardSize The size of the board to validate.
+   * @return {@code true} if the size is between MIN_BOARD_SIZE and MAX_BOARD_SIZE (inclusive),
+   *     {@code false} otherwise.
+   */
+  public static boolean isValidBoardSize(int boardSize) {
+    return boardSize >= MIN_BOARD_SIZE && boardSize <= MAX_BOARD_SIZE;
+  }
+
   /**
    * Checks whether a ship can be placed on the board at its intended position without overlapping
    * existing ships and without being directly adjacent to any other ship.

@@ -40,7 +40,7 @@ public class Board {
   public Board(int size) {
     // size can only be set during initialization
     // - must be greater than one and less than 16
-    if (size < 5 || size > 30) {
+    if (!BoardUtils.isValidBoardSize(size)) {
       logger.error("Board size must be between 5 and 30! Provided size: {}", size);
       throw new IllegalArgumentException("Board size must be between 5 and 30!");
     }

@@ -74,7 +74,6 @@ public class BattleShipApp extends Application {
 
   // OPTIONAL: falls du BOARD_SIZE weiter als "Default" behalten willst
   private double BOARD_SIZE = 400;
-  private double cellSize = BOARD_SIZE / selected_field_size;
 
   // ----- Temporary Game -----
   private Game game;
@@ -488,6 +487,10 @@ public class BattleShipApp extends Application {
         e -> {
           File storageFile =
               FileReaderService.chooseSaveFile(root2SingleplayerSettings.getScene().getWindow());
+          if (storageFile == null) {
+            System.out.println("Please choose a file to load the game state from a file!");
+            return;
+          }
           try {
             this.game = FileReaderService.loadGameFromFile(storageFile);
             this.selected_field_size = this.game.player.board.getSize();
@@ -526,22 +529,11 @@ public class BattleShipApp extends Application {
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
-          System.out.println(source);
-
-          root4PlaceShips
-              .getChildren()
-              .addAll(
-                  labelSelectPositionOfYourBoatsR4,
-                  labelShipsSpawnWhenBoardInitializedR4,
-                  buttonStartShootingR4,
-                  labelPressRToRotateR4,
-                  buttonEndGameR4);
 
           if (source == buttonStartPlacingShipsR2) {
             if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR2.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
@@ -551,14 +543,29 @@ public class BattleShipApp extends Application {
             if (!textfieldSelectFieldSizeR6.getText().isEmpty()) {
               try {
                 this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR6.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
               } catch (NumberFormatException ex) {
                 System.out.println("Invalid field size, default value 10");
                 this.selected_field_size = 10;
               }
             }
-            if (!textfieldSelectServerNameR6.getText().isEmpty()) {}
+            // if (!textfieldSelectServerNameR6.getText().isEmpty()) {
+            //
+            // }
           }
+
+          // validate input data
+          if (!BoardUtils.isValidBoardSize(this.selected_field_size)) {
+            System.out.println("Please select a valid Board size!");
+            return;
+          }
+          root4PlaceShips
+              .getChildren()
+              .addAll(
+                  labelSelectPositionOfYourBoatsR4,
+                  labelShipsSpawnWhenBoardInitializedR4,
+                  buttonStartShootingR4,
+                  labelPressRToRotateR4,
+                  buttonEndGameR4);
 
           // prepare ship setup for ship placement
           this.initialShipSetup =
