@@ -7,9 +7,8 @@ import java.util.*;
  * Scans the local network for available Battleship servers using UDP broadcast discovery. This
  * class sends a broadcast message ("DISCOVER") to the configured port and then listens for
  * responses from servers that are currently free (not busy). The discovery protocol is defined in
- * {@link DiscoveryProtocol}. Expected server reply format: "BS_HERE_V1 <tcpPort> <serverName...>"
- * The result is a list of {@link DiscoveredServer} entries that can be displayed in the GUI and
- * used to establish a TCP connection afterwards.
+ * {@link DiscoveryProtocol}. The result is a list of {@link DiscoveredServer} entries that can be
+ * displayed in the GUI and used to establish a TCP connection afterwards.
  *
  * <p>GUI-IMPORTANT: Used by the GUI to build the "server list" screen. Important methods: -
  * discover(timeoutMillis): scans the LAN via UDP broadcast and returns a List<DiscoveredServer>
@@ -29,7 +28,6 @@ public class ClientDiscoveryScanner {
    * Creates a new discovery scanner for a specific port.
    *
    * @param port the UDP port where servers listen for discovery requests
-   * @author WoFabian
    */
   public ClientDiscoveryScanner(int port) {
     this.port = port;
@@ -44,7 +42,6 @@ public class ClientDiscoveryScanner {
    * @param timeoutMillis how long to wait for server responses
    * @return list of discovered servers (can be empty if no server answered)
    * @throws Exception if socket creation or sending fails
-   * @author WoFabian
    */
   public List<DiscoveredServer> discover(int timeoutMillis) throws Exception {
     // Key: host IP, Value: server info. Using a map avoids duplicates.
@@ -101,7 +98,8 @@ public class ClientDiscoveryScanner {
           found.put(host, new DiscoveredServer(host, tcpPort, name, System.currentTimeMillis()));
 
         } catch (SocketTimeoutException ignored) {
-          // No response in the current wait window -> continue until overall timeout is reached.
+          // No response in the current wait window -> continue until overall timeout is
+          // reached.
         }
       }
     }
@@ -119,7 +117,6 @@ public class ClientDiscoveryScanner {
    * @param parts the split message tokens
    * @param start the starting index (inclusive)
    * @return joined string from parts[start..end]
-   * @author WoFabian
    */
   private String joinFrom(String[] parts, int start) {
     StringBuilder b = new StringBuilder();

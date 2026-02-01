@@ -246,5 +246,4 @@ public class BoardUtils {
   }
 
   // ----- private methods ------
-
 }

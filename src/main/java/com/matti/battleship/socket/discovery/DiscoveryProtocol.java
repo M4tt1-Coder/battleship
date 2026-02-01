@@ -7,8 +7,7 @@ import java.nio.charset.StandardCharsets;
  * protocol is intentionally simple and text-based: - Clients broadcast a discovery request using
  * {@link #DISCOVER} - Free servers answer with a response starting with {@link #HERE_PREFIX}
  *
- * <p>Example: Client sends: "BS_DISCOVER_V1" Server replies: "BS_HERE_V1 <tcpPort> <serverName...>"
- * This class also provides helper methods to convert between String and byte[] using UTF-8.
+ * <p>* This class also provides helper methods to convert between String and byte[] using UTF-8.
  *
  * @author WoFabian
  */
@@ -32,7 +31,6 @@ public class DiscoveryProtocol {
    *
    * @param s input string
    * @return UTF-8 encoded bytes
-   * @author WoFabian
    */
   public static byte[] bytes(String s) {
 
@@ -46,7 +44,6 @@ public class DiscoveryProtocol {
    * @param buf byte buffer (e.g. from DatagramPacket.getData())
    * @param len actual message length (e.g. from DatagramPacket.getLength())
    * @return decoded and trimmed message string
-   * @author WoFabian
    */
   public static String str(byte[] buf, int len) {
     return new String(buf, 0, len, StandardCharsets.UTF_8).trim();

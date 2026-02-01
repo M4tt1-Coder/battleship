@@ -125,7 +125,6 @@ public class SocketConnector {
    * Sets the callback that receives incoming protocol lines and disconnect events.
    *
    * @param listener listener to notify (may be null)
-   * @author WoFabian
    */
   public void setMessageListener(IMessageListener listener) {
     this.listener = listener;
@@ -139,7 +138,6 @@ public class SocketConnector {
    *
    * @param msg one full protocol command line (without newline)
    * @throws IOException if writing to the socket fails
-   * @author WoFabian
    */
   public synchronized void sendMessage(String msg) throws IOException {
     handleTurnOnSend(msg);
@@ -253,8 +251,6 @@ public class SocketConnector {
    *
    * <p>LOGIC-IMPORTANT: This is a hard shutdown and will also end any active {@link #listenLoop()}
    * due to IO errors / stream closure.
-   *
-   * @author WoFabian
    */
   public void close() {
     try {

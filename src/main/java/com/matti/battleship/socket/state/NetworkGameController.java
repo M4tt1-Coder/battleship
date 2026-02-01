@@ -49,7 +49,6 @@ public class NetworkGameController implements IMessageListener {
    *
    * @param isServer true if this instance controls the server side
    * @param sender abstraction used to send raw protocol lines
-   * @author WoFabian
    */
   public NetworkGameController(boolean isServer, NetworkSender sender) {
     this.isServer = isServer;
@@ -63,7 +62,6 @@ public class NetworkGameController implements IMessageListener {
    * <p>GUI-OPTIONAL: The GUI may use this to show connection/protocol progress to the user.
    *
    * @return state machine instance used by this controller
-   * @author WoFabian
    */
   public NetworkStateMachine getStateMachine() {
     return sm;
@@ -76,7 +74,6 @@ public class NetworkGameController implements IMessageListener {
    * decide what to do after the state machine accepted the message.
    *
    * @param raw raw received protocol line
-   * @author WoFabian
    */
   @Override
   public void onMessageReceived(String raw) {
@@ -92,7 +89,6 @@ public class NetworkGameController implements IMessageListener {
    * dialog or a transition back to a "main menu" state.
    *
    * @param e error cause (may be null depending on implementation)
-   * @author WoFabian
    */
   @Override
   public void onConnectionClosed(Exception e) {
@@ -102,22 +98,10 @@ public class NetworkGameController implements IMessageListener {
   // ===== GUI/Logic sending =====
 
   /**
-   * Sends {@code size <n>} (server-driven setup step).
+   * Sends an array of ships using the messaging system.
    *
-   * @param size board size
-   * @throws Exception if sending fails or the protocol state does not allow it
-   * @author WoFabian
-   */
-  public void sendSize(int size) throws Exception {
-    sendTyped(MessageType.SIZE, MessageBuilder.size(size));
-  }
-
-  /**
-   * Sends {@code ships ...} (server-driven setup step).
-   *
-   * @param ships list of ship lengths
-   * @throws Exception if sending fails or the protocol state does not allow it
-   * @author WoFabian
+   * @param ships Variable-length array of ship sizes/types.
+   * @throws Exception if there is an error during message sending.
    */
   public void sendShips(int... ships) throws Exception {
     sendTyped(MessageType.SHIPS, MessageBuilder.ships(ships));
@@ -128,7 +112,6 @@ public class NetworkGameController implements IMessageListener {
    *
    * @param id load identifier
    * @throws Exception if sending fails or the protocol state does not allow it
-   * @author WoFabian
    */
   public void sendLoad(long id) throws Exception {
     sendTyped(MessageType.LOAD, MessageBuilder.load(id));
@@ -141,7 +124,6 @@ public class NetworkGameController implements IMessageListener {
    * applying size/ships).
    *
    * @throws Exception if sending fails or the protocol state does not allow it
-   * @author WoFabian
    */
   public void sendDone() throws Exception {
     sendTyped(MessageType.DONE, MessageBuilder.done());
@@ -153,7 +135,6 @@ public class NetworkGameController implements IMessageListener {
    * <p>GUI-IMPORTANT: Call this after applying the loaded state / confirming the load request.
    *
    * @throws Exception if sending fails or the protocol state does not allow it
-   * @author WoFabian
    */
   public void sendOk() throws Exception {
     sendTyped(MessageType.OK, MessageBuilder.ok());
@@ -165,7 +146,6 @@ public class NetworkGameController implements IMessageListener {
    * <p>GUI-IMPORTANT: Call this when the local player is ready to start gameplay.
    *
    * @throws Exception if sending fails or the protocol state does not allow it
-   * @author WoFabian
    */
   public void sendReady() throws Exception {
     sendTyped(MessageType.READY, MessageBuilder.ready());
@@ -183,7 +163,6 @@ public class NetworkGameController implements IMessageListener {
    * @param type message type used for protocol validation
    * @param raw raw protocol line to send
    * @throws Exception if sending fails or the protocol state does not allow this message
-   * @author WoFabian
    */
   private void sendTyped(MessageType type, String raw) throws Exception {
     if (!sm.canSend(type)) {

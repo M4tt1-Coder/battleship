@@ -39,7 +39,6 @@ public class ProtocolHandler implements IMessageListener {
    * because it registers itself as the connector's {@link IMessageListener}.
    *
    * @param connector connected socket wrapper used for send/receive
-   * @author WoFabian
    */
   public ProtocolHandler(SocketConnector connector) {
     this.connector = connector;
@@ -55,7 +54,6 @@ public class ProtocolHandler implements IMessageListener {
    * used during shutdown or when the game logic is not yet ready to process messages.
    *
    * @param listener protocol listener (may be null to disable forwarding)
-   * @author WoFabian
    */
   public void setProtocolListener(IProtocolListener listener) {
     this.listener = listener;
@@ -69,7 +67,6 @@ public class ProtocolHandler implements IMessageListener {
    *
    * @param msg message line to send (one protocol command)
    * @throws Exception if sending fails
-   * @author WoFabian
    */
   public void send(String msg) throws Exception {
     connector.sendMessage(msg);
@@ -85,7 +82,6 @@ public class ProtocolHandler implements IMessageListener {
    * objects instead of raw strings.
    *
    * @param message raw received protocol line
-   * @author WoFabian
    */
   @Override
   public void onMessageReceived(String message) {
@@ -101,7 +97,6 @@ public class ProtocolHandler implements IMessageListener {
    * show an error dialog, return to a menu, or attempt reconnect logic.
    *
    * @param e the exception that caused the close (may be null depending on implementation)
-   * @author WoFabian
    */
   @Override
   public void onConnectionClosed(Exception e) {

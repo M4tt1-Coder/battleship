@@ -55,6 +55,7 @@ public class Game {
   /** The difficulty level of the AI. Can be null if not set. */
   @Nullable private AIDifficulty difficulty;
 
+  /** Global connector managing the socket communication for the multiplayer game mode. */
   @Nullable private GlobalConnector connector;
 
   public Game(
@@ -76,7 +77,6 @@ public class Game {
     this.whoseTurn = turn; // Default starting turn
     this.winner = Winner.NONE_YET; // when starting the game no player has won yet
     this.initialShipSetup = initialShipSetup;
-    this.connector = new GlobalConnector();
   }
 
   // ----- Methods -----
