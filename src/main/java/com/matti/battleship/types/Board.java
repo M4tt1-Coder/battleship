@@ -40,7 +40,7 @@ public class Board {
   public Board(int size) {
     // size can only be set during initialization
     // - must be greater than one and less than 16
-    if (size < 5 || size > 30) {
+    if (!BoardUtils.isValidBoardSize(size)) {
       logger.error("Board size must be between 5 and 30! Provided size: {}", size);
       throw new IllegalArgumentException("Board size must be between 5 and 30!");
     }
@@ -64,7 +64,6 @@ public class Board {
   /**
    * Provides the size of a 'Board' instance.
    *
-   * @author m4tt1
    * @return The size of a board
    */
   public int getSize() {
@@ -176,8 +175,6 @@ public class Board {
   /**
    * Since the 'Size' property of can only be set during initialization it isn't mutated. The method
    * clears the 'board' and sets the 'number_of_ships' to null.
-   *
-   * @author m4tt1
    */
   public void reset() {
     numberOfShips = 0;
@@ -190,7 +187,6 @@ public class Board {
    * <p>Then adds an occupied field to the output list.
    *
    * @return List of occupied fields
-   * @author m4tt1
    */
   public ArrayList<Coordinates> getCoordinatesOfOccupiedFields() {
     ArrayList<Coordinates> output_coordinates = new ArrayList<Coordinates>();

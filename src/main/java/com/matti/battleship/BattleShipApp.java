@@ -72,7 +72,6 @@ public class BattleShipApp extends Application {
   private final DoubleProperty boardSize = new SimpleDoubleProperty(400);
 
   private double BOARD_SIZE = 400;
-  private double cellSize = BOARD_SIZE / selected_field_size;
 
   // ----- Temporary Game -----
   private Game game;
@@ -482,12 +481,14 @@ public class BattleShipApp extends Application {
     // ----------------------
     buttonGoBackR2.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
 
-    // TODO: Add feature of loading a game state from a file
-
     buttonLoadGameR2.setOnAction(
         e -> {
           File storageFile =
               FileReaderService.chooseSaveFile(root2SingleplayerSettings.getScene().getWindow());
+          if (storageFile == null) {
+            System.out.println("Please choose a file to load the game state from a file!");
+            return;
+          }
           try {
             this.game = FileReaderService.loadGameFromFile(storageFile);
             this.selected_field_size = this.game.player.board.getSize();
@@ -514,6 +515,8 @@ public class BattleShipApp extends Application {
                     labelTextEnemySideR5);
 
             preparePlayingGridPanes(root5ShootOnShips, this.game);
+            buttonEndGameR5.toFront();
+            buttonSafeGameR5.toFront();
 
             scene1.setRoot(root5ShootOnShips);
           } catch (Exception ex) {
@@ -526,6 +529,39 @@ public class BattleShipApp extends Application {
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
 
+          if (source == buttonStartPlacingShipsR2) {
+            if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
+              try {
+                this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR2.getText());
+              } catch (NumberFormatException ex) {
+                System.out.println("Invalid field size, default value 10");
+                this.selected_field_size = 10;
+              }
+            }
+          } else if (source == buttonStartGameR6) {
+            if (!textfieldSelectFieldSizeR6.getText().isEmpty()) {
+              try {
+                this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR6.getText());
+              } catch (NumberFormatException ex) {
+                System.out.println("Invalid field size, default value 10");
+                this.selected_field_size = 10;
+              }
+            }
+            // if (!textfieldSelectServerNameR6.getText().isEmpty()) {
+            //
+            // }
+          }
+
+          // validate input data
+          if (!BoardUtils.isValidBoardSize(this.selected_field_size)) {
+            System.out.println("Please select a valid Board size!");
+            PlayingUtils.show_pop_up_information(
+                root2SingleplayerSettings,
+                "Invalid field size,\n Enter a value between 5 and 30",
+                3000,
+                false);
+            return;
+          }
           root4PlaceShips.getChildren().clear();
           root4PlaceShips
               .getChildren()
@@ -535,40 +571,6 @@ public class BattleShipApp extends Application {
                   buttonStartShootingR4,
                   labelPressRToRotateR4,
                   buttonEndGameR4);
-
-          if (source == buttonStartPlacingShipsR2) {
-            if (!textfieldSelectFieldSizeR2.getText().isEmpty()) {
-              try {
-                this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR2.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
-              } catch (NumberFormatException ex) {
-                System.out.println("Invalid field size, default value 10");
-                PlayingUtils.show_pop_up_information(
-                    root2SingleplayerSettings,
-                    "Invalid field size,\n Enter a value between 5 and 30",
-                    3000,
-                    false);
-                this.selected_field_size = 10;
-              }
-            }
-          } else if (source == buttonStartGameR6) {
-            if (!textfieldSelectFieldSizeR6.getText().isEmpty()) {
-              try {
-                this.selected_field_size = Integer.parseInt(textfieldSelectFieldSizeR6.getText());
-                this.cellSize = BOARD_SIZE / selected_field_size;
-              } catch (NumberFormatException ex) {
-                System.out.println("Invalid field size, default value 10");
-                PlayingUtils.show_pop_up_information(
-                    root6MultiplayerSettings,
-                    "Invalid field size,\n Enter a value between 5 and 30",
-                    3000,
-                    false);
-                this.selected_field_size = 10;
-              }
-            }
-            // TODO: Implementation of setting the server_name
-            if (!textfieldSelectServerNameR6.getText().isEmpty()) {}
-          }
 
           // prepare ship setup for ship placement
           this.initialShipSetup =
