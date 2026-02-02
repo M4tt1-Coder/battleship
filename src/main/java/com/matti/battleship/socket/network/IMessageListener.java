@@ -23,7 +23,6 @@ public interface IMessageListener {
    * Called whenever a full protocol line/message was received.
    *
    * @param message raw received line (one protocol command)
-   * @author WoFabian
    */
   void onMessageReceived(String message);
 
@@ -31,7 +30,6 @@ public interface IMessageListener {
    * Called when the connection was closed or an error occurred.
    *
    * @param e exception that caused the close (may be null depending on implementation)
-   * @author WoFabian
    */
   void onConnectionClosed(Exception e);
 }

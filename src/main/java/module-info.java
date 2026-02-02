@@ -22,4 +22,11 @@ module com.matti.battleship {
   exports com.matti.battleship.utils;
   exports com.matti.battleship.socket;
   exports com.matti.battleship.computer;
+  exports com.matti.battleship.utils.datatypes;
+  exports com.matti.battleship.socket.config;
+  exports com.matti.battleship.socket.discovery;
+  exports com.matti.battleship.socket.logging;
+  exports com.matti.battleship.socket.network;
+  exports com.matti.battleship.socket.protocol;
+  exports com.matti.battleship.socket.state;
 }

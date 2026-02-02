@@ -35,7 +35,6 @@ public class NetworkStateMachine {
    * of those commands.
    *
    * @param isServer true for server rules, false for client rules
-   * @author WoFabian
    */
   public NetworkStateMachine(boolean isServer) {
     this.isServer = isServer;
@@ -46,7 +45,6 @@ public class NetworkStateMachine {
    * Returns the current protocol state.
    *
    * @return current {@link GameState}
-   * @author WoFabian
    */
   public GameState getState() {
     return state;
@@ -60,7 +58,6 @@ public class NetworkStateMachine {
    * them as errors (or gameplay messages once the handshake is complete).
    *
    * @param msg parsed incoming protocol message
-   * @author WoFabian
    */
   public void onMessageReceived(Message msg) {
     MessageType t = msg.getType();
@@ -107,7 +104,6 @@ public class NetworkStateMachine {
    *
    * @param type message type to send
    * @return true if sending this type is allowed in the current state
-   * @author WoFabian
    */
   public boolean canSend(MessageType type) {
     if (!isServer) {
@@ -141,7 +137,6 @@ public class NetworkStateMachine {
    * <p>3) calls this method so the state machine moves forward
    *
    * @param type message type that was sent
-   * @author WoFabian
    */
   public void onMessageSent(MessageType type) {
     if (!isServer) {

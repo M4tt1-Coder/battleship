@@ -43,6 +43,7 @@ import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.Role;
+import com.matti.battleship.enums.ShipBoardShare;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.socket.GlobalConnector;
@@ -95,9 +96,6 @@ import org.jetbrains.annotations.Nullable;
 
 // TODO: Refactor code -> extract indenpendent snippets into external functions
 
-// TODO: Move all image loading to the 'ResourceProfiler' instance
-
-// option + shift + f -> format
 public class BattleShipApp extends Application {
 
   // -------------------------------------------------------------------
@@ -121,6 +119,7 @@ public class BattleShipApp extends Application {
   @Nullable private AIDifficulty difficulty; // selected AI difficulty (VS_AI only)
   @Nullable private Algorithm aIAlgorithm; // concrete AI strategy instance
   @Nullable private Role playerRole; // player role (client/server)
+  @Nullable private GlobalConnector connector;
 
   // Occupancy rule: initial ship setup derived from board size / occupancy %
   private ShipLength[] initialShipSetup;
@@ -574,7 +573,7 @@ public class BattleShipApp extends Application {
         e -> {
           scene1.setRoot(root3JoinOtherServers);
           this.playingMode = PlayingMode.VS_PLAYER;
-          discover_servers(root3JoinOtherServers);
+          discover_servers(root3JoinOtherServers, scene1, root4PlaceShips);
         });
 
     // ---------------------- Root 2 actions ----------------------
@@ -627,7 +626,6 @@ public class BattleShipApp extends Application {
             scene1.setRoot(root5ShootOnShips);
           } catch (Exception ex) {
             System.out.println(ex.toString());
-            return;
           }
         });
 
@@ -687,9 +685,13 @@ public class BattleShipApp extends Application {
                   labelPressRToRotateR4,
                   buttonEndGameR4);
 
+          String selectedShipShareString =
+              comboboxesAmountOfShipsR2.getSelectionModel().getSelectedItem();
+          ShipBoardShare tempShipShare = BoardUtils.getShipShareFromString(selectedShipShareString);
+          // prepare ship setup for ship placement
           // Generate ship setup for placement (based on board size / occupancy)
           this.initialShipSetup =
-              BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+              BoardUtils.generateShipSetupForPlacement(this.selected_field_size, tempShipShare);
 
           // Read selected difficulty from combobox and convert to enum
           String selectedDifficultyString =
@@ -698,6 +700,7 @@ public class BattleShipApp extends Application {
 
           // Create the logical board for placement
           this.board = new Board(selected_field_size);
+          this.board.setShipShare(tempShipShare);
 
           // Create placement grid (visual)
           GridPane battleGrid = new GridPane();
@@ -740,6 +743,12 @@ public class BattleShipApp extends Application {
             discover_servers(root3JoinOtherServers)
     );
 
+    buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
+    buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
+    buttonRefreshServersR3.setOnAction(
+        e -> discover_servers(root3JoinOtherServers, scene1, root4PlaceShips));
+
+    // --------------------------------- root 4
     // ---------------------- Root 4 actions ----------------------
     // End placement/game: clear roots and return to root1
     buttonEndGameR4.setOnAction(
@@ -755,8 +764,8 @@ public class BattleShipApp extends Application {
         e -> {
           // prevent starting a game when not all ships have been placed
           if (this.board.getNumberOfOccupiedFields()
-              != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
-                  this.board.getSize())) {
+              != BoardUtils.getExactNumberOfMandatoryOccupiedFields(
+                  this.board.getSize(), this.board.getShipShare())) {
             System.out.println(
                 "You can't start a game if you don't have placed all ships on the board!");
             PlayingUtils.show_pop_up_information(
@@ -782,15 +791,19 @@ public class BattleShipApp extends Application {
           // Create opponent board and auto-place ships
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
+          opponentBoard.setShipShare(this.board.getShipShare());
+          Player tempOpponent = new Player("Opponent", this.selected_field_size);
+          Player tempPlayer = new Player("Player", this.selected_field_size);
+          tempOpponent.board = opponentBoard;
+          tempPlayer.board = this.board;
+
           this.game =
               new Game(
                   this.playingMode,
-                  new Player("Player", this.selected_field_size),
-                  new Player("Opponent", this.selected_field_size),
+                  tempPlayer,
+                  tempOpponent,
                   PlayerTurn.PLAYER,
                   this.initialShipSetup);
-          this.game.opponent.board = opponentBoard;
-          this.game.player.board = this.board;
 
           // determine AI algorithm for the 'VS_AI' playing mode
           if (this.game.getPlayingMode() == PlayingMode.VS_AI) {
@@ -858,7 +871,7 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root7LoadingScreen);
         });
 
-    //TODO: If player joined zwisch to root5
+    //TODO: If player joined switch to root5
 
     // start_game_button_r6.setOnAction(startHandler);
 
@@ -897,8 +910,10 @@ public class BattleShipApp extends Application {
   // _________________________________________________________________
   // ----- Helper functions -----
   // _________________________________________________________________
-  //TODO: Outsource helper functions
-  /**
+  
+    //TODO: Outsource helper functions
+  
+    /**
    * Prepares and initializes the playing grid panes for the game UI.
    *
    * <p>This method creates two {@link GridPane} instances for the player's and opponent's boards,
@@ -1220,7 +1235,7 @@ public class BattleShipApp extends Application {
               ShotAttemptResult res = this.game.shotShot(coordinates, root);
               // process the shot response
               switch (res) {
-                case MISS:
+                case MISS -> {
                   iv = new ImageViews(imgMiss);
 
                   iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
@@ -1228,9 +1243,8 @@ public class BattleShipApp extends Application {
                   iv.setPreserveRatio(false);
 
                   btn.setGraphic(iv);
-
-                  break;
-                case HIT:
+                }
+                case HIT -> {
                   iv = new ImageViews(imgHit);
 
                   iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
@@ -1238,13 +1252,9 @@ public class BattleShipApp extends Application {
                   iv.setPreserveRatio(false);
 
                   btn.setGraphic(iv);
-                  break;
-                case SUNK:
-                  applyChangesToButtonsAfterShipSunk(pane, coordinates);
-                  break;
-                case INVALID:
-                  System.out.println("Invalid shot! Please try again!");
-                  break;
+                }
+                case SUNK -> applyChangesToButtonsAfterShipSunk(pane, coordinates);
+                case INVALID -> System.out.println("Invalid shot! Please try again!");
               }
 
               if (this.game.getWhoseTurn() == PlayerTurn.OPPONENT) {
@@ -1332,7 +1342,7 @@ public class BattleShipApp extends Application {
     double rotationAngle = 0.;
 
     switch (newDirection) {
-      case DOWN:
+      case DOWN -> {
         if (row + (shipLength - 1) > boardSize - 1) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1346,9 +1356,8 @@ public class BattleShipApp extends Application {
         shipRect.widthProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 90.;
-
-        break;
-      case UP:
+      }
+      case UP -> {
         if (row - (shipLength - 1) < 0) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1361,9 +1370,8 @@ public class BattleShipApp extends Application {
         shipRect.widthProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 270.;
-
-        break;
-      case RIGHT:
+      }
+      case RIGHT -> {
         if (col + (shipLength - 1) > boardSize) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1376,9 +1384,8 @@ public class BattleShipApp extends Application {
         shipRect.heightProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 0.;
-
-        break;
-      case LEFT:
+      }
+      case LEFT -> {
         if (col - (shipLength - 1) < 0) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1391,8 +1398,7 @@ public class BattleShipApp extends Application {
         shipRect.heightProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 180.;
-
-        break;
+      }
     }
     String imagePath = new ResourceProfiler().getPictureOfShip(shipLength);
     Image ship_image =
@@ -1536,7 +1542,6 @@ public class BattleShipApp extends Application {
       ship.translateXProperty().bind(clampedX);
       ship.setTranslateY(0);
 
-      // TODO: Right size
       ship.setScaleX(0.6);
       ship.setScaleY(0.6);
 
@@ -1706,7 +1711,7 @@ public class BattleShipApp extends Application {
       int boardSize) {
     grid.getChildren().add(rect);
     switch (direction) {
-      case DOWN:
+      case DOWN -> {
         int finalColD = col;
         int finalRowD = row;
         if (row + (length - 1) > boardSize - 1) {
@@ -1716,8 +1721,8 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColD);
         GridPane.setRowSpan(rect, length);
         GridPane.setColumnSpan(rect, 1);
-        break;
-      case UP:
+      }
+      case UP -> {
         int finalColU = col;
         int finalRowU = row;
         if (row - (length - 1) < 0) {
@@ -1727,8 +1732,8 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColU);
         GridPane.setRowSpan(rect, length);
         GridPane.setColumnSpan(rect, 1);
-        break;
-      case RIGHT:
+      }
+      case RIGHT -> {
         int finalColR = col;
         if (col + (length - 1) > boardSize - 1) {
           finalColR = boardSize - length;
@@ -1738,8 +1743,8 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColR);
         GridPane.setRowSpan(rect, 1);
         GridPane.setColumnSpan(rect, length);
-        break;
-      case LEFT:
+      }
+      case LEFT -> {
         int finalColL = col;
         if (col - (length - 1) < 0) {
           finalColL = length;
@@ -1749,7 +1754,7 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColL);
         GridPane.setRowSpan(rect, 1);
         GridPane.setColumnSpan(rect, length);
-        break;
+      }
     }
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);
@@ -1767,9 +1772,8 @@ public class BattleShipApp extends Application {
    *
    * @param root the UI container {@link Pane} that will receive the "no servers" label or the join buttons.
    */
-  private void discover_servers(Pane root) {
-    EnvConfig config = new EnvConfig();
-    int port = config.getPort();
+  private void discover_servers(Pane root, Scene scene, Pane destinationPane) {
+    int port = EnvConfig.getPort();
     ClientDiscoveryScanner scanner = new ClientDiscoveryScanner(port);
     List<DiscoveredServer> list_of_discovered_servers = new ArrayList<>();
     try {
@@ -1789,7 +1793,7 @@ public class BattleShipApp extends Application {
     } else {
       for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
         String server_name = list_of_discovered_servers.get(i).name();
-        // String host_name = list_of_discovered_servers.get(i).host(); // optional, if
+        String host_name = list_of_discovered_servers.get(i).host(); // optional, if
         // needed
         Buttons join_server_button = new Buttons(server_name);
         int row = i / 3;
@@ -1800,12 +1804,48 @@ public class BattleShipApp extends Application {
         join_server_button.position(root, x_pos, y_pos);
         join_server_button.fontsize(root, 0.02);
         join_server_button.size(root, 0.13, 0.05);
+        join_server_button.setOnAction(
+            e -> {
+              // TODO: Complete socket implementation needs to be reworked -> can't get data
+              // out of scope IMessageListener.onMessageReceived
+
+              // this.connector = new GlobalConnector();
+              // try {
+              // this.connector.startAsClient(host_name);
+              // int currentSetup = 1;
+              // final int[] tempBoardSize = { -1 };
+              // IMessageListener listener = new IMessageListener() {
+              // @Override
+              // public void onMessageReceived(String mes) {
+              // Message message = MessageParser.parse(mes);
+              // switch (message.getType()) {
+              // case SIZE -> {
+              // tempBoardSize[0] = message.getIntArg(0);
+              //
+              // break;
+              // }
+              // }
+              // }
+              //
+              // @Override
+              // public void onConnectionClosed(Exception e) {
+              // }
+              //
+              // };
+              // this.connector.setMessageListener(listener);
+              // this.connector.listenLoop();
+              //
+              // scene.setRoot(destinationPane);
+              // } catch (Exception ex) {
+              // System.out.println(ex.getMessage());
+              // return;
+              // }
+            });
       }
     }
   }
 
   // Entry Point -> main function
-
   public static void main(String[] args) {
     launch(args);
   }

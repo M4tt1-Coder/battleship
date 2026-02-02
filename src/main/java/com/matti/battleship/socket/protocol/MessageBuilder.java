@@ -20,7 +20,6 @@ public class MessageBuilder {
    *
    * @param rows board size (number of rows/columns)
    * @return protocol line for size
-   * @author WoFabian
    */
   public static String size(int rows) {
     return "size " + rows;
@@ -33,7 +32,6 @@ public class MessageBuilder {
    *
    * @param l ship lengths
    * @return protocol line for ships
-   * @author WoFabian
    */
   public static String ships(int... l) {
     StringBuilder sb = new StringBuilder("ships");
@@ -47,7 +45,6 @@ public class MessageBuilder {
    * <p>DONE is typically used as acknowledgement after receiving SIZE or SHIPS.
    *
    * @return protocol line "done"
-   * @author WoFabian
    */
   public static String done() {
     return "done";
@@ -59,7 +56,6 @@ public class MessageBuilder {
    * <p>READY is used to indicate that the player finished setup and is ready to start.
    *
    * @return protocol line "ready"
-   * @author WoFabian
    */
   public static String ready() {
     return "ready";
@@ -76,7 +72,6 @@ public class MessageBuilder {
    * @param r row coordinate (usually 1-based in the protocol)
    * @param c column coordinate (usually 1-based in the protocol)
    * @return protocol line for shot
-   * @author WoFabian
    */
   public static String shot(int r, int c) {
     return "shot " + r + " " + c;
@@ -91,7 +86,6 @@ public class MessageBuilder {
    *
    * @param a answer code (0/1/2)
    * @return protocol line for answer
-   * @author WoFabian
    */
   public static String answer(int a) {
     return "answer " + a;
@@ -103,7 +97,6 @@ public class MessageBuilder {
    * <p>PASS is used after a miss (answer 0) to clearly switch the turn to the opponent.
    *
    * @return protocol line "pass"
-   * @author WoFabian
    */
   public static String pass() {
     return "pass";
@@ -116,7 +109,6 @@ public class MessageBuilder {
    *
    * @param id save id
    * @return protocol line for save
-   * @author WoFabian
    */
   public static String save(long id) {
     return "save " + id;
@@ -129,7 +121,6 @@ public class MessageBuilder {
    *
    * @param id save id
    * @return protocol line for load
-   * @author WoFabian
    */
   public static String load(long id) {
     return "load " + id;
@@ -141,7 +132,6 @@ public class MessageBuilder {
    * <p>OK is typically used as acknowledgement after receiving SAVE or LOAD.
    *
    * @return protocol line "ok"
-   * @author WoFabian
    */
   public static String ok() {
     return "ok";

@@ -200,7 +200,7 @@ public class TestClientDiscoveryManuell {
 
     // Chat loop: send raw lines until exit.
     Scanner in = new Scanner(System.in);
-    System.out.println("Tippe Nachrichten und drücke ENTER. 'exit' beendet.");
+    System.out.println("Mach eine Nachricht und drück ENTER. 'exit' beendet.");
 
     while (true) {
       System.out.print("> ");

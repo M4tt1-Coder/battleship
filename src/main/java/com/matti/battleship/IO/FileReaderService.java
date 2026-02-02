@@ -63,9 +63,12 @@ public class FileReaderService {
     Player player = new Player(meta.playerName, meta.boardSize);
     Player opponent = new Player(meta.opponentName, meta.boardSize);
 
-    Game game = new Game(meta.playingMode, player, opponent, meta.turn, meta.initialSetup);
-
     fillBoards(lines, player.board, opponent.board);
+
+    player.board.setShipShare(meta.shipShare);
+    opponent.board.setShipShare(meta.shipShare);
+
+    Game game = new Game(meta.playingMode, player, opponent, meta.turn, meta.initialSetup);
 
     game.setHasEnded(meta.hasEnded);
     game.setWinner(meta.winner);
@@ -113,6 +116,9 @@ public class FileReaderService {
 
     /** The size of the game board. */
     int boardSize = 10;
+
+    /** Share of the board occupied by ships. */
+    ShipBoardShare shipShare = ShipBoardShare.THIRTY;
   }
 
   /**
@@ -171,6 +177,13 @@ public class FileReaderService {
         try {
           meta.boardSize = Integer.parseInt(value);
         } catch (Exception ignored) {
+        }
+      }
+
+      if (key.equals("shipShare")) {
+        try {
+          meta.shipShare = ShipBoardShare.valueOf(value);
+        } catch (Exception ex) {
         }
       }
     }

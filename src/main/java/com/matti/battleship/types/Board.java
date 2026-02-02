@@ -1,6 +1,7 @@
 package com.matti.battleship.types;
 
 import com.matti.battleship.enums.Direction;
+import com.matti.battleship.enums.ShipBoardShare;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.utils.BoardUtils;
 import com.matti.battleship.utils.ShipUtils;
@@ -20,16 +21,11 @@ import org.jetbrains.annotations.Nullable;
 public class Board {
   private static final Logger logger = LogManager.getLogger(Board.class);
 
-  /**
-   * Defines the exact percentage of all fields that need to be occupied by ships. There can't be
-   * less or more ships on the field!
-   *
-   * <p>Here 30% of the fields need to occupied by a ship.
-   */
-  public static final float shareOfShipsOnTheBoard = 0.3f;
-
   /** Size of the board instance. Maximum size is 15x15 fields. */
   private final int size;
+
+  /** The share of the board, which needs to be covered by ships. */
+  private ShipBoardShare shipShare;
 
   /** Number of ships currently placed on the board. */
   public int numberOfShips;
@@ -46,6 +42,7 @@ public class Board {
     }
     this.size = size;
     this.numberOfShips = 0;
+    this.shipShare = ShipBoardShare.THIRTY;
 
     // creates an empty field with no content
     this.board = new Field[size][size];
@@ -60,6 +57,24 @@ public class Board {
   }
 
   // ----- methods -----
+
+  /**
+   * Retrieves the current ship share category.
+   *
+   * @return The {@link ShipBoardShare} representing the share category.
+   */
+  public ShipBoardShare getShipShare() {
+    return this.shipShare;
+  }
+
+  /**
+   * Sets the ship share category.
+   *
+   * @param share The {@link ShipBoardShare} to set for this instance.
+   */
+  public void setShipShare(ShipBoardShare share) {
+    this.shipShare = share;
+  }
 
   /**
    * Provides the size of a 'Board' instance.
@@ -501,7 +516,7 @@ public class Board {
    */
   private boolean isTheMaxCapacityForShipsReached() {
     int numberOfMandatoryOccupiedFields =
-        BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(this.size);
+        BoardUtils.getExactNumberOfMandatoryOccupiedFields(this.size, this.shipShare);
     int numberOfOccupiedFields = getNumberOfOccupiedFields();
     // count the occupied fields on the field
     return numberOfOccupiedFields >= numberOfMandatoryOccupiedFields;

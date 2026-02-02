@@ -6,10 +6,10 @@ package com.matti.battleship.utils.datatypes;
  * <p>This class encapsulates the current display state of a cell, which can be one of:
  *
  * <ul>
- *   <li>{@link DisplayState#MISS} - The cell was targeted and resulted in a miss.
- *   <li>{@link DisplayState#SUNK} - A ship occupying this cell has been sunk.
- *   <li>{@link DisplayState#HIT} - The cell was targeted and resulted in a hit on a ship.
- *   <li>{@link DisplayState#NOT_SET} - The cell has not been targeted or its state is not yet
+ *   <li>{@link FieldDisplayState#MISS} - The cell was targeted and resulted in a miss.
+ *   <li>{@link FieldDisplayState#SUNK} - A ship occupying this cell has been sunk.
+ *   <li>{@link FieldDisplayState#HIT} - The cell was targeted and resulted in a hit on a ship.
+ *   <li>{@link FieldDisplayState#NOT_SET} - The cell has not been targeted or its state is not yet
  *       determined.
  * </ul>
  *

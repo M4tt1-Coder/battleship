@@ -18,7 +18,6 @@ public interface IProtocolListener {
    * Called for every parsed protocol message received from the network.
    *
    * @param msg parsed message (type + args)
-   * @author WoFabian
    */
   void onMessage(Message msg);
 
@@ -26,7 +25,6 @@ public interface IProtocolListener {
    * Called when the connection closes or an error occurs.
    *
    * @param e exception that caused the close (may be null depending on implementation)
-   * @author WoFabian
    */
   void onClosed(Exception e);
 }
