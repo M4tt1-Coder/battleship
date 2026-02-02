@@ -10,6 +10,7 @@ import com.matti.battleship.enums.Direction;
 import com.matti.battleship.enums.PlayerTurn;
 import com.matti.battleship.enums.PlayingMode;
 import com.matti.battleship.enums.Role;
+import com.matti.battleship.enums.ShipBoardShare;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.enums.ShotAttemptResult;
 import com.matti.battleship.socket.GlobalConnector;
@@ -135,6 +136,9 @@ public class BattleShipApp extends Application {
     ComboBoxes comboboxesDifficultySelectionR2 = new ComboBoxes();
     comboboxesDifficultySelectionR2.setId("comboboxes");
 
+    ComboBoxes comboboxesAmountOfShipsR2 = new ComboBoxes();
+    comboboxesAmountOfShipsR2.setId("comboboxes");
+
     TextFields textfieldSelectFieldSizeR2 = new TextFields();
     textfieldSelectFieldSizeR2.setId("textfields");
     textfieldSelectFieldSizeR2.setPromptText("Type in field size");
@@ -148,6 +152,9 @@ public class BattleShipApp extends Application {
     Labels labelTextSelectFieldSizeR2 = new Labels("Field Size:");
     labelTextSelectFieldSizeR2.setId("labelsNormal");
 
+    Labels labelTextSelectAmountOfShipsR2 = new Labels("Occupancy\n Rate of Ships:");
+    labelTextSelectAmountOfShipsR2.setId("labelsNormal");
+
     StackPane root2SingleplayerSettings =
         new StackPane(
             imageviewPlayerVsAiR2,
@@ -157,8 +164,10 @@ public class BattleShipApp extends Application {
             buttonLoadGameR2,
             textfieldSelectFieldSizeR2,
             comboboxesDifficultySelectionR2,
+            comboboxesAmountOfShipsR2,
             labelTextSelectDifficultyR2,
-            labelTextSelectFieldSizeR2);
+            labelTextSelectFieldSizeR2,
+            labelTextSelectAmountOfShipsR2);
     root2SingleplayerSettings.setId("root2SingleplayerSettings");
 
     imageviewPlayerVsAiR2.position(root2SingleplayerSettings, 0.25, 0.00);
@@ -177,25 +186,34 @@ public class BattleShipApp extends Application {
     buttonLoadGameR2.size(root2SingleplayerSettings, 0.13, 0.05);
 
     comboboxesDifficultySelectionR2.set_selections("Medium", "Easy", "Medium", "Hard");
-    comboboxesDifficultySelectionR2.position(root2SingleplayerSettings, -0.2, -0.05);
+    comboboxesDifficultySelectionR2.position(root2SingleplayerSettings, -0.2, -0.18);
     comboboxesDifficultySelectionR2.fontsize(root2SingleplayerSettings, 0.01);
     comboboxesDifficultySelectionR2.size(root2SingleplayerSettings, 0.15, 0.05);
 
-    textfieldSelectFieldSizeR2.position(root2SingleplayerSettings, -0.2, 0.1);
+    comboboxesAmountOfShipsR2.set_selections("30%", "15%", "20%", "30%");
+    comboboxesAmountOfShipsR2.position(root2SingleplayerSettings, -0.2, 0.12);
+    comboboxesAmountOfShipsR2.fontsize(root2SingleplayerSettings, 0.009);
+    comboboxesAmountOfShipsR2.size(root2SingleplayerSettings, 0.15, 0.05);
+
+    textfieldSelectFieldSizeR2.position(root2SingleplayerSettings, -0.2, -0.03);
     textfieldSelectFieldSizeR2.fontsize(root2SingleplayerSettings, 0.01);
     textfieldSelectFieldSizeR2.size(root2SingleplayerSettings, 0.15, 0.05);
 
-    labelSettingsR2.position(root2SingleplayerSettings, -0.255, 0.05);
+    labelSettingsR2.position(root2SingleplayerSettings, -0.255, -0.01);
     labelSettingsR2.fontsize(root2SingleplayerSettings, 0.04);
-    labelSettingsR2.size(root2SingleplayerSettings, 0.3, 0.6);
+    labelSettingsR2.size(root2SingleplayerSettings, 0.3, 0.65);
 
-    labelTextSelectDifficultyR2.position(root2SingleplayerSettings, -0.347, -0.05);
+    labelTextSelectDifficultyR2.position(root2SingleplayerSettings, -0.347, -0.18);
     labelTextSelectDifficultyR2.fontsize(root2SingleplayerSettings, 0.02);
     labelTextSelectDifficultyR2.size(root2SingleplayerSettings, 0.2, 0.07);
 
-    labelTextSelectFieldSizeR2.position(root2SingleplayerSettings, -0.343, 0.1);
+    labelTextSelectFieldSizeR2.position(root2SingleplayerSettings, -0.343, -0.03);
     labelTextSelectFieldSizeR2.fontsize(root2SingleplayerSettings, 0.02);
     labelTextSelectFieldSizeR2.size(root2SingleplayerSettings, 0.2, 0.07);
+
+    labelTextSelectAmountOfShipsR2.position(root2SingleplayerSettings, -0.343, 0.12);
+    labelTextSelectAmountOfShipsR2.fontsize(root2SingleplayerSettings, 0.015);
+    labelTextSelectAmountOfShipsR2.size(root2SingleplayerSettings, 0.2, 0.1);
 
     // ---------------root 3
     // ---------------------------------------------------------------------
@@ -249,7 +267,8 @@ public class BattleShipApp extends Application {
     Labels labelShipsSpawnWhenBoardInitializedR4 = new Labels("");
     labelShipsSpawnWhenBoardInitializedR4.setId("labelsBackgroundBlueCenter");
 
-    Labels labelPressRToRotateR4 = new Labels("Press R to Rotate");
+    Labels labelPressRToRotateR4 =
+        new Labels("Press R after the ship\n has been dropped\n onto the board to Rotate");
     labelPressRToRotateR4.setId("labelsNormal");
 
     StackPane root4PlaceShips = new StackPane();
@@ -272,8 +291,8 @@ public class BattleShipApp extends Application {
     labelShipsSpawnWhenBoardInitializedR4.size(root4PlaceShips, 1, 0.08);
 
     labelPressRToRotateR4.position(root4PlaceShips, 0.35, -0.2);
-    labelPressRToRotateR4.fontsize(root4PlaceShips, 0.015);
-    labelPressRToRotateR4.size(root4PlaceShips, 0.25, 0.1);
+    labelPressRToRotateR4.fontsize(root4PlaceShips, 0.012);
+    labelPressRToRotateR4.size(root4PlaceShips, 0.25, 0.3);
 
     // ---------------root 5
     // ---------------------------------------------------------------------
@@ -444,12 +463,12 @@ public class BattleShipApp extends Application {
     buttonGoBackR7.size(root7LoadingScreen, 0.07, 0.1);
 
     labelWaitingForOtherPlayerToJoinR7.position(root7LoadingScreen, 0, -0.2);
-    labelWaitingForOtherPlayerToJoinR7.fontsize(root7LoadingScreen, 0.05);
+    labelWaitingForOtherPlayerToJoinR7.fontsize(root7LoadingScreen, 0.035);
     labelWaitingForOtherPlayerToJoinR7.size(root7LoadingScreen, 0.7, 0.2);
     labelWaitingForOtherPlayerToJoinR7.setAlignment(Pos.CENTER);
 
     labelFunnyInfosR7.position(root7LoadingScreen, 0, 0);
-    labelFunnyInfosR7.fontsize(root7LoadingScreen, 0.03);
+    labelFunnyInfosR7.fontsize(root7LoadingScreen, 0.02);
     labelFunnyInfosR7.size(root7LoadingScreen, 0.4, 0.2);
     labelFunnyInfosR7.setAlignment(Pos.CENTER);
 
@@ -519,7 +538,6 @@ public class BattleShipApp extends Application {
             scene1.setRoot(root5ShootOnShips);
           } catch (Exception ex) {
             System.out.println(ex.toString());
-            return;
           }
         });
 
@@ -570,9 +588,12 @@ public class BattleShipApp extends Application {
                   labelPressRToRotateR4,
                   buttonEndGameR4);
 
+          String selectedShipShareString =
+              comboboxesAmountOfShipsR2.getSelectionModel().getSelectedItem();
+          ShipBoardShare tempShipShare = BoardUtils.getShipShareFromString(selectedShipShareString);
           // prepare ship setup for ship placement
           this.initialShipSetup =
-              BoardUtils.generateShipSetupForPlacement(this.selected_field_size);
+              BoardUtils.generateShipSetupForPlacement(this.selected_field_size, tempShipShare);
 
           // save current AIDifficulty
           String selectedDifficultyString =
@@ -580,6 +601,7 @@ public class BattleShipApp extends Application {
           this.difficulty = GameUtils.getDifficultyFromString(selectedDifficultyString);
 
           this.board = new Board(selected_field_size);
+          this.board.setShipShare(tempShipShare);
 
           GridPane battleGrid = new GridPane();
 
@@ -625,8 +647,8 @@ public class BattleShipApp extends Application {
         e -> {
           // prevent starting a game when not all ships have been placed
           if (this.board.getNumberOfOccupiedFields()
-              != BoardUtils.getNumberForExactNumberOfMandatoryOccupiedFields(
-                  this.board.getSize())) {
+              != BoardUtils.getExactNumberOfMandatoryOccupiedFields(
+                  this.board.getSize(), this.board.getShipShare())) {
             System.out.println(
                 "You can't start a game if you don't have placed all ships on the board!");
             PlayingUtils.show_pop_up_information(
@@ -652,15 +674,19 @@ public class BattleShipApp extends Application {
           // initializing the playing boards
           Board opponentBoard = new Board(this.selected_field_size);
           PlacementAlgorithm.placeShipsWithBacktracking(opponentBoard, this.initialShipSetup);
+          opponentBoard.setShipShare(this.board.getShipShare());
+          Player tempOpponent = new Player("Opponent", this.selected_field_size);
+          Player tempPlayer = new Player("Player", this.selected_field_size);
+          tempOpponent.board = opponentBoard;
+          tempPlayer.board = this.board;
+
           this.game =
               new Game(
                   this.playingMode,
-                  new Player("Player", this.selected_field_size),
-                  new Player("Opponent", this.selected_field_size),
+                  tempPlayer,
+                  tempOpponent,
                   PlayerTurn.PLAYER,
                   this.initialShipSetup);
-          this.game.opponent.board = opponentBoard;
-          this.game.player.board = this.board;
 
           // determine AI algorithm for the 'VS_AI' playing mode
           if (this.game.getPlayingMode() == PlayingMode.VS_AI) {
@@ -1068,7 +1094,7 @@ public class BattleShipApp extends Application {
               ShotAttemptResult res = this.game.shotShot(coordinates, root);
               // process the shot response
               switch (res) {
-                case MISS:
+                case MISS -> {
                   iv = new ImageViews(imgMiss);
 
                   iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
@@ -1076,9 +1102,8 @@ public class BattleShipApp extends Application {
                   iv.setPreserveRatio(false);
 
                   btn.setGraphic(iv);
-
-                  break;
-                case HIT:
+                }
+                case HIT -> {
                   iv = new ImageViews(imgHit);
 
                   iv.fitWidthProperty().bind(BUTTON_SIZE.multiply(0.4));
@@ -1086,13 +1111,9 @@ public class BattleShipApp extends Application {
                   iv.setPreserveRatio(false);
 
                   btn.setGraphic(iv);
-                  break;
-                case SUNK:
-                  applyChangesToButtonsAfterShipSunk(pane, coordinates);
-                  break;
-                case INVALID:
-                  System.out.println("Invalid shot! Please try again!");
-                  break;
+                }
+                case SUNK -> applyChangesToButtonsAfterShipSunk(pane, coordinates);
+                case INVALID -> System.out.println("Invalid shot! Please try again!");
               }
 
               if (this.game.getWhoseTurn() == PlayerTurn.OPPONENT) {
@@ -1180,7 +1201,7 @@ public class BattleShipApp extends Application {
     double rotationAngle = 0.;
 
     switch (newDirection) {
-      case DOWN:
+      case DOWN -> {
         if (row + (shipLength - 1) > boardSize - 1) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1194,9 +1215,8 @@ public class BattleShipApp extends Application {
         shipRect.widthProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 90.;
-
-        break;
-      case UP:
+      }
+      case UP -> {
         if (row - (shipLength - 1) < 0) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1209,9 +1229,8 @@ public class BattleShipApp extends Application {
         shipRect.widthProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 270.;
-
-        break;
-      case RIGHT:
+      }
+      case RIGHT -> {
         if (col + (shipLength - 1) > boardSize) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1224,9 +1243,8 @@ public class BattleShipApp extends Application {
         shipRect.heightProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 0.;
-
-        break;
-      case LEFT:
+      }
+      case LEFT -> {
         if (col - (shipLength - 1) < 0) {
           System.out.println("Couldn't rotate the ship to" + newDirection.toString());
           return;
@@ -1239,8 +1257,7 @@ public class BattleShipApp extends Application {
         shipRect.heightProperty().bind(cs.multiply(0.8));
 
         rotationAngle = 180.;
-
-        break;
+      }
     }
     String imagePath = new ResourceProfiler().getPictureOfShip(shipLength);
     Image ship_image =
@@ -1553,7 +1570,7 @@ public class BattleShipApp extends Application {
       int boardSize) {
     grid.getChildren().add(rect);
     switch (direction) {
-      case DOWN:
+      case DOWN -> {
         int finalColD = col;
         int finalRowD = row;
         if (row + (length - 1) > boardSize - 1) {
@@ -1563,8 +1580,8 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColD);
         GridPane.setRowSpan(rect, length);
         GridPane.setColumnSpan(rect, 1);
-        break;
-      case UP:
+      }
+      case UP -> {
         int finalColU = col;
         int finalRowU = row;
         if (row - (length - 1) < 0) {
@@ -1574,8 +1591,8 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColU);
         GridPane.setRowSpan(rect, length);
         GridPane.setColumnSpan(rect, 1);
-        break;
-      case RIGHT:
+      }
+      case RIGHT -> {
         int finalColR = col;
         if (col + (length - 1) > boardSize - 1) {
           finalColR = boardSize - length;
@@ -1585,8 +1602,8 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColR);
         GridPane.setRowSpan(rect, 1);
         GridPane.setColumnSpan(rect, length);
-        break;
-      case LEFT:
+      }
+      case LEFT -> {
         int finalColL = col;
         if (col - (length - 1) < 0) {
           finalColL = length;
@@ -1596,7 +1613,7 @@ public class BattleShipApp extends Application {
         GridPane.setColumnIndex(rect, finalColL);
         GridPane.setRowSpan(rect, 1);
         GridPane.setColumnSpan(rect, length);
-        break;
+      }
     }
     GridPane.setHalignment(rect, javafx.geometry.HPos.CENTER);
     GridPane.setValignment(rect, javafx.geometry.VPos.CENTER);

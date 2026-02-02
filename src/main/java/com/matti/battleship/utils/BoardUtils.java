@@ -1,5 +1,6 @@
 package com.matti.battleship.utils;
 
+import com.matti.battleship.enums.ShipBoardShare;
 import com.matti.battleship.enums.ShipLength;
 import com.matti.battleship.types.Board;
 import com.matti.battleship.types.Coordinates;
@@ -10,7 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Holds the helper functions to execute checks like if a some fields are already occupied etc.
+ * Holds the helper functions to execute checks like if a some fields are
+ *
+ * <p>already occupied etc.
  *
  * @author m4tt1
  */
@@ -27,7 +30,7 @@ public class BoardUtils {
    * Checks if the provided board size is within the valid range.
    *
    * @param boardSize The size of the board to validate.
-   * @return {@code true} if the size is between MIN_BOARD_SIZE and MAX_BOARD_SIZE (inclusive),
+   *     <p>urn {@code true} if the size is between MIN_BOARD_SIZE and MAX_BOARD_SIZE (inclusive),
    *     {@code false} otherwise.
    */
   public static boolean isValidBoardSize(int boardSize) {
@@ -36,7 +39,7 @@ public class BoardUtils {
 
   /**
    * Checks whether a ship can be placed on the board at its intended position without overlapping
-   * existing ships and without being directly adjacent to any other ship.
+   * existing sh ps and without being directly adjacent to any other ship.
    *
    * @param board The game board where ships are placed.
    * @param ship The ship to be placed.
@@ -72,8 +75,8 @@ public class BoardUtils {
   }
 
   /**
-   * Validates the provided data and determines if some coordinates are on the board according to
-   * its size.
+   * Validates the provided data and determines if some coordinates are on the board according o its
+   * size.
    *
    * @param coordinates Coordinates of a ship or any field
    * @param boardSize Size of the board
@@ -100,8 +103,8 @@ public class BoardUtils {
   /**
    * Retrieves all the current occupied fields of a sunken ship on the given board.
    *
-   * <p>This method analyzes the board to identify the set of coordinates that belong to the most
-   * recently sunken ship. It does so by grouping neighboring occupied fields, validating the ship
+   * <p>This method analyzes the board to identify the set of coordinates that elong he most
+   * recently sunken ship. It does so by grouping neighboring occupied fiel s, validating the ship
    * size, and ensuring the ship hasn't been previously registered.
    *
    * @param board the game board to analyze, which contains information about occupied fields and
@@ -146,12 +149,13 @@ public class BoardUtils {
           break;
         }
       }
+
       if (!shipAlreadyRegistered) {
         output = temp;
         break;
       }
     }
-    return output.toArray(new Coordinates[0]);
+    return output.toArray(Coordinates[]::new);
   }
 
   /**
@@ -173,20 +177,18 @@ public class BoardUtils {
   }
 
   /**
-   * Generates a setup of ships for placement on the board based on the board size.
+   * Generates an initial setup of ships for placement on the board based on the board size and
+   * share. The method tries to select an approximately equal number of ships of each size until the
+   * required number of mandatory fields is reached.
    *
-   * <p>The method calculates the number of mandatory occupied fields based on the board size, then
-   * creates a list of ships by selecting an equal number of each ship size (represented by {@link
-   * ShipLength}). The selection continues until the total number of occupied fields matches the
-   * required number.
-   *
-   * @param boardSize the size of the board (e.g., length of one side)
-   * @return an array of {@link ShipLength} representing the initial ship setup for placement
+   * @param boardSize The size of the board (number of cells per side).
+   * @param share The share category determining the proportion of occupied fields.
+   * @return An array of {@link ShipLength} representing the ships to be placed.
    */
-  public static ShipLength[] generateShipSetupForPlacement(int boardSize) {
-    int numMandatoryFields = getNumberForExactNumberOfMandatoryOccupiedFields(boardSize);
+  public static ShipLength[] generateShipSetupForPlacement(int boardSize, ShipBoardShare share) {
+    int numMandatoryFields = getExactNumberOfMandatoryOccupiedFields(boardSize, share);
 
-    ArrayList<ShipLength> initialShipSetup = new ArrayList<ShipLength>();
+    ArrayList<ShipLength> initialShipSetup = new ArrayList<>();
     // try to select an equal number of each ship size
 
     while (numMandatoryFields > 0) {
@@ -199,17 +201,35 @@ public class BoardUtils {
       }
     }
 
-    return initialShipSetup.toArray(new ShipLength[0]);
+    return initialShipSetup.toArray(ShipLength[]::new);
   }
 
   /**
-   * Calculates the number of ships needed to exactly occupy the specified share of the board.
+   * Calculates the exact number of mandatory occupied fields on the board based on the board size
+   * and share category.
    *
-   * @return the number of ships required.
+   * @param boardSize The size of the board (number of cells per side).
+   * @param share The share category determining the proportion of occupied fields.
+   * @return The total number of mandatory occupied fields, rounded up to the nearest integer.
    */
-  public static int getNumberForExactNumberOfMandatoryOccupiedFields(int boardSize) {
+  public static int getExactNumberOfMandatoryOccupiedFields(int boardSize, ShipBoardShare share) {
     int totalCells = boardSize * boardSize;
-    double requiredShips = totalCells * Board.shareOfShipsOnTheBoard;
+
+    double requiredShips = totalCells * 0.30f;
+
+    switch (share) {
+      case FIFTEEN -> {
+        requiredShips = totalCells * 0.15f;
+        break;
+      }
+      case TWENTY -> {
+        requiredShips = totalCells * 0.20f;
+      }
+      case THIRTY -> {
+        requiredShips = totalCells * 0.30f;
+      }
+    }
+
     return (int) Math.ceil(requiredShips);
   }
 
@@ -243,6 +263,30 @@ public class BoardUtils {
       sb.append("\n");
     }
     logger.info("\n" + sb.toString());
+  }
+
+  /**
+   * Converts a string representation of a share percentage to its corresponding {@link
+   * ShipBoardShare} enum.
+   *
+   * @param str The string representing the share percentage (e.g., "15%", "20%", "30%").
+   * @return The corresponding {@link ShipBoardShare} enum value.
+   */
+  public static ShipBoardShare getShipShareFromString(String str) {
+    switch (str) {
+      case "15%" -> {
+        return ShipBoardShare.FIFTEEN;
+      }
+      case "20%" -> {
+        return ShipBoardShare.TWENTY;
+      }
+      case "30%" -> {
+        return ShipBoardShare.THIRTY;
+      }
+      default -> {
+        return ShipBoardShare.THIRTY;
+      }
+    }
   }
 
   // ----- private methods ------

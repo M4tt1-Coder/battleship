@@ -228,6 +228,9 @@ public class FileWriterService {
         .append("numberOfShips=")
         .append(board.numberOfShips)
         .append(lineSeparator)
+        .append("shipShare=")
+        .append(board.getShipShare())
+        .append(lineSeparator)
         .append("#board")
         .append(lineSeparator);
 
