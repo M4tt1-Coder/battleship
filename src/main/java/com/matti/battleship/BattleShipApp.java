@@ -366,7 +366,7 @@ public class BattleShipApp extends Application {
     // ROOT 5: Playing screen (shooting boards + save/end)
     // ================================================================
 
-    //go to root1
+    // go to root1
     Buttons buttonEndGameR5 = new Buttons("End Game");
     buttonEndGameR5.setId("buttonsEndGame");
 
@@ -578,9 +578,7 @@ public class BattleShipApp extends Application {
 
     // ---------------------- Root 2 actions ----------------------
     // Back to root1
-    buttonGoBackR2.setOnAction(e ->
-            scene1.setRoot(root1GamemodeSelection)
-    );
+    buttonGoBackR2.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
 
     // Load saved singleplayer game and jump to playing screen (root5)
     buttonLoadGameR2.setOnAction(
@@ -629,7 +627,8 @@ public class BattleShipApp extends Application {
           }
         });
 
-    // Shared start handler: used by singleplayer start (root2) and intended for multiplayer start (root6)
+    // Shared start handler: used by singleplayer start (root2) and intended for multiplayer start
+    // (root6)
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
           Buttons source = (Buttons) e.getSource();
@@ -660,7 +659,6 @@ public class BattleShipApp extends Application {
               GlobalConnector global = new GlobalConnector();
               global.setServerName(textfieldSelectServerNameR6.getText());
             }
-
           }
 
           // Validate board size input
@@ -731,17 +729,11 @@ public class BattleShipApp extends Application {
 
     // ---------------------- Root 3 actions ----------------------
     // Back to root1
-    buttonGoBackR3.setOnAction(e ->
-            scene1.setRoot(root1GamemodeSelection)
-    );
+    buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
     // Create own game -> open multiplayer settings (root6)
-    buttonCreateOwnGameR3.setOnAction(e ->
-            scene1.setRoot(root6MultiplayerSettings)
-    );
+    buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
     // Refresh discovered servers list
-    buttonRefreshServersR3.setOnAction(e ->
-            discover_servers(root3JoinOtherServers)
-    );
+    buttonRefreshServersR3.setOnAction(e -> discover_servers(root3JoinOtherServers));
 
     buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
     buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
@@ -830,7 +822,6 @@ public class BattleShipApp extends Application {
           scene1.setRoot(root1GamemodeSelection);
         });
 
-
     // Save game state and fully reset game-related fields
     buttonSafeGameR5.setOnAction(
         e -> {
@@ -865,13 +856,13 @@ public class BattleShipApp extends Application {
         });
 
     // Start multiplayer -> show waiting screen (root7)
-    //TODO: Add Multiplayer Connection logic
+    // TODO: Add Multiplayer Connection logic
     buttonStartGameR6.setOnAction(
         e -> {
           scene1.setRoot(root7LoadingScreen);
         });
 
-    //TODO: If player joined switch to root5
+    // TODO: If player joined switch to root5
 
     // start_game_button_r6.setOnAction(startHandler);
 
@@ -885,10 +876,10 @@ public class BattleShipApp extends Application {
     // ================================================================
     // Stage / Scene setup
     // ================================================================
-    //Create window with size 800x600
+    // Create window with size 800x600
     scene1 = new Scene(root1GamemodeSelection, 800, 600);
 
-    //include stylesheet
+    // include stylesheet
     scene1.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
 
     // Bind boardSize to the smaller window dimension (responsive square board),
@@ -910,10 +901,10 @@ public class BattleShipApp extends Application {
   // _________________________________________________________________
   // ----- Helper functions -----
   // _________________________________________________________________
-  
-    //TODO: Outsource helper functions
-  
-    /**
+
+  // TODO: Outsource helper functions
+
+  /**
    * Prepares and initializes the playing grid panes for the game UI.
    *
    * <p>This method creates two {@link GridPane} instances for the player's and opponent's boards,
@@ -1764,13 +1755,15 @@ public class BattleShipApp extends Application {
    * Discovers available multiplayer servers on the local network and updates the given UI root pane
    * with corresponding join buttons (or a "No servers found" label if none are discovered).
    *
-   * <p>This method reads the discovery port from {@link EnvConfig}, runs a {@link ClientDiscoveryScanner}
-   * with a fixed timeout, and collects {@link DiscoveredServer} results. It then renders up to 9 servers
-   * as buttons arranged in a simple 3-column grid using predefined relative positions.
+   * <p>This method reads the discovery port from {@link EnvConfig}, runs a {@link
+   * ClientDiscoveryScanner} with a fixed timeout, and collects {@link DiscoveredServer} results. It
+   * then renders up to 9 servers as buttons arranged in a simple 3-column grid using predefined
+   * relative positions.
    *
    * <p>If no servers are found, a centered information label is added to the root pane.
    *
-   * @param root the UI container {@link Pane} that will receive the "no servers" label or the join buttons.
+   * @param root the UI container {@link Pane} that will receive the "no servers" label or the join
+   *     buttons.
    */
   private void discover_servers(Pane root, Scene scene, Pane destinationPane) {
     int port = EnvConfig.getPort();
