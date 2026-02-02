@@ -1640,7 +1640,7 @@ public class BattleShipApp extends Application {
     } else {
       for (int i = 0; i < amount_of_discovered_servers && i < 9; i++) {
         String server_name = list_of_discovered_servers.get(i).name();
-        // String host_name = list_of_discovered_servers.get(i).host(); // optional, if
+        String host_name = list_of_discovered_servers.get(i).host(); // optional, if
         // needed
         Buttons join_server_button = new Buttons(server_name);
         int row = i / 3;
