@@ -13,10 +13,10 @@ package com.matti.battleship;
  * - Game, board, and AI are stored in the application object and updated when switching screens.
  *
  * Where to find:
- *  -   JavaFX lifecycle/roots -> line 128
- *  -   Button actions / navigation -> 557
- *  -   Stage / SceneSetup -> 870
- *  -   Helper functions -> 895
+ *  -   JavaFX lifecycle/roots -> line 134
+ *  -   Button actions / navigation -> 552
+ *  -   Stage / SceneSetup -> 865
+ *  -   Helper functions -> 889
  *
  * root naming convention:
  *  - Structure:
@@ -627,7 +627,8 @@ public class BattleShipApp extends Application {
           }
         });
 
-    // Shared start handler: used by singleplayer start (root2) and intended for multiplayer start
+    // Shared start handler: used by singleplayer start (root2) and intended for
+    // multiplayer start
     // (root6)
     final EventHandler<ActionEvent> startHandler =
         (ActionEvent e) -> {
@@ -733,7 +734,8 @@ public class BattleShipApp extends Application {
     // Create own game -> open multiplayer settings (root6)
     buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
     // Refresh discovered servers list
-    buttonRefreshServersR3.setOnAction(e -> discover_servers(root3JoinOtherServers));
+    buttonRefreshServersR3.setOnAction(
+        e -> discover_servers(root3JoinOtherServers, scene1, root4PlaceShips));
 
     buttonGoBackR3.setOnAction(e -> scene1.setRoot(root1GamemodeSelection));
     buttonCreateOwnGameR3.setOnAction(e -> scene1.setRoot(root6MultiplayerSettings));
@@ -778,7 +780,8 @@ public class BattleShipApp extends Application {
                   labelTextYourSideR5,
                   labelTextEnemySideR5);
 
-          // TODO: Add the case for playing against another player -> no board needs to be added
+          // TODO: Add the case for playing against another player -> no board needs to be
+          // added
 
           // Create opponent board and auto-place ships
           Board opponentBoard = new Board(this.selected_field_size);
@@ -905,15 +908,25 @@ public class BattleShipApp extends Application {
   // TODO: Outsource helper functions
 
   /**
-   * Prepares and initializes the playing grid panes for the game UI.
+   * Prepares and initializes the playing grid panes for both the player and the opponent within the
+   * specified root pane.
    *
-   * <p>This method creates two {@link GridPane} instances for the player's and opponent's boards,
-   * configures their layout properties, binds their preferred sizes to the {@code boardSize}
-   * property, and initializes their content through dedicated initialization methods. It also
-   * positions the grids within the root pane using translation bindings based on the scene's width,
-   * ensuring a responsive layout.
+   * <p>This method performs the following steps:
    *
-   * @param root the root {@link Pane} to which the playing grid panes will be added.
+   * <ul>
+   *   <li>Removes all existing GridPane children from the root pane.
+   *   <li>Creates and configures new GridPane instances for the player and opponent boards.
+   *   <li>Initializes the opponent's and player's game boards via dedicated methods.
+   *   <li>Positions the grids within the UI, binding their size and position properties to scene
+   *       dimensions for responsiveness.
+   *   <li>Synchronizes the visual representation of the boards with the current game state.
+   *   <li>Adds the configured grids to the root pane.
+   * </ul>
+   *
+   * @param root The parent Pane that contains the game boards. Existing GridPane children will be
+   *     removed.
+   * @param game The current Game instance containing game state information, including player and
+   *     opponent boards.
    */
   private void preparePlayingGridPanes(Pane root, Game game) {
     // delete all existing gridpane children of the root
@@ -955,14 +968,6 @@ public class BattleShipApp extends Application {
     opponentGrid.setAlignment(Pos.CENTER);
   }
 
-  /**
-   * Updates the opponent's game UI board based on the current state of the opponent's logical
-   * board. This method is responsible for synchronizing the visual representation of the game with
-   * the actual game state. It iterates over the opponent's logical board, updating the
-   * corresponding UI elements in the opponent's game board.
-   *
-   * @param pane the GridPane to which the buttons will be added, representing the game board grid.
-   */
   private void applyBoardUpdatesToPlayerUIBoard(GridPane opponentPane, Board opponentBoard) {
     DoubleBinding BUTTON_SIZE =
         Bindings.createDoubleBinding(() -> boardSize.get() / selected_field_size, boardSize);
@@ -1030,16 +1035,16 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Updates the opponent's game UI board based on the current state of the opponent's logical
-   * board. This method is responsible for synchronizing the visual representation of the game with
-   * the actual game state. It iterates over the opponent's logical board, updating the
-   * corresponding UI elements in the opponent's game board.
+   * Updates the opponent's UI board (GridPane) to reflect the current game state of the player's
+   * board.
    *
-   * @param opponentPane The GridPane containing the opponent's UI board, which needs to be updated
-   *     to reflect the current game state.
-   * @param playerBoard The opponent's logical board, which contains the current state of the game.
-   * @param gameStatus The current status of the game, which determines the appearance of certain UI
-   *     elements.
+   * <p>The method iterates through each field of the player's board and updates the corresponding
+   * UI cell in the opponent's GridPane based on the theoretical state of each field (miss, hit,
+   * sunk). It updates visual indicators such as images for misses and hits and styles for sunk
+   * ships. If a ship is sunk, it highlights all related cells accordingly.
+   *
+   * @param opponentPane The GridPane representing the opponent's board UI, which will be updated.
+   * @param playerBoard The Board object containing the current state of the player's board.
    */
   private void applyBoardUpdatesToOpponentsUIBoard(GridPane opponentPane, Board playerBoard) {
     DoubleBinding BUTTON_SIZE =
@@ -1123,28 +1128,13 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Initializes the opponent's game board grid within the provided GridPane.
+   * Initializes the opponent's game board UI grid within the specified GridPane.
    *
-   * <p>This method dynamically creates and adds cell representations for each field on the
-   * opponent's grid. Each cell is a StackPane with size bindings that adapt to the current board
-   * size and selected field size, ensuring the grid is responsive and scales appropriately.
+   * <p>This method creates a grid of StackPane cells, binds their sizes to the overall board size
+   * for responsiveness, and applies styling such as borders and background images. Each cell is
+   * associated with a {@link PlayerBoardCellContext} for storing state information.
    *
-   * <p>The process involves:
-   *
-   * <ul>
-   *   <li>Creating a DoubleBinding that calculates cell size based on the current board size and
-   *       field size, scaled by 0.9 for padding.
-   *   <li>Iterating over the game board's fields, retrieving their coordinates.
-   *   <li>For each field, creating a StackPane that represents a cell, binding its width and height
-   *       to the dynamic size binding.
-   *   <li>Styling each cell with a border and background color (light blue).
-   *   <li>Adding each cell to the GridPane at the appropriate X (column) and Y (row) positions.
-   * </ul>
-   *
-   * This setup ensures the opponent's grid is visually consistent and responsive to changes in
-   * board or field sizes.
-   *
-   * @param pane the GridPane into which opponent grid cells will be added.
+   * @param pane The GridPane to populate with cells representing the opponent's game board.
    */
   private void initializePlayingBoardOpponentGrid(GridPane pane) {
     DoubleBinding cs =
@@ -1177,13 +1167,17 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Initializes the playing board for a player by creating a grid of buttons in the specified
-   * GridPane. Each button represents a field on the board, and its size is determined by the
-   * current board size and selected field size.
+   * Initializes the player's game board UI grid within the specified GridPane.
    *
-   * @param pane The GridPane where the player's playing board will be rendered.
-   * @param opponentPane The GridPane where the opponent's playing board will be rendered.
-   * @param root The parent Pane of the player's playing board.
+   * <p>This method creates a grid of Buttons representing each field on the player's board. Each
+   * button is styled, bound to the board size for responsiveness, and configured with an action to
+   * handle shooting at the opponent when clicked. It also loads images for hit and miss indicators
+   * and handles the game logic for shooting, including updating the UI based on shot results.
+   *
+   * @param pane The GridPane where the player's game board buttons will be added.
+   * @param opponentPane The GridPane of the opponent's board, which will be updated after each
+   *     shot.
+   * @param root The root Pane of the scene, used for accessing game state and managing game flow.
    */
   private void initializePlayingBoardPlayerGrid(GridPane pane, GridPane opponentPane, Pane root) {
     DoubleBinding BUTTON_SIZE =
@@ -1261,15 +1255,14 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Updates the visual representation of the game board after a ship has been sunk.
+   * Updates the UI buttons on the player's grid after a ship has been sunk.
    *
-   * <p>This method changes the style of the buttons corresponding to the sunk ship's fields to
-   * indicate they are sunk, and overlays surrounding fields with an image (e.g., a "miss" marker)
-   * to show the area around the sunk ship.
+   * <p>This method highlights the fields of the sunk ship and marks the surrounding fields with a
+   * miss indicator. It modifies the style of the ship's fields to indicate they are sunk and sets
+   * miss images around the ship.
    *
-   * @param gridPane the {@link GridPane} containing the buttons representing the game board.
-   * @param coordinates the {@link Coordinates} of the sunk ship's position.
-   * @throws NullPointerException if the ship at the specified coordinates cannot be found.
+   * @param gridPane The GridPane containing the buttons representing the player's board.
+   * @param coordinates The coordinates of the sunk ship's position.
    */
   private void applyChangesToButtonsAfterShipSunk(GridPane gridPane, Coordinates coordinates) {
     Board targettedBoard = game.opponent.board;
@@ -1307,23 +1300,19 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Rotates and positions a Rectangle representing a ship within a GridPane layout based on the
-   * specified direction.
+   * Rotates and positions a Rectangle representing a ship on the GridPane based on the specified
+   * direction.
    *
-   * <p>This method adjusts the rectangle's row and column indices, span, and size bindings to
-   * visually rotate the ship within the grid. It ensures the ship remains within grid boundaries
-   * before applying changes. If rotation is not possible due to boundary constraints, an
-   * informative message is printed and the operation is aborted.
+   * <p>This method adjusts the rectangle's position, size, and rotation to match the new
+   * orientation, ensuring the ship fits within the grid boundaries. It also updates the ship's
+   * image to reflect the rotation.
    *
-   * <p>The size of the rectangle is dynamically bound to the current board size, ensuring
-   * responsive resizing. The rectangle is centered within its grid cell after positioning.
-   *
-   * @param shipRect the Rectangle object representing the ship to be rotated and positioned.
-   * @param row the current row index of the ship's starting position.
-   * @param col the current column index of the ship's starting position.
-   * @param shipLength the length of the ship in grid units.
-   * @param boardSize the total size (number of cells) of the game board.
-   * @param newDirection the direction to rotate the ship to (UP, DOWN, LEFT, RIGHT).
+   * @param shipRect The Rectangle representing the ship on the grid.
+   * @param row The starting row index for positioning the ship.
+   * @param col The starting column index for positioning the ship.
+   * @param shipLength The length of the ship.
+   * @param boardSize The size of the game board (number of rows/columns).
+   * @param newDirection The new direction (orientation) for the ship (UP, DOWN, LEFT, RIGHT).
    */
   private void rotateRectangleOnGridPane(
       Rectangle shipRect, int row, int col, int shipLength, int boardSize, Direction newDirection) {
@@ -1401,22 +1390,15 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Prepares and initializes the ship rectangles within the provided root pane.
+   * Prepares and initializes the ship rectangles for the initial setup of the game.
    *
-   * <p>This method creates a visual representation of ships based on predefined ship lengths,
-   * binding their size dynamically to the current board size for responsiveness. Each ship is
-   * represented by a Rectangle with styling and transformation capabilities, including
-   * drag-and-drop and rotation via keyboard input (pressing 'R').
+   * <p>This method creates draggable ship rectangles representing each ship based on their lengths,
+   * applies visual styling, binds their size properties to the grid, and sets up drag-and-drop
+   * behavior including rotation via keyboard input (R key). Ships can be rotated during placement
+   * by pressing R, which temporarily removes the ship, updates its orientation, and attempts to
+   * place it again.
    *
-   * <p>During drag detection, the method sets up event handlers to handle ship rotation, which
-   * involves removing the ship from the board, updating its direction, and attempting to re-place
-   * it. If placement fails, the ship's direction is reverted, and it is re-added to the original
-   * position.
-   *
-   * <p>The rectangles are added to the root pane, positioned with margins and translation bindings
-   * to display multiple ships in a row. They also support dragging with a visual snapshot.
-   *
-   * @param root the Pane to which the ship rectangles will be added and displayed.
+   * @param root The Pane container to which the ship rectangles are added.
    */
   private void prepareShipRectangles(Pane root) {
     ShipLength[] allLengths = this.initialShipSetup;
@@ -1752,18 +1734,17 @@ public class BattleShipApp extends Application {
   }
 
   /**
-   * Discovers available multiplayer servers on the local network and updates the given UI root pane
-   * with corresponding join buttons (or a "No servers found" label if none are discovered).
+   * Discovers available servers on the network, displays the results on the provided root pane, and
+   * creates buttons for each discovered server to allow the user to connect.
    *
-   * <p>This method reads the discovery port from {@link EnvConfig}, runs a {@link
-   * ClientDiscoveryScanner} with a fixed timeout, and collects {@link DiscoveredServer} results. It
-   * then renders up to 9 servers as buttons arranged in a simple 3-column grid using predefined
-   * relative positions.
+   * <p>This method uses a client discovery scanner to find servers within a specified timeout. If
+   * no servers are found, it displays a message indicating so. If servers are discovered, it
+   * creates up to nine buttons arranged in a grid, each representing a server, with an action to
+   * initiate connection (currently commented out).
    *
-   * <p>If no servers are found, a centered information label is added to the root pane.
-   *
-   * @param root the UI container {@link Pane} that will receive the "no servers" label or the join
-   *     buttons.
+   * @param root The Pane container where server discovery results and buttons will be displayed.
+   * @param scene The Scene associated with the UI, used for scene management.
+   * @param destinationPane The Pane to switch to upon connecting to a selected server.
    */
   private void discover_servers(Pane root, Scene scene, Pane destinationPane) {
     int port = EnvConfig.getPort();
