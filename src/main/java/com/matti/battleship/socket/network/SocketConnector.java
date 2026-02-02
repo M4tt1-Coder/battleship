@@ -103,7 +103,6 @@ public class SocketConnector {
    * @param socket connected TCP socket
    * @param log turn log instance for readable send/receive output
    * @throws IOException if socket IO streams cannot be created
-   * @author WoFabian
    */
   public SocketConnector(Socket socket, TurnLog log) throws IOException {
     this.socket = socket;
@@ -112,7 +111,8 @@ public class SocketConnector {
     this.self = (log.getSide() == TurnLog.Side.SERVER) ? "SERVER" : "CLIENT";
     this.other = self.equals("SERVER") ? "CLIENT" : "SERVER";
 
-    // Allows read operations to wake up periodically so stopLoopRequested can be checked.
+    // Allows read operations to wake up periodically so stopLoopRequested can be
+    // checked.
     this.socket.setSoTimeout(750);
 
     this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -155,8 +155,6 @@ public class SocketConnector {
    *
    * <p>LOGIC-IMPORTANT: This does not start a thread; it only enables the loop if/when it is
    * running.
-   *
-   * @author WoFabian
    */
   public void requestStartListening() {
     synchronized (listenLock) {
@@ -170,8 +168,6 @@ public class SocketConnector {
    * 2).
    *
    * <p>LOGIC-IMPORTANT: This is intentionally not a disconnect. The TCP socket remains open.
-   *
-   * @author WoFabian
    */
   public void requestStopListening() {
     synchronized (listenLock) {
@@ -189,8 +185,6 @@ public class SocketConnector {
    * <p>LOGIC-IMPORTANT: A stop request is NOT treated as a disconnect. Only a real remote close
    * ({@code readLine()} returns null) triggers {@link
    * IMessageListener#onConnectionClosed(Exception)}.
-   *
-   * @author WoFabian
    */
   public void listenLoop() {
     boolean remoteClosed = false;

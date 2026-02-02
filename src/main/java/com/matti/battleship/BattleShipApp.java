@@ -13,10 +13,10 @@ package com.matti.battleship;
  * - Game, board, and AI are stored in the application object and updated when switching screens.
  *
  * Where to find:
- *  -   JavaFX lifecycle/roots -> line 134
- *  -   Button actions / navigation -> 552
- *  -   Stage / SceneSetup -> 865
- *  -   Helper functions -> 889
+ *  -   JavaFX lifecycle/roots -> line 130
+ *  -   Button actions / navigation -> 558
+ *  -   Stage / SceneSetup -> 880
+ *  -   Helper functions -> 905
  *
  * root naming convention:
  *  - Structure:
@@ -1436,6 +1436,15 @@ public class BattleShipApp extends Application {
                 e -> {
                   if (e.getCode() == KeyCode.R) {
                     ShipGridElement data = (ShipGridElement) ship.getUserData();
+                    if (!data.isPlaced()) {
+                      System.out.println("Can't rotate ship if it wasn't placed on the board yet!");
+                      PlayingUtils.show_pop_up_information(
+                          root,
+                          "Only try to rotate ships after you placed them on the board!",
+                          3000,
+                          false);
+                      return;
+                    }
                     Direction oldDirection = data.getDirection();
                     Direction newDir =
                         (oldDirection == Direction.RIGHT) ? Direction.DOWN : Direction.RIGHT;
